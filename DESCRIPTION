@@ -1,0 +1,35 @@
+Package: networkscaleup
+Title: Network Scale-up Models for Aggregated Relational Data
+Version: 0.1-1
+Authors@R: 
+    c(person("Ian", "Laga", , "ilaga25@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5164-4856")),
+           person("Le", "Bao", , "lebao@psu.edu", role = c("aut")),
+           person("Xiaoyue", "Niu", , "Xiaoyue@psu.edu", role = c("aut")))
+Description: Provides a variety of Network Scale-up Models for researchers to analyze Aggregated Relational Data, mostly through the use of Stan. In this version, the package implements models from Laga et al. (2022+) <https://doi.org/10.48550/arXiv.2109.10204>, Teo et al. (2019) <http://doi.org/10.1136/sextrans-2018-053747>, Zheng et al. (2006) <https://doi.org/10.1198/016214505000001168>, Killworth et al. (1998a) <https://doi.org/10.1016/S0378-8733(96)00305-X>, and Killworth et al. (1998b) <https://doi.org/10.1177%2F0193841X9802200205>.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Biarch: true
+Depends: 
+    R (>= 3.4.0)
+Imports: 
+    methods,
+    Rcpp (>= 0.12.0),
+    RcppParallel (>= 5.0.1),
+    rstan (>= 2.18.1),
+    rstantools (>= 2.1.1)
+LinkingTo: 
+    BH (>= 1.66.0),
+    Rcpp (>= 0.12.0),
+    RcppEigen (>= 0.3.3.3.0),
+    RcppParallel (>= 5.0.1),
+    rstan (>= 2.18.1),
+    StanHeaders (>= 2.18.0)
+SystemRequirements: GNU make
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
+LazyData: true
