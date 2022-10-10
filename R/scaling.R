@@ -3,10 +3,10 @@
 #' This function scales estimates from either the overdispersed model or from
 #' the correlated models. Several scaling options are available.
 #'
-#' @param log_degree The matrix of estimated raw log degrees from either the
+#' @param log_degrees The matrix of estimated raw log degrees from either the
 #'   overdispersed or correlated models.
-#' @param log_prevalence The matrix of estimates raw log prevalences from either
-#'   the overdispersed or correlated models.
+#' @param log_prevalences The matrix of estimates raw log prevalences from
+#'   either the overdispersed or correlated models.
 #' @param scaling An character vector providing the name of scaling procedure
 #'   should be performed in order to transform estimates to degrees and
 #'   subpopulation sizes. Scaling options are `overdispersed`, `all` (the
@@ -42,9 +42,9 @@
 #'   details.} \item{all}{All subpopulations with known sizes are used to scale
 #'   the parameters, using a modified scaling procedure that standardizes the
 #'   sizes so each population is weighted equally. Additional details are
-#'   provided in Laga et al. (2022+).} \item{weighted}{All subpopulations with
+#'   provided in Laga et al. (2021).} \item{weighted}{All subpopulations with
 #'   known sizes are weighted according their correlation with the unknown
-#'   subpopulation size. Additional details are provided in Laga et al. (2022+)}
+#'   subpopulation size. Additional details are provided in Laga et al. (2021)}
 #'   \item{weighted_sq}{Same as `weighted`, except the weights are squared,
 #'   providing more relative weight to subpopulations with higher correlation.}}
 #'
@@ -54,39 +54,15 @@
 #'   people do you know in prison, \emph{Journal of the American Statistical
 #'   Association}, \bold{101:474}, 409--423
 #'
-#'   Laga, I., Bao, L., and Niu, X (2022+). A Correlated Network Scaleup Model:
-#'   Finding the Connection Between Subpopulations, arxiv preprint:
-#'   <https://doi.org/10.48550/arXiv.2109.10204>
+#'   Laga, I., Bao, L., and Niu, X (2021). A Correlated Network Scaleup Model:
+#'   Finding the Connection Between Subpopulations
 #' @import rstan
 #' @export
 #'
-#' @examples
-#' # Analyze an example ard data set using Zheng et al. (2006) models
-#' # Note that in practice, both warmup and iter should be much higher
-#' data(example_data)
 #'
-#' overdisp.est = overdispersed(example_data$ard,
-#' known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
-#' known_ind = c(1, 3, 4),
-#' G1_ind = 1,
-#' G2_ind = 2,
-#' B2_ind = 2,
-#' N = example_data$N,
-#' warmup = 250,
-#' iter = 250)
-#'
-#' # Compare size estimates
-#' data.frame(true = example_data$subpop_sizes,
-#' basic = colMeans(overdisp.est$betas))
-#'
-#' # Compare degree estimates
-#' plot(example_data$degrees, colMeans(overdisp.est$alphas))
-#'
-#' # Look at overdispersion parameter
-#' colMeans(overdisp.est$omegas)
 scaling <-
-  function(log_degree,
-           log_prevalence,
+  function(log_degrees,
+           log_prevalences,
            scaling = c("all", "overdispersed", "weighted", "weighted_sq"),
            known_sizes = NULL,
            known_ind = NULL,
@@ -96,31 +72,31 @@ scaling <-
            B2_ind = NULL,
            N = NULL) {
     ## Extract dimensions
-    iter = nrow(log_degree) ## Number of MCMC samples
-    N_i = ncol(log_degree) ## Number of respondents
-    N_k = ncol(log_prevalence) ## Number of subpopulations
+    iter = nrow(log_degrees) ## Number of MCMC samples
+    N_i = ncol(log_degrees) ## Number of respondents
+    N_k = ncol(log_prevalences) ## Number of subpopulations
 
     scaling = match.arg(scaling)
 
-    alphas = log_degree
-    betas = log_prevalence
-
-
-
-    if (is.null(refresh)) {
-      ## By default, refresh every 10% of iterations
-      refresh = round(iter / 10)
+    if(!is.null(Correlation)){
+      diag(Correlation) = NA
     }
+
+
+    alphas = log_degrees
+    betas = log_prevalences
 
     known_prevalences = known_sizes / N
+    prevalences_vec = rep(NA, N_k)
+    prevalences_vec[known_ind] = known_prevalences
     if (!is.null(G1_ind)) {
-      Pg1 = sum(known_prevalences[G1_ind])
+      Pg1 = sum(prevalences_vec[G1_ind])
     }
     if (!is.null(G2_ind)) {
-      Pg2 = sum(known_prevalences[G2_ind])
+      Pg2 = sum(prevalences_vec[G2_ind])
     }
-    if (is.null(B2_ind)) {
-      Pb2 = sum(known_prevalences[B2_ind])
+    if (!is.null(B2_ind)) {
+      Pb2 = sum(prevalences_vec[B2_ind])
     }
 
 
@@ -133,7 +109,7 @@ scaling <-
           is.null(B2_ind)) {
         ## Perform scaling with only main
         for (ind in 1:iter) {
-          C1 = log(sum(exp(log_prevalence[ind, G1_ind]) / Pg1))
+          C1 = log(sum(exp(log_prevalences[ind, G1_ind]) / Pg1))
           C = C1
 
           alphas[ind, ] = alphas[ind, ] + C
@@ -143,9 +119,9 @@ scaling <-
       } else{
         ## Perform scaling with secondary groups
         for (ind in 1:iter) {
-          C1 = log(sum(exp(log_prevalence[ind, G1_ind]) / Pg1))
-          C2 = log(sum(exp(log_prevalence[ind, B2_ind]) / Pb2)) -
-            log(sum(exp(log_prevalence[ind, G2_ind]) / Pg2))
+          C1 = log(sum(exp(log_prevalences[ind, G1_ind]) / Pg1))
+          C2 = log(sum(exp(log_prevalences[ind, B2_ind]) / Pb2)) -
+            log(sum(exp(log_prevalences[ind, G2_ind]) / Pg2))
           C = C1 + 1 / 2 * C2
 
           alphas[ind, ] = alphas[ind, ] + C
@@ -155,7 +131,7 @@ scaling <-
       }
     } else if (scaling == "all") {
       for (ind in 1:iter) {
-        C = log(mean(exp(log_prevalence[ind, known_ind]) / known_prevalences[known_ind]))
+        C = log(mean(exp(log_prevalences[ind, known_ind]) / known_prevalences))
 
         alphas[ind,] = alphas[ind,] + C
         betas[ind,] = betas[ind,] - C
@@ -172,18 +148,17 @@ scaling <-
         scale.weights = scale.weights / sum(scale.weights, na.rm = T) * sum(!is.na(scale.weights))
         for (ind in 1:iter) {
           C = log(mean(
-            exp(log_prevalence[ind, known_ind]) * scale.weights / known_prevalences[known_ind],
+            exp(log_prevalences[ind, known_ind]) * scale.weights / known_prevalences,
             na.rm = T
           ))
 
           betas[ind, k] = betas[ind, k] - C
         }
-        print(k)
       }
 
       ## Scale degrees separately using all
       for (ind in 1:iter) {
-        C = log(mean(exp(log_prevalence[ind, known_ind]) / known_prevalences[known_ind]))
+        C = log(mean(exp(log_prevalences[ind, known_ind]) / known_prevalences))
 
         alphas[ind,] = alphas[ind,] + C
       }
@@ -202,26 +177,25 @@ scaling <-
         scale.weights = scale.weights / sum(scale.weights, na.rm = T) * sum(!is.na(scale.weights))
         for (ind in 1:iter) {
           C = log(mean(
-            exp(log_prevalence[ind, known_ind]) * scale.weights / known_prevalences[known_ind],
+            exp(log_prevalences[ind, known_ind]) * scale.weights / known_prevalences[known_ind],
             na.rm = T
           ))
 
           betas[ind, k] = betas[ind, k] - C
         }
-        print(k)
       }
 
       ## Scale degrees separately using all
       for (ind in 1:iter) {
-        C = log(mean(exp(log_prevalence[i, known_ind]) / known_prevalences[known_ind]))
+        C = log(mean(exp(log_prevalences[ind, known_ind]) / known_prevalences[known_ind]))
 
         alphas[ind,] = alphas[ind,] + C
       }
     }
 
 
-    return_list = list(log_degree = alphas,
-                       log_prevalence = betas)
+    return_list = list(log_degrees = alphas,
+                       log_prevalences = betas)
 
     return(return_list)
 

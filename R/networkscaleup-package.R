@@ -1,6 +1,7 @@
 #' The 'networkscaleup' package.
 #'
-#' @description A DESCRIPTION OF THE PACKAGE
+#' @description Provides a variety of Network Scale-up Models for researchers to
+#'   analyze Aggregated Relational Data, mostly through the use of Stan.
 #'
 #' @docType package
 #' @name networkscaleup-package
@@ -10,7 +11,25 @@
 #' @import Rcpp
 #' @importFrom rstan sampling
 #'
-#' @references
-#' Stan Development Team (2021). RStan: the R interface to Stan. R package version 2.21.3. https://mc-stan.org
+#' @references Stan Development Team (2021). RStan: the R interface to Stan. R
+#' package version 2.21.3. https://mc-stan.org
+#'
+#' Laga, I., Bao, L., and Niu, X (2021). A Correlated Network Scaleup Model:
+#' Finding the Connection Between Subpopulations
+#'
+#' Zheng, T., Salganik, M. J., and Gelman, A. (2006). How many people do you
+#' know in prison, \emph{Journal of the American Statistical Association},
+#' \bold{101:474}, 409--423
+#'
+#' Killworth, P. D., Johnsen, E. C., McCarty, C., Shelley, G. A., and Bernard,
+#' H. R. (1998). A Social Network Approach to Estimating Seroprevalence in the
+#' United States, \emph{Social Networks}, \bold{20}, 23--50
+#'
+#' Killworth, P. D., McCarty, C., Bernard, H. R., Shelley, G. A., and Johnsen,
+#' E. C. (1998). Estimation of Seroprevalence, Rape and Homelessness in the
+#' United States Using a Social Network Approach, \emph{Evaluation Review},
+#' \bold{22}, 289--308
+#'
+#'
 #'
 NULL

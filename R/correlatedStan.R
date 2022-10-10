@@ -1,7 +1,7 @@
 #' Fit ARD using the uncorrelated or correlated model in Stan
 
 #' This function fits the ARD using either the uncorrelated or correlated model
-#' in Laga et al. (2022+) in Stan. The population size estimates and degrees are
+#' in Laga et al. (2021) in Stan. The population size estimates and degrees are
 #' scaled using a post-hoc procedure.
 #'
 #' @param ard The `n_i x n_k` matrix of non-negative ARD integer responses,
@@ -38,17 +38,17 @@
 #'   is the number of demographic covariates used. This matrix represents the
 #'   demographic information about the respondents in order to capture the
 #'   barrier effects.
-#' @param G1_ind A vector of indices corresponding to the subpopulations that
-#'   belong to the primary scaling groups, i.e. the collection of rare girls'
-#'   names in Zheng, Salganik, and Gelman (2006). By default, all known_sizes
-#'   are used. If G2_ind and B2_ind are not provided, `C = C_1`, so only G1_ind
-#'   are used. If G1_ind is not provided, no scaling is performed.
-#' @param G2_ind A vector of indices corresponding to the subpopulations that
-#'   belong to the first secondary scaling groups, i.e. the collection of
-#'   somewhat popular girls' names.
-#' @param B2_ind A vector of indices corresponding to the subpopulations that
-#'   belong to the second secondary scaling groups, i.e. the collection of
-#'   somewhat popular boys' names.
+#' @param G1_ind A vector of indices denoting the columns of `ard` that
+#'   correspond to the primary scaling groups, i.e. the collection of rare
+#'   girls' names in Zheng, Salganik, and Gelman (2006). By default, all
+#'   known_sizes are used. If G2_ind and B2_ind are not provided, `C = C_1`, so
+#'   only G1_ind are used. If G1_ind is not provided, no scaling is performed.
+#' @param G2_ind A vector of indices denoting the columns of `ard` that
+#'   correspond to the subpopulations that belong to the first secondary scaling
+#'   groups, i.e. the collection of somewhat popular girls' names.
+#' @param B2_ind A vector of indices denoting the columns of `ard` that
+#'   correspond to the subpopulations that belong to the second secondary
+#'   scaling groups, i.e. the collection of somewhat popular boys' names.
 #' @param chains A positive integer specifying the number of Markov chains.
 #' @param cores A positive integer specifying the number of cores to use to run
 #'   the Markov chains in parallel.
@@ -96,70 +96,74 @@
 #'   \item{Corr}{Correlation matrix, if `Correlation = TRUE`}}
 #'
 #'   If scaled, the following additional parameters are included:
-#'   \describe{\item{log_degree}{Scaled log degrees} \item{degree}{Scaled
-#'   degrees} \item{log_prevalence}{Scaled log prevalences}
+#'   \describe{\item{log_degrees}{Scaled log degrees} \item{degree}{Scaled
+#'   degrees} \item{log_prevalences}{Scaled log prevalences}
 #'   \item{sizes}{Subpopulation size estimates}}
-#' @references Laga, I., Bao, L., and Niu, X (2022+). A Correlated Network
-#'   Scaleup Model: Finding the Connection Between Subpopulations, arxiv
-#'   preprint: <https://doi.org/10.48550/arXiv.2109.10204>
+#' @references Laga, I., Bao, L., and Niu, X (2021). A Correlated Network
+#'   Scaleup Model: Finding the Connection Between Subpopulations
 #' @export
 #'
 #' @examples
-#' # Analyze an example ard data set using Laga et al. (2022+) models
-#' # Note that in practice, both warmup and iter should be much higher
+#' \dontrun{
 #' data(example_data)
 #'
+#' x = example_data$x
+#' z_global = example_data$z[,1:2]
+#' z_subpop = example_data$z[,3:4]
+#'
 #' basic_corr_est = correlatedStan(example_data$ard,
-#' known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
-#' known_ind = c(1, 2, 4),
-#' N = example_data$N,
-#' model = "correlated",
-#' scaling = "weighted",
-#' chains = 1,
-#' cores = 1,
-#' warmup = 250,
-#' iter = 500)
+#'      known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
+#'      known_ind = c(1, 2, 4),
+#'      N = example_data$N,
+#'      model = "correlated",
+#'      scaling = "weighted",
+#'      chains = 1,
+#'      cores = 1,
+#'      warmup = 50,
+#'      iter = 100)
 #'
 #' cov_uncorr_est = correlatedStan(example_data$ard,
-#' known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
-#' known_ind = c(1, 2, 4),
-#' N = example_data$N,
-#' model = "uncorrelated",
-#' scaling = "weighted",
-#' x = x,
-#' z_global = z_global,
-#' z_subpop = z_subpop,
-#' chains = 1,
-#' cores = 1,
-#' warmup = 250,
-#' iter = 500)
+#'      known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
+#'      known_ind = c(1, 2, 4),
+#'      N = example_data$N,
+#'      model = "uncorrelated",
+#'      scaling = "all",
+#'      x = x,
+#'      z_global = z_global,
+#'      z_subpop = z_subpop,
+#'      chains = 1,
+#'      cores = 1,
+#'      warmup = 50,
+#'      iter = 100)
 #'
 #' cov_corr_est = correlatedStan(example_data$ard,
-#' known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
-#' known_ind = c(1, 2, 4),
-#' N = example_data$N,
-#' model = "correlated",
-#' scaling = "weighted",
-#' x = x,
-#' z_subpop = z_subpop,
-#' chains = 1,
-#' cores = 1,
-#' warmup = 250,
-#' iter = 500)
+#'      known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
+#'      known_ind = c(1, 2, 4),
+#'      N = example_data$N,
+#'      model = "correlated",
+#'      scaling = "all",
+#'      x = x,
+#'      z_subpop = z_subpop,
+#'      chains = 1,
+#'      cores = 1,
+#'      warmup = 50,
+#'      iter = 100)
 #'
 #' # Compare size estimates
-#' data.frame(true = example_data$subpop_sizes,
-#' basic = colMeans(basic_corr_est$sizes),
-#' transmission = colMeans(cov_uncorr_est$sizes),
-#' barrier = colMeans(cov_corr_est$sizes))
+#' round(data.frame(true = example_data$subpop_sizes,
+#'      corr_basic = colMeans(basic_corr_est$sizes),
+#'      uncorr_x_zsubpop_zglobal = colMeans(cov_uncorr_est$sizes),
+#'      corr_x_zsubpop = colMeans(cov_corr_est$sizes)))
 #'
 #' # Look at z slope parameters
-#' colMeans(cov_uncorr_est$beta)
-#' colMeans(cov_corr_est$beta)
+#' colMeans(cov_uncorr_est$beta_global)
+#' colMeans(cov_corr_est$beta_subpop)
+#' colMeans(cov_uncorr_est$beta_subpop)
 #'
 #' # Look at x slope parameters
 #' colMeans(cov_uncorr_est$alpha)
 #' colMeans(cov_corr_est$alpha)
+#' }
 correlatedStan <-
   function(ard,
            known_sizes = NULL,
@@ -184,12 +188,19 @@ correlatedStan <-
     N_k = ncol(ard)
 
     model = match.arg(model)
+    scaling = match.arg(scaling)
 
     ## Check dimensions of x
     if (!is.null(x)) {
       if ((nrow(x) != N_i) | (ncol(x) != N_k)) {
         stop("Dimensions of x do not match dimensions of ard")
       }
+    }
+
+    ## Check for scaling method
+    if (model == "uncorrelated" &
+        (scaling == "weighted" | scaling == "weighted_sq")) {
+      stop("Model must be `correlated` to using `weighted` or `weighted_sq` scaling")
     }
 
     ## Check dimensions of z
@@ -617,55 +628,66 @@ correlatedStan <-
     ## Extract draws
     ## Exclude eps and L_Omega  (if correlated) for memory
     if (model == "correlated") {
-      draws = rstan::extract(model_fit, pars = c("eps", "L_Omega"))
+      draws = rstan::extract(model_fit,
+                             pars = c("eps", "L_Omega"),
+                             include = FALSE)
     } else{
-      draws = rstan::extract(model_fit, pars = c("eps"))
+      draws = rstan::extract(model_fit, pars = c("eps"), include = FALSE)
     }
 
 
     ## Perform scaling procedure
-    logdi = draws$logdi
-    sigma_di = draws$sigma_di
-    log_degree = matrix(NA, nrow = nrow(logdi), ncol = ncol(logdi))
-    for(i in 1:nrow(log_degree)){
-      log_degree[i,] = logdi[i,] * sigma_di[i]
+    delta = draws$delta
+    sigma_delta = draws$sigma_delta
+    log_degrees = matrix(NA, nrow = nrow(delta), ncol = ncol(delta))
+    for (i in 1:nrow(log_degrees)) {
+      log_degrees[i, ] = delta[i, ] * sigma_delta[i]
     }
 
-    if(!is.null(scaling)){
-      if((scaling == "weighted") | (scaling == "weighted_sq")){
+    if (!is.null(scaling)) {
+      if ((scaling == "weighted") | (scaling == "weighted_sq")) {
         ## First get point estimate for correlation matrix
         Correlation = draws$Corr
         Correlation = apply(Correlation, c(2, 3), mean)
-        scaling_res = networkscaleup::scaling(log_degree, draws$rho,
-                                              scaling = scaling,
-                                              known_sizes = known_sizes,
-                                              known_ind = known_ind,
-                                              Correlation = Correlation,
-                                              N = N)
+        scaling_res = networkscaleup::scaling(
+          log_degrees,
+          draws$rho,
+          scaling = scaling,
+          known_sizes = known_sizes,
+          known_ind = known_ind,
+          Correlation = Correlation,
+          N = N
+        )
 
 
-      }else if(scaling == "all"){
-        scaling_res = networkscaleup::scaling(log_degree, draws$rho,
-                                              scaling = scaling,
-                                              known_sizes = known_sizes,
-                                              known_ind = known_ind,
-                                              N = N)
+      } else if (scaling == "all") {
+        scaling_res = networkscaleup::scaling(
+          log_degrees,
+          draws$rho,
+          scaling = scaling,
+          known_sizes = known_sizes,
+          known_ind = known_ind,
+          N = N
+        )
 
-      }else if(scaling == "overdispersed"){
-        scaling_res = networkscaleup::scaling(log_degree, draws$rho,
-                                              scaling = scaling,
-                                              known_sizes = known_sizes,
-                                              known_ind = known_ind,
-                                              G1_ind = G1_ind,
-                                              G2_ind = G2_ind,
-                                              B2_ind = B2_ind,
-                                              N = N)
+      } else if (scaling == "overdispersed") {
+        scaling_res = networkscaleup::scaling(
+          log_degrees,
+          draws$rho,
+          scaling = scaling,
+          known_sizes = known_sizes,
+          known_ind = known_ind,
+          G1_ind = G1_ind,
+          G2_ind = G2_ind,
+          B2_ind = B2_ind,
+          N = N
+        )
       }
 
-      draws$log_degree = scaling_res$log_degree
-      draws$degree = exp(draws$log_degree)
-      draws$log_prevalence = scaling_res$log_prevalence
-      draws$sizes = exp(draws$log_prevalence) * N
+      draws$log_degrees = scaling_res$log_degrees
+      draws$degrees = exp(draws$log_degrees)
+      draws$log_prevalences = scaling_res$log_prevalences
+      draws$sizes = exp(draws$log_prevalences) * N
     }
 
 

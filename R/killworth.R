@@ -16,34 +16,42 @@
 #'
 #' @return A named list with the estimated degrees and sizes.
 #' @references Killworth, P. D., Johnsen, E. C., McCarty, C., Shelley, G. A.,
-#'   and Bernard, H. R. (1998a). A Social Network Approach to Estimating
+#'   and Bernard, H. R. (1998). A Social Network Approach to Estimating
 #'   Seroprevalence in the United States, \emph{Social Networks}, \bold{20},
 #'   23--50
 #'
 #'   Killworth, P. D., McCarty, C., Bernard, H. R., Shelley, G. A., and Johnsen,
-#'   E. C. (1998b). Estimation of Seroprevalence, Rape and Homelessness in the
+#'   E. C. (1998). Estimation of Seroprevalence, Rape and Homelessness in the
 #'   United States Using a Social Network Approach, \emph{Evaluation Review},
 #'   \bold{22}, 289--308
+#'
+#'   Laga, I., Bao, L., and Niu, X. (2021). Thirty Years of the Network Scale-up
+#'   Method, \emph{Journal of the American Statistical Association},
+#'   \bold{116:535}, 1548--1559
 #' @export
 #'
 #' @examples
 #' # Analyze an example ard data set using the killworth function
 #' data(example_data)
 #'
-#' mle.est = killworth(example_data$ard,
-#' known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
+#' ard = example_data$ard
+#' subpop_sizes = example_data$subpop_sizes
+#' N = example_data$N
+#'
+#' mle.est = killworth(ard,
+#' known_sizes = subpop_sizes[c(1, 2, 4)],
 #' known_ind = c(1, 2, 4),
 #' N = N, model = "MLE")
 #'
-#' pimle.est = killworth(example_data$ard,
-#' known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
+#' pimle.est = killworth(ard,
+#' known_sizes = subpop_sizes[c(1, 2, 4)],
 #' known_ind = c(1, 2, 4),
 #' N = N, model = "PIMLE")
 #'
 #' ## Compare estimates with the truth
 #' plot(mle.est$degrees, example_data$degrees)
 #'
-#' data.frame(true = example_data$subpop_sizes[c(3, 5)],
+#' data.frame(true = subpop_sizes[c(3, 5)],
 #' mle = mle.est$sizes,
 #' pimle = pimle.est$sizes)
 killworth <-

@@ -15,17 +15,17 @@
 #'   with known_sizes. By default, the function assumes the first \code{n_known}
 #'   columns, where \code{n_known} corresponds to the number of
 #'   \code{known_sizes}.
-#' @param G1_ind A vector of indices corresponding to the subpopulations that
-#'   belong to the primary scaling groups, i.e. the collection of rare girls'
-#'   names in Zheng, Salganik, and Gelman (2006). By default, all known_sizes
-#'   are used. If G2_ind and B2_ind are not provided, `C = C_1`, so only G1_ind
-#'   are used. If G1_ind is not provided, no scaling is performed.
-#' @param G2_ind A vector of indices corresponding to the subpopulations that
-#'   belong to the first secondary scaling groups, i.e. the collection of
-#'   somewhat popular girls' names.
-#' @param B2_ind A vector of indices corresponding to the subpopulations that
-#'   belong to the second secondary scaling groups, i.e. the collection of
-#'   somewhat popular boys' names.
+#' @param G1_ind A vector of indices denoting the columns of `ard` that
+#'   correspond to the primary scaling groups, i.e. the collection of rare
+#'   girls' names in Zheng, Salganik, and Gelman (2006). By default, all
+#'   known_sizes are used. If G2_ind and B2_ind are not provided, `C = C_1`, so
+#'   only G1_ind are used. If G1_ind is not provided, no scaling is performed.
+#' @param G2_ind A vector of indices denoting the columns of `ard` that
+#'   correspond to the subpopulations that belong to the first secondary scaling
+#'   groups, i.e. the collection of somewhat popular girls' names.
+#' @param B2_ind A vector of indices denoting the columns of `ard` that
+#'   correspond to the subpopulations that belong to the second secondary
+#'   scaling groups, i.e. the collection of somewhat popular boys' names.
 #' @param N The known total population size.
 #' @param warmup A positive integer specifying the number of warmup samples.
 #' @param iter A positive integer specifying the total number of samples
@@ -51,26 +51,26 @@
 #'   'beta' parameters are initialized at the values corresponding to the
 #'   Killworth MLE estimates (for the missing 'beta'), with all 'omega' set to
 #'   20. Alternatively, \code{init = 'random'} simulates 'alpha' and 'beta' from
-#'   a normal random variable with mean 0 and standard deviation 1.
+#'   a normal random variable with mean 0 and standard deviation 1. By default,
+#'   \code{init = 'MLE'} initializes values at the Killworth et al. (1998b) MLE
+#'   estimates for the degrees and sizes and simulates the other parameters.
 #'
 #' @details This function fits the overdispersed NSUM model using the
 #'   Metropolis-Gibbs sampler provided in Zheng et al. (2006).
 #'
 #' @return A named list with the estimated posterior samples. The estimated
-#' parameters are named as follows, with additional descriptions as needed:
+#'   parameters are named as follows, with additional descriptions as needed:
 #'
 #'   \describe{\item{alphas}{Log degree, if scaled, else raw alpha parameters}
 #'   \item{betas}{Log prevalence, if scaled, else raw beta parameters}
 #'   \item{inv_omegas}{Inverse of overdispersion parameters}
-#'   \item{sigma_alpha}{Standard deviation of alphas}
-#'   \item{mu_beta}{Mean of betas}
-#'   \item{sigma_beta}{Standard deviation of betas}
+#'   \item{sigma_alpha}{Standard deviation of alphas} \item{mu_beta}{Mean of
+#'   betas} \item{sigma_beta}{Standard deviation of betas}
 #'   \item{omegas}{Overdispersion parameters}}
 #'
 #'   If scaled, the following additional parameters are included:
-#'   \describe{\item{mu_alpha}{Mean of log degrees}
-#'   \item{degrees}{Degree estimates}
-#'   \item{sizes}{Subpopulation size estimates}}
+#'   \describe{\item{mu_alpha}{Mean of log degrees} \item{degrees}{Degree
+#'   estimates} \item{sizes}{Subpopulation size estimates}}
 #' @references Zheng, T., Salganik, M. J., and Gelman, A. (2006). How many
 #'   people do you know in prison, \emph{Journal of the American Statistical
 #'   Association}, \bold{101:474}, 409--423
@@ -83,22 +83,27 @@
 #' # Note that in practice, both warmup and iter should be much higher
 #' data(example_data)
 #'
-#' overdisp.est = overdispersed(example_data$ard,
-#' known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
-#' known_ind = c(1, 2, 4),
+#' ard = example_data$ard
+#' subpop_sizes = example_data$subpop_sizes
+#' known_ind = c(1, 2, 4)
+#' N = example_data$N
+#'
+#' overdisp.est = overdispersed(ard,
+#' known_sizes = subpop_sizes[known_ind],
+#' known_ind = known_ind,
 #' G1_ind = 1,
 #' G2_ind = 2,
 #' B2_ind = 4,
-#' N = example_data$N,
-#' warmup = 250,
-#' iter = 500)
+#' N = N,
+#' warmup = 50,
+#' iter = 100)
 #'
 #' # Compare size estimates
-#' data.frame(true = example_data$subpop_sizes,
-#' basic = colMeans(overdisp.est$betas))
+#' data.frame(true = subpop_sizes,
+#' basic = colMeans(overdisp.est$sizes))
 #'
 #' # Compare degree estimates
-#' plot(example_data$degrees, colMeans(overdisp.est$alphas))
+#' plot(example_data$degrees, colMeans(overdisp.est$degrees))
 #'
 #' # Look at overdispersion parameter
 #' colMeans(overdisp.est$omegas)
@@ -129,14 +134,16 @@ overdispersed <-
     }
 
     known_prevalences = known_sizes / N
+    prevalences_vec = rep(NA, N_k)
+    prevalences_vec[known_ind] = known_prevalences
     if (!is.null(G1_ind)) {
-      Pg1 = sum(known_prevalences[G1_ind])
+      Pg1 = sum(prevalences_vec[G1_ind])
     }
     if (!is.null(G2_ind)) {
-      Pg2 = sum(known_prevalences[G2_ind])
+      Pg2 = sum(prevalences_vec[G2_ind])
     }
-    if (is.null(B2_ind)) {
-      Pb2 = sum(known_prevalences[B2_ind])
+    if (!is.null(B2_ind)) {
+      Pb2 = sum(prevalences_vec[B2_ind])
     }
 
 
@@ -147,7 +154,7 @@ overdispersed <-
     mu_alpha = mu_beta = sigma_sq_alpha = sigma_sq_beta = rep(NA, iter)
     C1 = C2 = C = NA
 
-    if (class(init) == "list") {
+    if (inherits(init, "list")) {
       if ("alpha" %in% names(init)) {
         alphas[1,] = init$alpha
       } else{
@@ -306,7 +313,7 @@ overdispersed <-
               iter,
               " [",
               round(ind / iter * 100),
-              "%]",
+              "%]\n",
               sep = "")
         }
       }
@@ -332,11 +339,11 @@ overdispersed <-
 
 
     return_list = list(
-      alpha = alphas,
+      alphas = alphas,
       degrees = exp(alphas),
-      beta = betas,
+      betas = betas,
       sizes = exp(betas) * N,
-      omega = omegas,
+      omegas = omegas,
       mu_alpha = mu_alpha,
       mu_beta = mu_beta,
       sigma_sq_alpha = sigma_sq_alpha,
