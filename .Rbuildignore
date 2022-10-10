@@ -1,3 +1,2 @@
-^networkscaleup\.Rproj$
+^.*\.Rproj$
 ^\.Rproj\.user$
-^LICENSE\.md$
