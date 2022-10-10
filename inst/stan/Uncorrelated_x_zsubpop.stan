@@ -38,7 +38,6 @@ model {
   sigma_delta ~ cauchy(0, 2.5); // Half-cauchy suggested in stan-users-guide
   tau_N ~ cauchy(0, 2.5); // Half-cauchy suggested in stan-users-guide
   to_vector(eps) ~ std_normal();
-  L_Omega ~ lkj_corr_cholesky(2);
   alpha ~ normal(0, 10);
   to_vector(beta_subpop) ~ normal(0, 10);
   sigma_rho ~ cauchy(0, 2.5); // Half-cauchy suggested in stan-users-guide

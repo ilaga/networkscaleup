@@ -6,8 +6,8 @@ data {
 }
 
 parameters {
-  vector[n_i] logdi;
-  real<lower=0> sigma_di;
+  vector[n_i] delta;
+  real<lower=0> sigma_delta;
   matrix[n_i,n_k] eps;
   vector<lower=0>[n_k] tau_N;
   cholesky_factor_corr[n_k] L_Omega;
@@ -22,7 +22,7 @@ transformed parameters {
   matrix[n_i,n_k] bias;
   matrix[n_i,n_k] prev_mean;
   
-  prev_mean = exp(rep_matrix(rho, n_i)' + rep_matrix(sigma_di * logdi, n_k));
+  prev_mean = exp(rep_matrix(rho, n_i)' + rep_matrix(sigma_delta * delta, n_k));
   
   mu = log(1.0 ./ sqrt(1.0 + 1.0 ./ square(tau_N)));
   tau = sqrt(log(1.0 + 1.0 ./ square(tau_N)));
@@ -30,8 +30,8 @@ transformed parameters {
 }
 
 model {
-  logdi ~ normal(0, 1);
-  sigma_di ~ cauchy(0, 2.5);
+  delta ~ normal(0, 1);
+  sigma_delta ~ cauchy(0, 2.5);
   tau_N ~ cauchy(0, 2.5); // Half-cauchy suggested in stan-users-guide
   to_vector(eps) ~ std_normal();
   L_Omega ~ lkj_corr_cholesky(2);
