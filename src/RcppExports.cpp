@@ -12,16 +12,42 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 
+RcppExport SEXP _rcpp_module_boot_stan_fit4Correlated_basic_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Correlated_x_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Correlated_x_zglobal_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Correlated_x_zsubpop_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Correlated_x_zsubpop_zglobal_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Correlated_zglobal_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Correlated_zsubpop_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Correlated_zsubpop_zglobal_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4Overdispersed_Stan_mod();
-RcppExport SEXP _rcpp_module_boot_stan_fit4Teo_barrier_model_mod();
-RcppExport SEXP _rcpp_module_boot_stan_fit4Teo_basic_model_mod();
-RcppExport SEXP _rcpp_module_boot_stan_fit4Teo_transmission_error_model_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Uncorrelated_basic_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Uncorrelated_x_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Uncorrelated_x_zglobal_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Uncorrelated_x_zsubpop_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Uncorrelated_x_zsubpop_zglobal_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Uncorrelated_zglobal_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Uncorrelated_zsubpop_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Uncorrelated_zsubpop_zglobal_mod();
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_rcpp_module_boot_stan_fit4Correlated_basic_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Correlated_basic_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Correlated_x_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Correlated_x_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Correlated_x_zglobal_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Correlated_x_zglobal_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Correlated_x_zsubpop_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Correlated_x_zsubpop_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Correlated_x_zsubpop_zglobal_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Correlated_x_zsubpop_zglobal_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Correlated_zglobal_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Correlated_zglobal_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Correlated_zsubpop_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Correlated_zsubpop_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Correlated_zsubpop_zglobal_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Correlated_zsubpop_zglobal_mod, 0},
     {"_rcpp_module_boot_stan_fit4Overdispersed_Stan_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Overdispersed_Stan_mod, 0},
-    {"_rcpp_module_boot_stan_fit4Teo_barrier_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Teo_barrier_model_mod, 0},
-    {"_rcpp_module_boot_stan_fit4Teo_basic_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Teo_basic_model_mod, 0},
-    {"_rcpp_module_boot_stan_fit4Teo_transmission_error_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Teo_transmission_error_model_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Uncorrelated_basic_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Uncorrelated_basic_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Uncorrelated_x_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Uncorrelated_x_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Uncorrelated_x_zglobal_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Uncorrelated_x_zglobal_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Uncorrelated_x_zsubpop_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Uncorrelated_x_zsubpop_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Uncorrelated_x_zsubpop_zglobal_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Uncorrelated_x_zsubpop_zglobal_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Uncorrelated_zglobal_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Uncorrelated_zglobal_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Uncorrelated_zsubpop_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Uncorrelated_zsubpop_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Uncorrelated_zsubpop_zglobal_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Uncorrelated_zsubpop_zglobal_mod, 0},
     {NULL, NULL, 0}
 };
 
