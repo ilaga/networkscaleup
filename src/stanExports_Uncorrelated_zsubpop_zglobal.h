@@ -459,9 +459,9 @@ public:
             stan::math::assign(prev_mean,stan::math::exp(add(add(transpose(rep_matrix(rho, n_i)), multiply(z_subpop, beta_subpop)), rep_matrix(add(multiply(sigma_delta, delta), multiply(z_global, beta_global)), n_k))));
             // transformed parameters block statements
             current_statement_begin__ = 30;
-            stan::math::assign(mu, stan::math::log(elt_divide(1.0, stan::math::sqrt(add(1.0, elt_divide(1.0, square(tau_N)))))));
+            stan::math::assign(mu, stan::math::log(elt_divide(1.0, stan::math::sqrt(add(1.0, square(tau_N))))));
             current_statement_begin__ = 31;
-            stan::math::assign(tau, stan::math::sqrt(stan::math::log(add(1.0, elt_divide(1.0, square(tau_N))))));
+            stan::math::assign(tau, stan::math::sqrt(stan::math::log(add(1.0, square(tau_N)))));
             current_statement_begin__ = 32;
             for (int k = 1; k <= n_k; ++k) {
                 current_statement_begin__ = 33;
@@ -706,9 +706,9 @@ public:
             stan::math::assign(prev_mean,stan::math::exp(add(add(transpose(rep_matrix(rho, n_i)), multiply(z_subpop, beta_subpop)), rep_matrix(add(multiply(sigma_delta, delta), multiply(z_global, beta_global)), n_k))));
             // do transformed parameters statements
             current_statement_begin__ = 30;
-            stan::math::assign(mu, stan::math::log(elt_divide(1.0, stan::math::sqrt(add(1.0, elt_divide(1.0, square(tau_N)))))));
+            stan::math::assign(mu, stan::math::log(elt_divide(1.0, stan::math::sqrt(add(1.0, square(tau_N))))));
             current_statement_begin__ = 31;
-            stan::math::assign(tau, stan::math::sqrt(stan::math::log(add(1.0, elt_divide(1.0, square(tau_N))))));
+            stan::math::assign(tau, stan::math::sqrt(stan::math::log(add(1.0, square(tau_N)))));
             current_statement_begin__ = 32;
             for (int k = 1; k <= n_k; ++k) {
                 current_statement_begin__ = 33;

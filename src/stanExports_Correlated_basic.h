@@ -387,9 +387,9 @@ public:
             current_statement_begin__ = 25;
             stan::math::assign(prev_mean, stan::math::exp(add(transpose(rep_matrix(rho, n_i)), rep_matrix(multiply(sigma_delta, delta), n_k))));
             current_statement_begin__ = 27;
-            stan::math::assign(mu, stan::math::log(elt_divide(1.0, stan::math::sqrt(add(1.0, elt_divide(1.0, square(tau_N)))))));
+            stan::math::assign(mu, stan::math::log(elt_divide(1.0, stan::math::sqrt(add(1.0, square(tau_N))))));
             current_statement_begin__ = 28;
-            stan::math::assign(tau, stan::math::sqrt(stan::math::log(add(1.0, elt_divide(1.0, square(tau_N))))));
+            stan::math::assign(tau, stan::math::sqrt(stan::math::log(add(1.0, square(tau_N)))));
             current_statement_begin__ = 29;
             stan::math::assign(bias, stan::math::exp(add(transpose(rep_matrix(mu, n_i)), transpose(multiply(diag_pre_multiply(tau, L_Omega), transpose(eps))))));
             // validate transformed parameters
@@ -619,9 +619,9 @@ public:
             current_statement_begin__ = 25;
             stan::math::assign(prev_mean, stan::math::exp(add(transpose(rep_matrix(rho, n_i)), rep_matrix(multiply(sigma_delta, delta), n_k))));
             current_statement_begin__ = 27;
-            stan::math::assign(mu, stan::math::log(elt_divide(1.0, stan::math::sqrt(add(1.0, elt_divide(1.0, square(tau_N)))))));
+            stan::math::assign(mu, stan::math::log(elt_divide(1.0, stan::math::sqrt(add(1.0, square(tau_N))))));
             current_statement_begin__ = 28;
-            stan::math::assign(tau, stan::math::sqrt(stan::math::log(add(1.0, elt_divide(1.0, square(tau_N))))));
+            stan::math::assign(tau, stan::math::sqrt(stan::math::log(add(1.0, square(tau_N)))));
             current_statement_begin__ = 29;
             stan::math::assign(bias, stan::math::exp(add(transpose(rep_matrix(mu, n_i)), transpose(multiply(diag_pre_multiply(tau, L_Omega), transpose(eps))))));
             if (!include_gqs__ && !include_tparams__) return;
