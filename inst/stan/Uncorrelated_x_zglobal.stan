@@ -26,8 +26,8 @@ transformed parameters {
   matrix[n_i,n_k] bias;
   matrix[n_i,n_k] prev_mean = exp(rep_matrix(rho, n_i)' + x .* rep_matrix(alpha, n_i)' + rep_matrix(sigma_delta * delta + z_global * beta_global, n_k));
   
-  mu = log(1.0 ./ sqrt(1.0 + 1.0 ./ square(tau_N)));
-  tau = sqrt(log(1.0 + 1.0 ./ square(tau_N)));
+  mu = log(1.0 ./ sqrt(1.0 + square(tau_N)));
+  tau = sqrt(log(1.0 + square(tau_N)));
   for(k in 1:n_k){
 	bias[,k] = exp(mu[k] + tau[k] * eps[,k]);
   }
