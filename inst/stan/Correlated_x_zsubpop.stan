@@ -5,7 +5,7 @@ data {
   int<lower=0> z_subpop_size;
   matrix[n_i, n_k] x;
   matrix[n_i, z_subpop_size] z_subpop;
-  int y[n_i,n_k];
+  array[n_i,n_k] int y;
 }
 
 parameters {

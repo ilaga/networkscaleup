@@ -5,7 +5,7 @@ data {
   int<lower=0> z_global_size;
   matrix[n_i, n_k] x;
   matrix[n_i, z_global_size] z_global;
-  int y[n_i,n_k];
+  array[n_i,n_k] int y;
 }
 
 parameters {

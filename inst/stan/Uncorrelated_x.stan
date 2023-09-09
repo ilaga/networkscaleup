@@ -3,7 +3,7 @@ data {
   int<lower=0> n_i;
   int<lower=0> n_k;
   matrix[n_i, n_k] x;
-  int y[n_i,n_k];
+  array[n_i,n_k] int y;
 }
 
 parameters {
