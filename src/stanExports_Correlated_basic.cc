@@ -7,7 +7,7 @@ using namespace Rcpp ;
 RCPP_MODULE(stan_fit4Correlated_basic_mod) {
 
 
-    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("model_Correlated_basic")
+    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("rstantools_model_Correlated_basic")
 
     .constructor<SEXP,SEXP,SEXP>()
 
