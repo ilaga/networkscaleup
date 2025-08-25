@@ -108,12 +108,12 @@ round(data.frame(true = sizes[c(3, 5)],
                  pimle = pimle.est$sizes))
 ```
 
-Note that the function provides a warning saying that at least $\hat{d}_i$ was 0. This occurs when a respondent does not resport knowing anyone in the known subpopulations. This is an issue for the PIMLE since a 0 value is in the denominator for $\hat{N}_u^{PIMLE}$. Thus, we ignore the responses from respondents that correspond to $\hat{d}_i = 0$.
+Note that the function provides a warning saying that at least one $\hat{d}_i$ was 0. This occurs when a respondent does not report knowing anyone in the known subpopulations. This is an issue for the PIMLE since a 0 value is in the denominator for $\hat{N}_u^{PIMLE}$. Thus, we ignore the responses from respondents that correspond to $\hat{d}_i = 0$.
 
 
 ### MLE
 
-Next, we analyze the data from the Killworth, P. D., McCarty, C., Bernard, H. R., Shelley, G. A., and Johnsen, E. C. (1998) MLE estimator. This is also a two-stage model, which an identical first stage, i.e.
+Next, we analyze the data from the Killworth, P. D., McCarty, C., Bernard, H. R., Shelley, G. A., and Johnsen, E. C. (1998) MLE estimator. This is also a two-stage model, with an identical first stage, i.e.
 \begin{equation}
   \hat{d}_i = N \cdot \frac{\sum_{k=1}^L y_{ik}}{\sum_{k=1}^L N_k}.
 \end{equation}
@@ -293,16 +293,3 @@ colMeans(correlated_cov_stan$alpha)
 colMeans(correlated_cov_stan$beta_global)
 colMeans(correlated_cov_stan$beta_subpop)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
