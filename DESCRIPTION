@@ -9,11 +9,12 @@ Authors@R:
 Description: Provides a variety of Network Scale-up Models for researchers to analyze Aggregated Relational Data, mostly through the use of Stan. In this version, the package implements models from Laga, I., Bao, L., and Niu, X (2021) <arXiv:2109.10204>, Zheng, T., Salganik, M. J., and Gelman, A. (2006) <doi:10.1198/016214505000001168>, Killworth, P. D., Johnsen, E. C., McCarty, C., Shelley, G. A., and Bernard, H. R. (1998) <doi:10.1016/S0378-8733(96)00305-X>, and Killworth, P. D., McCarty, C., Bernard, H. R., Shelley, G. A., and Johnsen, E. C. (1998) <doi:10.1177/0193841X9802200205>.
 License: GPL (>= 3)
 Encoding: UTF-8
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Biarch: true
-Depends: R (>= 3.4.0)
+Depends: R (>= 4.1.0)
 Imports: methods, Rcpp (>= 0.12.0), RcppParallel (>= 5.0.1), rstan (>=
-        2.26.0), rstantools (>= 2.1.1), LaplacesDemon (>= 16.1.6)
+        2.26.0), rstantools (>= 2.1.1), LaplacesDemon (>= 16.1.6), dplyr, 
+        ggplot2, scales, stats, readr, tibble, tidyr, graphics, rlang
 LinkingTo: BH (>= 1.66.0), Rcpp (>= 0.12.0), RcppEigen (>= 0.3.3.3.0),
         RcppParallel (>= 5.0.1), rstan (>= 2.26.0), StanHeaders (>=
         2.26.0)
