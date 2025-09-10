@@ -76,6 +76,9 @@ construct_pearson <- function(y, dist = "poisson",
                                .data$est)/sqrt(.data$est/.data$prob)) |> 
       dplyr::pull(.data$resid)
   }
+  else{
+    stop("Invalid distribution")
+  }
 }
 
 

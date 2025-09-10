@@ -50,7 +50,8 @@ hang_rootogram_ard <- function(y,
     k <- 0:max(y_vec, floor(max(y_vec) * 1.25))   
   }
   else{
-    k <- 0:max(y_vec, floor(x_max))
+    # k <- 0:max(y_vec, floor(x_max))
+    k <- 0:floor(x_max)
   }
   # generous upper limit
   
