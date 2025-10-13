@@ -56,7 +56,7 @@ construct_pearson <- function(y, family = "poisson",
              resid = (value - est)/sqrt(est)) |> 
       pull(resid)
   }
-  else if(family == "negbin") {
+  else if(family == "nbinomial") {
     long_ard |> 
       mutate(est = size * (1 -prob)/prob,
              resid = (value - est)/sqrt(est/prob)) |> 
