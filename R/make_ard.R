@@ -8,7 +8,7 @@
 #' @param p_local_nonzero Number of non-zero local covariates
 #' @param group_corr Group correlation
 #' @param degree_corr Degree correlation
-#' @param distribution Sampling distribution
+#' @param family Sampling distribution
 #' @param omega_range Minimum and maximum omega for negative binomial overdispersion
 #' @param alpha_mean Mean of alphas
 #' @param alpha_sd Variance of alphas
@@ -27,13 +27,13 @@ make_ard <- function(n_i = 500,
                      p_local_nonzero = 0,
                      group_corr = FALSE,
                      degree_corr = FALSE,
-                     distribution = c("poisson", "nbinomial"),
+                     family = c("poisson", "nbinomial"),
                      omega_range = c(1, 5),
                      alpha_mean = 5,
                      alpha_sd = 0.15,
                      eta = 3,
                      seed = NULL) {
-  distribution <- match.arg(distribution)
+  family <- match.arg(family)
   if (!is.null(seed)) {
     # Only set seed if provided
     set.seed(seed)
@@ -109,7 +109,7 @@ make_ard <- function(n_i = 500,
 
   ## Simulate ARD
   ard <- matrix(NA, nrow = n_i, ncol = n_k)
-  if (distribution == "poisson") {
+  if (family == "poisson") {
     for (k in 1:n_k) {
       ard[, k] <- rpois(
         n_i,
