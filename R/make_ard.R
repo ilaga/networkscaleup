@@ -1,4 +1,25 @@
-# 1. All combinations of sims in this one function
+
+#' Title
+#'
+#' @param n_i Number of respondents (rows)
+#' @param n_k Number of groups (columns)
+#' @param N Total population size
+#' @param p Number of collected covariates
+#' @param p_global_nonzero Number of non-zero global covariates
+#' @param p_local_nonzero Number of non-zero local covariates
+#' @param group_corr Group correlation
+#' @param degree_corr Degree correlation
+#' @param distribution Sampling distribution
+#' @param omega_range Minimum and maximum omega for negative binomial overdispersion
+#' @param alpha_mean Mean of alphas
+#' @param alpha_sd Variance of alphas
+#' @param eta Correlation hyperparameter for LKJ prior
+#' @param seed Random seed
+#'
+#' @returns
+#' @export
+#'
+#' @examples
 make_ard <- function(n_i = 500,
                      n_k = 20,
                      N = 1000000,
