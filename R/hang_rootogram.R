@@ -23,8 +23,7 @@ library(scales)
 #'
 #' @examples
 hang_rootogram_ard <- function(y,
-                               fit,
-                               family = c("poisson", "nbinomial"),
+                               model_fit,
                                # default
                                size = NULL,
                                # NB dispersion if needed
@@ -33,7 +32,7 @@ hang_rootogram_ard <- function(y,
                                x_max = NULL) {
   # bar width (0–1)
   
-  family <- match.arg(family)
+  family <- model_fit$family
   
   if (is.null(x_max)) {
     ## 1. support (integer counts)
@@ -44,10 +43,10 @@ hang_rootogram_ard <- function(y,
   # generous upper limit
   
   if (family == "poisson") {
-    lambda <- fit$summary(variables = "mu")$estimate
+    lambda <- model_fit$fit$summary(variables = "mu")$estimate
   } else if (family == "nbinomial") {
-    prob <- rep(fit$summary(variables = "inv_omegas")$estimate, each = n_i)
-    size <- fit$summary(variables = "par1")$estimate
+    prob <- rep(model_fit$fit$summary(variables = "inv_omegas")$estimate, each = n_i)
+    size <- model_fit$fit$summary(variables = "par1")$estimate
   }
   
   
