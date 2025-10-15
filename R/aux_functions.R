@@ -46,7 +46,7 @@ construct_pearson <- function(y, family = "poisson",
   long_ard <- make_ard_tidy(y)
   n_i <- nrow(y)
   n_k <- ncol(y)
-  if(length(prob) != n_i * n_k & family == "negbin") {
+  if(length(prob) != n_i * n_k & family == "nbinomial") {
     stop("You have not specified the probability vector for the negative binomial
          the correct way. Please check the documentation.")
   }
