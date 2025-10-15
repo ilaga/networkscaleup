@@ -18,26 +18,9 @@ cov_plots <- function(model_fit,
   family <- match.arg(family, c("poisson", "nbinomial"))
   
   ## Obtain residuals
-  if (family == "poisson") {
-    pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
-    alpha_est <- model_fit$summary(variables = "alphas")$estimate
-    resid_vec <- construct_pearson(data.frame(value = c(ard)), family = "poisson", fit = pois_lambda_est)
-  } else if (family == "nbinomial") {
-    nb_prob_est <- model_fit$summary(variables = "inv_omegas")$estimate
-    nb_size_est <- model_fit$summary(variables = "par1")$estimate
-    alpha_est <- model_fit$summary(variables = "alphas")$estimate
-    resid_vec <- construct_pearson(
-      data.frame(value = c(ard)),
-      family = "negbin",
-      size = nb_size_est,
-      prob = rep(nb_prob_est, each = n_i)
-    )
-  } else {
-    stop("Invalid family argument. Must be one of poisson or nbinomial.")
-  }
-  
-  resid_mat = matrix(resid_vec, nrow = nrow(ard), ncol = ncol(ard))
-  
+  resid_mat = model_fit$residuals
+  alpha_est <- model_fit$fit$summary(variables = "alphas")$estimate
+
   ## Convert x_cov to data.frame, if not already
   if (!inherits(ard, "data.frame")) {
     ard <- data.frame(ard)
