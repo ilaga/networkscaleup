@@ -13,9 +13,9 @@ cov_plots <- function(model_fit,
                       ard,
                       x_cov,
                       cov_names = NULL,
-                      family = c("poisson", "nbinomial"),
                       se = F) {
-  family <- match.arg(family, c("poisson", "nbinomial"))
+  
+  family <- model_fit$family
   
   ## Obtain residuals
   resid_mat = model_fit$residuals
