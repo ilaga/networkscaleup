@@ -1,44 +1,20 @@
 degree_corr_perm <- function(model_fit,
                              ard,
                              b = 1000,
-                             distribution = c("poisson", "nbinomial"),
                              plot = TRUE,
                              attr = c("range", "min", "max", "mean", "median")) {
   # Allow multiple attr values
   attr <- match.arg(attr, several.ok = TRUE)
   
   
-  distribution <- match.arg(distribution)
+
   
   ## Obtain residuals
-  if (distribution == "poisson") {
-    pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
-    alphas <- model_fit$summary(variables = "alphas")$estimate
-    resid_vec <- construct_pearson(data.frame(value = c(ard)),
-                                   family = "poisson",
-                                   fit = pois_lambda_est)
-    resids <- matrix(resid_vec,
-                     nrow = nrow(ard),
-                     ncol = ncol(ard))
-  } else if (distribution == "nbinomial") {
-    nb_prob_est <- model_fit$summary(variables = "inv_omegas")$estimate
-    nb_size_est <- model_fit$summary(variables = "par1")$estimate
-    alphas <- model_fit$summary(variables = "alphas")$estimate
-    resid_vec <- construct_pearson(
-      data.frame(value = c(ard)),
-      family = "negbin",
-      size = nb_size_est,
-      prob = rep(nb_prob_est, each = n_i)
-    )
-    resids <- matrix(resid_vec,
-                     nrow = nrow(ard),
-                     ncol = ncol(ard))
-  } else {
-    stop("Invalid distribution argument. Must be one of poisson or nbinomial.")
-  }
+  resid_mat = model_fit$residuals
+  alpha_est <- model_fit$fit$summary(variables = "alphas")$estimate
   
   est_df <-
-    cbind(alphas, resids)         # Combine degree estimates and residuals
+    cbind(alpha_est, resid_mat)         # Combine degree estimates and residuals
   est_corr <- cor(est_df)                 # Empirical correlation
   
   # Helper: compute statistic from a vector
@@ -118,39 +94,14 @@ degree_corr_perm <- function(model_fit,
 multivariate_resid_test <- function(model_fit,
                                     ard,
                                     b = 1000,
-                                    plot = TRUE,
-                                    distribution = c("poisson", "nbinomial")) {
+                                    plot = TRUE) {
   
-  distribution <- match.arg(distribution)
   
   ## Obtain residuals
-  if (distribution == "poisson") {
-    pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
-    alphas <- model_fit$summary(variables = "alphas")$estimate
-    resid_vec <- construct_pearson(data.frame(value = c(ard)),
-                                   family = "poisson",
-                                   fit = pois_lambda_est)
-    resids <- matrix(resid_vec,
-                     nrow = nrow(ard),
-                     ncol = ncol(ard))
-  } else if (distribution == "nbinomial") {
-    nb_prob_est <- model_fit$summary(variables = "inv_omegas")$estimate
-    nb_size_est <- model_fit$summary(variables = "par1")$estimate
-    alphas <- model_fit$summary(variables = "alphas")$estimate
-    resid_vec <- construct_pearson(
-      data.frame(value = c(ard)),
-      family = "negbin",
-      size = nb_size_est,
-      prob = rep(nb_prob_est, each = n_i)
-    )
-    resids <- matrix(resid_vec,
-                     nrow = nrow(ard),
-                     ncol = ncol(ard))
-  } else {
-    stop("Invalid distribution argument. Must be one of poisson or nbinomial.")
-  }
+  resid_mat = model_fit$residuals
+  alpha_est <- model_fit$fit$summary(variables = "alphas")$estimate
   
-  est_df <- cbind(alphas, resids)
+  est_df <- cbind(alpha_est, resid_mat)
   est_corr <- cor(est_df)
   
   # Off-diagonal sum of squares as test statistic
@@ -185,39 +136,14 @@ multivariate_resid_test <- function(model_fit,
 # PCA-based residual test for alpha correlation
 pca_degree_corr_test <- function(model_fit,
                                ard,
-                               b = 1000,
-                               distribution = c("poisson", "nbinomial")) {
-  distribution <- match.arg(distribution)
+                               b = 1000) {
   
   ## Obtain residuals
-  if (distribution == "poisson") {
-    pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
-    alphas <- model_fit$summary(variables = "alphas")$estimate
-    resid_vec <- construct_pearson(data.frame(value = c(ard)),
-                                   family = "poisson",
-                                   fit = pois_lambda_est)
-    resids <- matrix(resid_vec,
-                     nrow = nrow(ard),
-                     ncol = ncol(ard))
-  } else if (distribution == "nbinomial") {
-    nb_prob_est <- model_fit$summary(variables = "inv_omegas")$estimate
-    nb_size_est <- model_fit$summary(variables = "par1")$estimate
-    alphas <- model_fit$summary(variables = "alphas")$estimate
-    resid_vec <- construct_pearson(
-      data.frame(value = c(ard)),
-      family = "negbin",
-      size = nb_size_est,
-      prob = rep(nb_prob_est, each = n_i)
-    )
-    resids <- matrix(resid_vec,
-                     nrow = nrow(ard),
-                     ncol = ncol(ard))
-  } else {
-    stop("Invalid distribution argument. Must be one of poisson or nbinomial.")
-  }
+  resid_mat = model_fit$residuals
+  alpha_est <- model_fit$fit$summary(variables = "alphas")$estimate
   
   
-  est_df <- cbind(alphas, resids)
+  est_df <- cbind(alpha_est, resid_mat)
   
   # PCA on observed data
   obs_pca <- prcomp(est_df, center = TRUE, scale. = TRUE)
@@ -322,52 +248,27 @@ pca_degree_corr_test <- function(model_fit,
 # PCA-based residual test for residual correlation (permute each column independently)
 pca_group_corr_test <- function(model_fit,
                            ard,
-                           b = 1000,
-                           distribution = c("poisson", "nbinomial")) {
-  distribution <- match.arg(distribution)
+                           b = 1000) {
   
   ## Obtain residuals
-  if (distribution == "poisson") {
-    pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
-    resid_vec <- construct_pearson(data.frame(value = c(ard)),
-                                   family = "poisson",
-                                   fit = pois_lambda_est)
-    resids <- matrix(resid_vec,
-                     nrow = nrow(ard),
-                     ncol = ncol(ard))
-  } else if (distribution == "nbinomial") {
-    nb_prob_est <- model_fit$summary(variables = "inv_omegas")$estimate
-    nb_size_est <- model_fit$summary(variables = "par1")$estimate
-    resid_vec <- construct_pearson(
-      data.frame(value = c(ard)),
-      family = "negbin",
-      size = nb_size_est,
-      prob = rep(nb_prob_est, each = n_i)
-    )
-    resids <- matrix(resid_vec,
-                     nrow = nrow(ard),
-                     ncol = ncol(ard))
-  } else {
-    stop("Invalid distribution argument. Must be one of poisson or nbinomial.")
-  }
-  
-  est_df <- resids
+  resid_mat = model_fit$residuals
+  alpha_est <- model_fit$fit$summary(variables = "alphas")$estimate
   
   # PCA on observed data
-  obs_pca <- prcomp(est_df, center = TRUE, scale. = TRUE)
+  obs_pca <- prcomp(resid_mat, center = TRUE, scale. = TRUE)
   obs_var <-
     obs_pca$sdev[1] ^ 2 / sum(obs_pca$sdev ^ 2)        # first PC variance
   obs_var_all <-
     obs_pca$sdev ^ 2 / sum(obs_pca$sdev ^ 2)       # all PCs (scree)
   
   # Permutation test
-  n_cols <- ncol(est_df)
+  n_cols <- ncol(resid_mat)
   perm_var <- numeric(b)
   perm_var_all <- matrix(NA, nrow = b, ncol = n_cols)
   
   for (i in 1:b) {
     # Permute each column independently
-    perm_df <- apply(est_df, 2, sample)
+    perm_df <- apply(resid_mat, 2, sample)
     
     tmp_pca <- prcomp(perm_df, center = TRUE, scale. = TRUE)
     perm_var[i] <- tmp_pca$sdev[1] ^ 2 / sum(tmp_pca$sdev ^ 2)
