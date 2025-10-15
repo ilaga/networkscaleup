@@ -5,8 +5,8 @@ library(cmdstanr)
 #' Find MAP estimates of basic Poisson and Negative Binomial models using Stan optimization
 #'
 #' @param ard n_i by n_k ARD matrix
-#' @param x_cov n_i by p covariate matrix with columns names
-#' @param cov_names Vector of column names to include
+#' @param x_cov_global n_i by p_global covariate matrix of global covariates 
+#' @param x_cov_local n_i by p_local covariate matrix of lobal covariates
 #' @param family Distribution to fit, either "poisson" or "nbinomial"
 #'
 #' @return Stan fit
@@ -16,7 +16,6 @@ library(cmdstanr)
 fit_stan_optim <- function(ard,
                            x_cov_global = NULL,
                            x_cov_local = NULL,
-                           cov_names = NULL,
                            family = c("poisson", "nbinomial"),
                            ...) {
   ## Grab family
