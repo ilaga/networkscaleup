@@ -71,11 +71,13 @@ cov_plots <- function(model_fit,
   label_df <- ard_longer %>%
     split(.$cov_label) %>%
     imap_dfr(~ {
-      sm <- ggplot_build(
-        ggplot(.x, aes(x = CovValue, y = alpha)) +
-          geom_smooth(method = method, se = se)
-      )$data[[1]]
-
+      sm <- suppressMessages(
+        ggplot_build(
+          ggplot(.x, aes(x = CovValue, y = alpha)) +
+            geom_smooth(method = method, se = se)
+        )$data[[1]]
+      )
+      
       sm %>%
         filter(x == max(x, na.rm = TRUE)) %>%
         mutate(cov_label = .y)
