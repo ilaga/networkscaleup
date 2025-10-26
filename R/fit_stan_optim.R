@@ -23,13 +23,16 @@ fit_stan_optim <- function(ard,
 
   n_local <- ncol(x_cov_local)
   n_global <- ncol(x_cov_global)
+  
+  n_i = nrow(ard)
+  n_k = ncol(ard)
 
   if (is.null(x_cov_global) & is.null(x_cov_local)) {
     # No cov
     stan_data <- list(
       y = ard,
-      n_i = nrow(ard),
-      n_k = ncol(ard)
+      n_i = n_i,
+      n_k = n_k
     )
     if (family == "poisson") {
       mod <- cmdstan_model("./Stan_Files/Poisson.stan")
@@ -40,8 +43,8 @@ fit_stan_optim <- function(ard,
     # Only subpop cov
     stan_data <- list(
       y = ard,
-      n_i = nrow(ard),
-      n_k = ncol(ard),
+      n_i = n_i,
+      n_k = n_k,
       z_subpop_size = n_local,
       z_subpop = x_cov_local
     )
@@ -54,8 +57,8 @@ fit_stan_optim <- function(ard,
     # Only global cov
     stan_data <- list(
       y = ard,
-      n_i = nrow(ard),
-      n_k = ncol(ard),
+      n_i = n_i,
+      n_k = n_k,
       z_global_size = n_global,
       z_global = x_cov_global
     )
@@ -68,8 +71,8 @@ fit_stan_optim <- function(ard,
     # Both types of covariates
     stan_data <- list(
       y = ard,
-      n_i = nrow(ard),
-      n_k = ncol(ard),
+      n_i = n_i,
+      n_k = n_k,
       z_subpop_size = n_local,
       z_subpop = x_cov_local,
       z_global_size = n_global,
@@ -93,26 +96,80 @@ fit_stan_optim <- function(ard,
   if (family == "poisson") {
     pois_lambda_est <- fit$summary(variables = "mu")$estimate
     alphas <- fit$summary(variables = "alphas")$estimate
-    resid_vec <- construct_pearson(data.frame(value = c(ard)), family = "poisson", fit = pois_lambda_est)
-    resids <- matrix(resid_vec, nrow = nrow(ard), ncol = ncol(ard))
+    
+    # Pearson residuals
+    pearson_vec <- construct_pearson(
+      data.frame(value = c(ard)),
+      family = "poisson",
+      fit = pois_lambda_est
+    )
+    pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
+    
+    # Randomized quantile residuals
+    rqr_vec <- construct_rqr(
+      data.frame(value = c(ard)),
+      family = "poisson",
+      fit = pois_lambda_est
+    )
+    rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
+    
+    
+    ## Return both sets of residuals
+    return_obj <- list(
+      fit = fit,
+      family = family,
+      n_i = n_i,
+      n_k = n_k,
+      alphas = alphas,
+      pearson_residuals = pearson_resids,
+      rqr = rqr_resids,
+      x_cov_local = x_cov_local,
+      x_cov_global = x_cov_global,
+      mu = pois_lambda_est
+    )
+    
   } else if (family == "nbinomial") {
     nb_prob_est <- fit$summary(variables = "inv_omegas")$estimate
     nb_size_est <- fit$summary(variables = "par1")$estimate
     alphas <- fit$summary(variables = "alphas")$estimate
-    resid_vec <- construct_pearson(
+    
+    # Pearson residuals
+    pearson_vec <- construct_pearson(
       data.frame(value = c(ard)),
       family = "nbinomial",
       size = nb_size_est,
       prob = rep(nb_prob_est, each = n_i)
     )
-    resids <- matrix(resid_vec, nrow = nrow(ard), ncol = ncol(ard))
+    pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
+    
+    # Randomized quantile residuals
+    rqr_vec <- construct_rqr(
+      data.frame(value = c(ard)),
+      family = "nbinomial",
+      size = nb_size_est,
+      prob = rep(nb_prob_est, each = n_i)
+    )
+    rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
+    
+    
+    ## Return both sets of residuals
+    return_obj <- list(
+      fit = fit,
+      family = family,
+      n_i = n_i,
+      n_k = n_k,
+      alphas = alphas,
+      pearson_residuals = pearson_resids,
+      rqr = rqr_resids,
+      x_cov_local = x_cov_local,
+      x_cov_global = x_cov_global,
+      size = nb_size_est,
+      prob = nb_prob_est
+    )
   }
+  
 
-  return_obj <- list(
-    fit = fit,
-    family = family,
-    residuals = resids
-  )
-
+  
   return(return_obj)
+  
 }
