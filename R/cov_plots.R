@@ -23,7 +23,7 @@ cov_plots <- function(model_fit,
 
   ## Obtain residuals
   resid_mat <- model_fit$pearson_residuals
-  alpha_est <- model_fit$fit$summary(variables = "alphas")$estimate
+  alpha_est <- model_fit$alphas
 
   ## Convert ard to data.frame, if not already
   if (!inherits(ard, "data.frame")) {
