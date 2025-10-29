@@ -64,6 +64,63 @@ construct_pearson <- function(y, family = "poisson",
   }
 }
 
+#' Title
+#'
+#' @param y ARD matrix y
+#' @param family 
+#' @param fit (posterior) means for fitted parameters
+#' @param size for negative binomial. vector of length n * k (column wise)
+#' @param prob for negative binomial. vector of length n * k (column wise)
+#'
+#' @return
+#' @export
+#'
+#' @examples
+construct_rqr <- function(y, family = "poisson",
+                          fit = NULL, size = NULL, prob = NULL) {
+  long_ard <- make_ard_tidy(y)
+  n_i <- nrow(y)
+  n_k <- ncol(y)
+  
+  if (length(prob) != n_i * n_k & family == "nbinomial") {
+    stop("You have not specified the probability vector for the negative binomial
+         the correct way. Please check the documentation.")
+  }
+  
+  if (family == "poisson") {
+    long_ard |>
+      mutate(
+        est = fit,
+        # compute lower and upper CDF bounds
+        lower = ppois(value - 1, lambda = est),
+        upper = ppois(value, lambda = est),
+        # draw a uniform between them
+        eps = 1e-10,
+        u = pmin(pmax(runif(n(), lower, upper), eps), 1 - eps),
+        # transform to standard normal
+        resid = qnorm(u)
+      ) |>
+      pull(resid)
+  }
+  
+  else if (family == "nbinomial") {
+    long_ard |>
+      mutate(
+        est = size * (1 - prob) / prob,
+        # compute lower and upper CDF bounds
+        lower = pnbinom(value - 1, size = size, prob = prob),
+        upper = pnbinom(value, size = size, prob = prob),
+        # draw a uniform between them
+        eps = 1e-10,
+        u = pmin(pmax(runif(n(), lower, upper), eps), 1 - eps),
+        # transform to standard normal
+        resid = qnorm(u)
+      ) |>
+      pull(resid)
+  }
+}
+
+
 
 #' Title
 #'
