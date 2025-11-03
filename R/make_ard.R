@@ -1,4 +1,4 @@
-#' Title
+#' Generate simulated ARD
 #'
 #' @param n_i Number of respondents (rows)
 #' @param n_k Number of groups (columns)
@@ -15,10 +15,10 @@
 #' @param eta Correlation hyperparameter for LKJ prior
 #' @param seed Random seed
 #'
-#' @returns
+#' @returns simulated ARD along with all true parameters
 #' @export
 #'
-#' @examples
+#' @examples make_ard(N = 10000, family = "poisson")
 make_ard <- function(n_i = 500,
                      n_k = 20,
                      N = 1000000,

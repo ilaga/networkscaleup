@@ -81,7 +81,7 @@ construct_pearson <- function(y, model_fit = NULL,
 #'
 #' @returns a vector of residuals (column by column)
 #' @export
-get_rqr <- function(y, model_fit = NULL,
+construct_rqr <- function(y, model_fit = NULL,
                     family = c("binomial", "nbinomial", "poisson")) {
   
   family <- match.arg(family, c("poisson", "nbinomial", "binomial"))
