@@ -18,21 +18,17 @@ cov_plots <- function(model_fit,
                       se = F) {
   ## Grab family
   family <- model_fit$family
-
   ## Obtain residuals
   resid_mat <- model_fit$pearson_residuals
   alpha_est <- model_fit$alphas
-
   ## Convert ard to data.frame, if not already
   if (!inherits(ard, "data.frame")) {
     ard <- data.frame(ard)
   }
-
   ## Convert x_cov to data.frame, if not already
   if (!inherits(x_cov, "data.frame")) {
     x_cov <- data.frame(x_cov) ## Auto-names to X1:Xp if no names
   }
-
   ard_x <- data.frame(resid = resid_mat, cov = x_cov, alpha = alpha_est)
   ard_long <- ard_x |> 
     tidyr::pivot_longer(
@@ -40,17 +36,13 @@ cov_plots <- function(model_fit,
       names_to = "Group",
       values_to = "resid"
     )
-
-
   ard_longer <- ard_long |> 
     tidyr::pivot_longer(
       cols = starts_with("cov."),
       names_to = "cov_names",
       values_to = "CovValue"
     ) |> 
-    mutate(cov_label = str_remove(cov_names, "^cov\\."))
-
-
+    dplyr::mutate(cov_label = stringr::str_remove(cov_names, "^cov\\."))
   ## Produce plot 1, group-specific plots
   gg1 <- ggplot2::ggplot(ard_longer, ggplot2::aes(
     x = CovValue,
@@ -67,7 +59,7 @@ cov_plots <- function(model_fit,
 
   ## Find endpoints to add covariate label
   label_df <- ard_longer |>
-    split(.$cov_label) |>
+    split(ard_longer$cov_label) |>
     purrr::imap_dfr(~ {
       sm <- suppressMessages(
         ggplot2::ggplot_build(

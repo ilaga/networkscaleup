@@ -15,12 +15,10 @@ fit_stan_optim <- function(ard,
                            ...) {
   ## Grab family
   family <- match.arg(family, c("poisson", "nbinomial"))
-
   n_local <- ncol(x_cov_local)
   n_global <- ncol(x_cov_global)
-  
-  n_i = nrow(ard)
-  n_k = ncol(ard)
+  n_i <- nrow(ard)
+  n_k <- ncol(ard)
 
   if (is.null(x_cov_global) & is.null(x_cov_local)) {
     # No cov
@@ -88,14 +86,14 @@ fit_stan_optim <- function(ard,
     pearson_vec <- construct_pearson(
       y = ard,
       family = "poisson",
-      fit = pois_lambda_est
+      model_fit = fit
     )
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
       y = ard,
       family = "poisson",
-      model_fit = pois_lambda_est
+      model_fit = fit
     )
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
     ## Return both sets of residuals
@@ -118,17 +116,15 @@ fit_stan_optim <- function(ard,
     alphas <- fit$summary(variables = "alphas")$estimate
     # Pearson residuals
     pearson_vec <- construct_pearson(
-      data.frame(value = c(ard)),
+      y = ard,
       family = "nbinomial",
       model_fit = fit)
-    )
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
-      data.frame(value = c(ard)),
+      y = ard,
       family = "nbinomial",
       model_fit = fit)
-    )
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
     ## Return both sets of residuals
     return_obj <- list(

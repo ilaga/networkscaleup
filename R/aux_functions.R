@@ -27,45 +27,50 @@ make_ard_tidy <- function(y){
 #' Compute Pearson Residuals for ARD matrix and fitted model
 #'
 #' @param y ARD matrix y
-#' @param model_fit (posterior) matrix means for fitted parameters
-#' @param family poisson or negative binomial model 
-#' 
+#' @param model_fit estimated model 
+#' @param family poisson or negative binomial
+#'
 #' @return a vector (column by column) of corresponding residuals from ARD matrix
 #' @export
 #'
+#' @importFrom rlang .data
 construct_pearson <- function(y, model_fit = NULL, 
                               family = "poisson") {
   long_ard <- make_ard_tidy(y)
+  n_samp <- nrow(y)
   family <- match.arg(family, c("poisson", "nbinomial"))
   if (family == "poisson") {
     pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
+    fit_vec <- as.numeric(pois_lambda_est)
   } else if (family == "nbinomial") {
     nb_prob_est <- model_fit$summary(variables = "inv_omegas")$estimate
     nb_size_est <- model_fit$summary(variables = "par1")$estimate
+    size_vec <- as.numeric(nb_size_est)
+    prob_vec <- as.numeric(nb_prob_est)
   } else {
     stop("Invalid family argument. Must be one of poisson or nbinomial.",
          call. = FALSE)
   }
   
-  ## transform matrices to vector
+  ## transform matrix to vector
   y_vec <- as.numeric(y)
-  fit_vec <- as.numeric(pois_lambda_est)
-  size_vec <- as.numeric(nb_size_est)
-  prob_vec <- as.numeric(nb_prob_est)
-  
   if(family == "poisson") {
     long_ard |> 
       dplyr::mutate(est = fit_vec,
-                    resid = (value - est)/sqrt(est)) |> 
-      dplyr::pull(resid)
+                    resid = (.data$value - .data$est)/sqrt(.data$est)) |> 
+      dplyr::pull(.data$resid)
   }
   else if(family == "nbinomial") {
     long_ard |> 
       dplyr::mutate(size = size_vec,
-                    prob = prob_vec,
-                    est = size * (1 -prob)/prob,
-                    resid = (value - est)/sqrt(est/prob)) |> 
-      dplyr::pull(resid)
+                    prob = rep(prob_vec, each = n_samp),
+                    est = .data$size * (1 - .data$prob)/.data$prob,
+                    resid = (.data$value -
+                               .data$est)/sqrt(.data$est/.data$prob)) |> 
+      dplyr::pull(.data$resid)
+  }
+  else{
+    stop("Invalid distribution")
   }
 }
 
@@ -87,19 +92,18 @@ construct_rqr <- function(y, model_fit = NULL,
   family <- match.arg(family, c("poisson", "nbinomial", "binomial"))
   if (family == "poisson") {
     pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
+    mu_vec <- as.numeric(pois_lambda_est)
   } else if (family == "nbinomial") {
     nb_prob_est <- model_fit$summary(variables = "inv_omegas")$estimate
     nb_size_est <- model_fit$summary(variables = "par1")$estimate
+    size_vec <- as.numeric(nb_size_est)
+    prob_vec <- as.numeric(nb_prob_est)
   } else {
     stop("Invalid family argument. Must be one of poisson or nbinomial.",
          call. = FALSE)
   }
   ## TO DO: Add Binomial correctly here and extract the p
   y_vec <- as.numeric(y)
-  mu_vec <- as.numeric(pois_lambda_est)
-  size_vec <- as.numeric(nb_size_est)
-  prob_vec <- as.numeric(nb_prob_est)
-  
   rqr <- rep(NA, length(y_vec))
   
   if (family == "binomial") {

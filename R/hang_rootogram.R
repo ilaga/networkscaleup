@@ -22,19 +22,19 @@ hang_rootogram_ard <- function(y,
   family <- match.arg(family, c("poisson", "nbinomial"))
   if (family == "poisson") {
     pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
+    fit_vec <- as.numeric(pois_lambda_est)
   } else if (family == "nbinomial") {
     nb_prob_est <- model_fit$summary(variables = "inv_omegas")$estimate
     nb_size_est <- model_fit$summary(variables = "par1")$estimate
+    size_vec <- as.numeric(nb_size_est)
+    prob_vec <- as.numeric(nb_prob_est)
   } else {
     stop("Invalid family argument. Must be one of poisson or nbinomial.",
          call. = FALSE)
   }
   
-  ## transform matrices to vector
+  ## transform matrix to vector
   y_vec <- as.numeric(y)
-  fit_vec <- as.numeric(pois_lambda_est)
-  size_vec <- as.numeric(nb_size_est)
-  prob_vec <- as.numeric(nb_prob_est)
   
   if(is.null(x_max)){
     ## 1. support (integer counts)
@@ -55,7 +55,7 @@ hang_rootogram_ard <- function(y,
     function(j) {
       if (family == "poisson")
         sum(stats::dpois(j, lambda = fit_vec))
-      else if (family == "negbin") {
+      else if (family == "nbinomial") {
         if (is.null(size_vec) | is.null(prob_vec))
           stop("Please supply 'size' and 'prob' for the negative-binomial model")
         sum(stats::dnbinom(j, size = size_vec, prob = prob_vec))
@@ -84,7 +84,7 @@ hang_rootogram_ard <- function(y,
   if(family == "poisson"){
     plot_lab <- "Poisson"
   }
-  else if(family == "negbin") {
+  else if(family == "nbinomial") {
     plot_lab <- "Negative Binomial"
   }
   
