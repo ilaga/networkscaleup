@@ -80,20 +80,23 @@ fit_stan_optim <- function(ard,
   fit <- mod$optimize(data = stan_data, ...)
   ## Add residuals
   if (family == "poisson") {
-    pois_lambda_est <- fit$summary(variables = "mu")$estimate
+    fit_list <- list(fit = fit, 
+                     mu = fit$summary(variables = "mu")$estimate)
+    # pois_lambda_est <- fit$summary(variables = "mu")$estimate
+    # fit$mu <- fit$summary(variables = "mu")$estimate
     alphas <- fit$summary(variables = "alphas")$estimate
     # Pearson residuals
     pearson_vec <- construct_pearson(
       y = ard,
       family = "poisson",
-      model_fit = fit
+      model_fit = fit_list
     )
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
       y = ard,
       family = "poisson",
-      model_fit = fit
+      model_fit = fit_list
     )
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
     ## Return both sets of residuals
@@ -107,18 +110,21 @@ fit_stan_optim <- function(ard,
       rqr = rqr_resids,
       x_cov_local = x_cov_local,
       x_cov_global = x_cov_global,
-      mu = pois_lambda_est
+      mu = fit_list$mu
     )
     
   } else if (family == "nbinomial") {
-    nb_prob_est <- fit$summary(variables = "inv_omegas")$estimate
-    nb_size_est <- fit$summary(variables = "par1")$estimate
+    # nb_prob_est <- fit$summary(variables = "inv_omegas")$estimate
+    # nb_size_est <- fit$summary(variables = "par1")$estimate
+    fit_list <- list(fit = fit, 
+                     size = fit$summary(variables = "par1")$estimate,
+                     prob = fit$summary(variables = "inv_omegas")$estimate)
     alphas <- fit$summary(variables = "alphas")$estimate
     # Pearson residuals
     pearson_vec <- construct_pearson(
       y = ard,
       family = "nbinomial",
-      model_fit = fit)
+      model_fit = fit_list)
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(

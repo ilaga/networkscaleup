@@ -40,13 +40,14 @@ construct_pearson <- function(y, model_fit = NULL,
   n_samp <- nrow(y)
   family <- match.arg(family, c("poisson", "nbinomial"))
   if (family == "poisson") {
-    pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
+    pois_lambda_est <- model_fit$mu
     fit_vec <- as.numeric(pois_lambda_est)
   } else if (family == "nbinomial") {
-    nb_prob_est <- model_fit$summary(variables = "inv_omegas")$estimate
-    nb_size_est <- model_fit$summary(variables = "par1")$estimate
+    nb_prob_est <- model_fit$prob
+    nb_size_est <- model_fit$size
     size_vec <- as.numeric(nb_size_est)
     prob_vec <- as.numeric(nb_prob_est)
+    prob_vec <- rep(prob_vec, each = n_samp)
   } else {
     stop("Invalid family argument. Must be one of poisson or nbinomial.",
          call. = FALSE)
@@ -63,7 +64,7 @@ construct_pearson <- function(y, model_fit = NULL,
   else if(family == "nbinomial") {
     long_ard |> 
       dplyr::mutate(size = size_vec,
-                    prob = rep(prob_vec, each = n_samp),
+                    prob = prob_vec,
                     est = .data$size * (1 - .data$prob)/.data$prob,
                     resid = (.data$value -
                                .data$est)/sqrt(.data$est/.data$prob)) |> 
@@ -89,15 +90,18 @@ construct_pearson <- function(y, model_fit = NULL,
 construct_rqr <- function(y, model_fit = NULL,
                     family = c("binomial", "nbinomial", "poisson")) {
   
+  n_samp <- nrow(y)
+  
   family <- match.arg(family, c("poisson", "nbinomial", "binomial"))
   if (family == "poisson") {
-    pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
+    pois_lambda_est <- model_fit$mu
     mu_vec <- as.numeric(pois_lambda_est)
   } else if (family == "nbinomial") {
-    nb_prob_est <- model_fit$summary(variables = "inv_omegas")$estimate
-    nb_size_est <- model_fit$summary(variables = "par1")$estimate
+    nb_prob_est <- model_fit$prob
+    nb_size_est <- model_fit$size
     size_vec <- as.numeric(nb_size_est)
     prob_vec <- as.numeric(nb_prob_est)
+    prob_vec <- rep(prob_vec, each = n_samp)
   } else {
     stop("Invalid family argument. Must be one of poisson or nbinomial.",
          call. = FALSE)

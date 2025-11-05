@@ -6,26 +6,17 @@
 \usage{
 plot_fitted(
   y,
-  p = NULL,
-  fit = NULL,
-  size = NULL,
-  prob = NULL,
-  dist = c("binomial", "negbin", "poisson"),
+  model_fit = NULL,
+  family = c("binomial", "negbin", "poisson"),
   resid = c("rqr", "pearson", "surrogate")
 )
 }
 \arguments{
 \item{y}{ARD matrix (may be needed)}
 
-\item{p}{if binomial distribution, success probability (single value)}
+\item{model_fit}{fitted model}
 
-\item{fit}{if poisson distribution, rate matrix}
-
-\item{size}{if negative binomial, size matrix}
-
-\item{prob}{if negative binomial, prob matrix}
-
-\item{dist}{the distribution to be fit}
+\item{family}{the distribution to be fit}
 
 \item{resid}{the type of residuals to be used}
 }

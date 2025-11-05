@@ -4,24 +4,14 @@
 \alias{get_surrogate}
 \title{Compute Surrogate Residuals for ARD Models}
 \usage{
-get_surrogate(
-  p = NULL,
-  fit = NULL,
-  size = NULL,
-  prob = NULL,
-  dist = c("binomial", "negbin", "poisson")
-)
+get_surrogate(y, model_fit = NULL, family = c("binomial", "negbin", "poisson"))
 }
 \arguments{
-\item{p}{if binomial distribution, success probability (single value)}
+\item{y}{the ARD matrix}
 
-\item{fit}{if poisson distribution, rate matrix}
+\item{model_fit}{if poisson distribution, rate matrix}
 
-\item{size}{if negative binomial, size matrix}
-
-\item{prob}{if negative binomial, size matrix}
-
-\item{dist}{the distribution to fit, which will choose prev pars to be
+\item{family}{the distribution to fit, which will choose prev pars to be
 specified}
 }
 \value{

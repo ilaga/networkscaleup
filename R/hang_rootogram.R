@@ -19,6 +19,8 @@ hang_rootogram_ard <- function(y,
                                width  = 0.9,       # bar width (0–1)
                                x_max = NULL){      
   
+  n_samp <- nrow(y)
+  
   family <- match.arg(family, c("poisson", "nbinomial"))
   if (family == "poisson") {
     pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
@@ -28,6 +30,7 @@ hang_rootogram_ard <- function(y,
     nb_size_est <- model_fit$summary(variables = "par1")$estimate
     size_vec <- as.numeric(nb_size_est)
     prob_vec <- as.numeric(nb_prob_est)
+    prob_vec <- rep(prob_vec, each = n_samp)
   } else {
     stop("Invalid family argument. Must be one of poisson or nbinomial.",
          call. = FALSE)
