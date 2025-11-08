@@ -50,7 +50,8 @@ cov_plots <- function(model_fit,
       names_to = "cov_names",
       values_to = "CovValue"
     ) |> 
-    dplyr::mutate(cov_label = stringr::str_remove(cov_names, "^cov\\."))
+    dplyr::mutate(cov_label = stringr::str_remove(cov_names, "^cov\\."),
+                  cov_label = factor(cov_label, levels = colnames(x_cov)))
   ## Produce plot 1, group-specific plots
   gg1 <- ggplot2::ggplot(ard_longer, ggplot2::aes(
     x = CovValue,
