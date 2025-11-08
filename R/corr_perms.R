@@ -1,3 +1,15 @@
+#' Title
+#'
+#' @param model_fit 
+#' @param ard 
+#' @param b 
+#' @param plot 
+#' @param attr 
+#'
+#' @returns
+#' @export
+#'
+#' @examples
 degree_corr_perm <- function(model_fit,
                              ard,
                              b = 1000,
@@ -94,6 +106,17 @@ degree_corr_perm <- function(model_fit,
 
 # Multivariate residual correlation test
 ## Doesn't really work
+#' Title
+#'
+#' @param model_fit 
+#' @param ard 
+#' @param b 
+#' @param plot 
+#'
+#' @returns
+#' @export
+#'
+#' @examples
 multivariate_resid_test <- function(model_fit,
                                     ard,
                                     b = 1000,
@@ -137,6 +160,16 @@ multivariate_resid_test <- function(model_fit,
 
 
 # PCA-based residual test for alpha correlation
+#' Title
+#'
+#' @param model_fit 
+#' @param ard 
+#' @param b 
+#'
+#' @returns
+#' @export
+#'
+#' @examples
 pca_degree_corr_test <- function(model_fit,
                                  ard,
                                  b = 1000) {
@@ -148,7 +181,7 @@ pca_degree_corr_test <- function(model_fit,
   est_df <- cbind(alpha_est, resid_mat)
 
   # PCA on observed data
-  obs_pca <- prcomp(est_df, center = TRUE, scale. = TRUE)
+  obs_pca <- stats::prcomp(est_df, center = TRUE, scale. = TRUE)
   obs_var <-
     obs_pca$sdev[1]^2 / sum(obs_pca$sdev^2) # fraction of variance explained by first PC
   obs_var_all <-
@@ -161,31 +194,32 @@ pca_degree_corr_test <- function(model_fit,
 
   for (i in 1:b) {
     tmp <- est_df
-    tmp[, 1] <- sample(est_df[, 1]) # permute alphas
-    tmp_pca <- prcomp(tmp, center = TRUE, scale. = TRUE)
-
-    perm_var[i] <- tmp_pca$sdev[1]^2 / sum(tmp_pca$sdev^2)
-    perm_var_all[i, ] <- tmp_pca$sdev^2 / sum(tmp_pca$sdev^2)
+    tmp[, 1] <- sample(est_df[, 1])   # permute alphas
+    tmp_pca <- stats::prcomp(tmp, center = TRUE, scale. = TRUE)
+    
+    perm_var[i] <- tmp_pca$sdev[1] ^ 2 / sum(tmp_pca$sdev ^ 2)
+    perm_var_all[i,] <- tmp_pca$sdev ^ 2 / sum(tmp_pca$sdev ^ 2)
   }
 
   # Two-sided p-value
   p_val <-
     mean(abs(perm_var - mean(perm_var)) >= abs(obs_var - mean(perm_var)))
-
-  hist_plot <- ggplot(data.frame(perm_var), aes(x = perm_var)) +
-    geom_histogram(binwidth = diff(range(perm_var)) / 30, fill = "gray80", color = "black") +
-    geom_vline(xintercept = obs_var, color = "red", linewidth = 1) +
-    labs(
+  
+  hist_plot <- ggplot2::ggplot(data.frame(perm_var),
+                               ggplot2::aes(x = perm_var)) +
+    ggplot2::geom_histogram(binwidth = diff(range(perm_var)) / 30,
+                            fill = "gray80", color = "black") +
+    ggplot2::geom_vline(xintercept = obs_var, color = "red", linewidth = 1) +
+    ggplot2::labs(
       x = "Variance explained by first PC",
       y = "Count",
       title = "PCA Residual Test"
     ) +
-    theme_minimal()
-
+    ggplot2::theme_minimal()
 
   perm_df <- as.data.frame(t(perm_var_all)) |>
-    mutate(PC = 1:n()) |>
-    pivot_longer(
+    dplyr::mutate(PC = 1:dplyr::n()) |>
+    tidyr::pivot_longer(
       cols = -PC,
       names_to = "Permutation",
       values_to = "Variance"
@@ -197,33 +231,33 @@ pca_degree_corr_test <- function(model_fit,
   )
 
   ymax <- max(c(obs_var_all, perm_var_all), na.rm = TRUE)
-
-  scree_plot <- ggplot() +
-    geom_line(
+  
+  scree_plot <- ggplot2::ggplot() +
+    ggplot2::geom_line(
       data = perm_df,
-      aes(x = PC, y = Variance, group = Permutation),
+      ggplot2::aes(x = PC, y = Variance, group = Permutation),
       color = rgb(0, 0, 0, 0.2)
     ) +
-    geom_line(
+    ggplot2::geom_line(
       data = obs_df,
-      aes(x = PC, y = Variance),
+      ggplot2::aes(x = PC, y = Variance),
       color = "red",
       linewidth = 1.2
     ) +
-    geom_point(
+    ggplot2::geom_point(
       data = obs_df,
-      aes(x = PC, y = Variance),
+      ggplot2::aes(x = PC, y = Variance),
       color = "red"
     ) +
-    labs(
+    ggplot2::labs(
       x = "PC index",
       y = "Proportion variance explained",
       title = "Scree plots (obs vs permuted)"
     ) +
-    coord_cartesian(ylim = c(0, ymax)) +
-    theme_minimal() +
-    theme(legend.position = "top") +
-    guides(color = "none")
+    ggplot2::coord_cartesian(ylim = c(0, ymax)) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = "top") +
+    ggplot2::guides(color = "none")
 
   return(
     list(
@@ -375,14 +409,23 @@ pca_degree_corr_test3 <- function(model_fit,
 
 
 # PCA-based residual test for residual correlation (permute each column independently)
+#' Title
+#'
+#' @param model_fit 
+#' @param ard 
+#' @param b 
+#'
+#' @returns
+#' @export
+#'
+#' @examples
 pca_group_corr_test <- function(model_fit,
                                 ard,
                                 b = 1000) {
   ## Obtain residuals
   resid_mat <- model_fit$rqr
-
   # PCA on observed data
-  obs_pca <- prcomp(resid_mat, center = TRUE, scale. = TRUE)
+  obs_pca <- stats::prcomp(resid_mat, center = TRUE, scale. = TRUE)
   obs_var <-
     obs_pca$sdev[1]^2 / sum(obs_pca$sdev^2) # first PC variance
   obs_var_all <-
@@ -683,7 +726,7 @@ pca_degree_corr_test_parametric <- function(model_fit,
         init = 0
       )
     }
-    
+
     if (verbose) message(paste0("Bootstrap iteration ", i, " done."))
     
     ## --- Compute RQRs and alphas for sim data ---
@@ -705,22 +748,22 @@ pca_degree_corr_test_parametric <- function(model_fit,
   p_val_pca <- mean(abs(perm_var - mean(perm_var)) >= abs(obs_var - mean(perm_var)))
   p_val_lrt <- mean(LRT_boot >= LRT_obs, na.rm = TRUE)
   
-  ## --- Plots ---
-  # PCA histogram
-  hist_plot <- ggplot(data.frame(perm_var), aes(x = perm_var)) +
-    geom_histogram(binwidth = diff(range(perm_var)) / 30, fill = "gray80", color = "black") +
-    geom_vline(xintercept = obs_var, color = "red", linewidth = 1) +
-    labs(
+  hist_plot <- ggplot2::ggplot(data.frame(perm_var),
+                               ggplot2::aes(x = perm_var)) +
+    ggplot2::geom_histogram(binwidth = diff(range(perm_var)) / 30,
+                            fill = "gray80", color = "black") +
+    ggplot2::geom_vline(xintercept = obs_var, color = "red", linewidth = 1) +
+    ggplot2::labs(
       x = "Variance explained by first PC",
       y = "Count",
       title = "PCA Residual Test"
     ) +
-    theme_minimal()
+    ggplot2::theme_minimal()
   
   # Scree plot
   perm_df <- as.data.frame(t(perm_var_all)) |>
-    mutate(PC = 1:n()) |>
-    pivot_longer(
+    dplyr::mutate(PC = 1:dplyr::n()) |>
+    tidyr::pivot_longer(
       cols = -PC,
       names_to = "Permutation",
       values_to = "Variance"
@@ -733,32 +776,32 @@ pca_degree_corr_test_parametric <- function(model_fit,
   
   ymax <- max(c(obs_var_all, perm_var_all), na.rm = TRUE)
   
-  scree_plot <- ggplot() +
-    geom_line(
+  scree_plot <- ggplot2::ggplot() +
+    ggplot2::geom_line(
       data = perm_df,
-      aes(x = PC, y = Variance, group = Permutation),
+      ggplot2::aes(x = PC, y = Variance, group = Permutation),
       color = rgb(0, 0, 0, 0.2)
     ) +
-    geom_line(
+    ggplot2::geom_line(
       data = obs_df,
-      aes(x = PC, y = Variance),
+      ggplot2::aes(x = PC, y = Variance),
       color = "red",
       linewidth = 1.2
     ) +
-    geom_point(
+    ggplot2::geom_point(
       data = obs_df,
-      aes(x = PC, y = Variance),
+      ggplot2::aes(x = PC, y = Variance),
       color = "red"
     ) +
-    labs(
+    ggplot2::labs(
       x = "PC index",
       y = "Proportion variance explained",
       title = "Scree plots (obs vs permuted)"
     ) +
-    coord_cartesian(ylim = c(0, ymax)) +
-    theme_minimal() +
-    theme(legend.position = "top") +
-    guides(color = "none")
+    ggplot2::coord_cartesian(ylim = c(0, ymax)) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = "top") +
+    ggplot2::guides(color = "none")
   
   # LRT histogram
   lrt_plot <- ggplot(data.frame(LRT_boot), aes(x = LRT_boot)) +
@@ -941,6 +984,16 @@ test_identity_rqr <- function(model_fit, b = 1000) {
 
 
 # Parametric bootstrap overdispersion test for an ARD matrix
+#' Title
+#'
+#' @param ard 
+#' @param mu_hat 
+#' @param B 
+#'
+#' @returns
+#' @export
+#'
+#' @examples
 dispersion_test_pb_matrix <- function(ard, mu_hat, B = 1000) {
   # ard: n x K observed counts
   # mu_hat: n x K fitted Poisson means (same dimensions as ard)
@@ -997,6 +1050,18 @@ dispersion_test_pb_matrix <- function(ard, mu_hat, B = 1000) {
 
 
 # Stratified-permutation overdispersion test for ARD matrix (Option B, full matrix)
+#' Title
+#'
+#' @param Y 
+#' @param MU 
+#' @param B 
+#' @param n_bins 
+#' @param seed 
+#'
+#' @returns
+#' @export
+#'
+#' @examples
 dispersion_test_stratperm_matrix <-
   function(Y,
            MU,
