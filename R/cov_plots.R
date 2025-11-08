@@ -14,12 +14,15 @@
 cov_plots <- function(model_fit,
                       ard,
                       x_cov,
+                      resid_type = c("rqr", "pearson_residuals"),
                       method = "lm",
                       se = F) {
   ## Grab family
   family <- model_fit$family
+  ## Grab residual type
+  resid_type <- match.arg(resid_type, c("rqr", "pearson_residuals"))
   ## Obtain residuals
-  resid_mat <- model_fit$pearson_residuals
+  resid_mat <- model_fit[[resid_type]]
   alpha_est <- model_fit$alphas
   ## Convert ard to data.frame, if not already
   if (!inherits(ard, "data.frame")) {
@@ -29,6 +32,11 @@ cov_plots <- function(model_fit,
   if (!inherits(x_cov, "data.frame")) {
     x_cov <- data.frame(x_cov) ## Auto-names to X1:Xp if no names
   }
+  ## Standardize x_cov to have same min-max
+  x_cov <- as.data.frame(lapply(x_cov, function(x) {
+    (x - min(x)) / (max(x) - min(x))
+  }))
+  
   ard_x <- data.frame(resid = resid_mat, cov = x_cov, alpha = alpha_est)
   ard_long <- ard_x |> 
     tidyr::pivot_longer(
