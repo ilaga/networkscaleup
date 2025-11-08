@@ -130,7 +130,7 @@ fit_stan_optim <- function(ard,
     rqr_vec <- construct_rqr(
       y = ard,
       family = "nbinomial",
-      model_fit = fit)
+      model_fit = fit_list)
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
     ## Return both sets of residuals
     return_obj <- list(
@@ -143,8 +143,8 @@ fit_stan_optim <- function(ard,
       rqr = rqr_resids,
       x_cov_local = x_cov_local,
       x_cov_global = x_cov_global,
-      size = nb_size_est,
-      prob = nb_prob_est
+      size = fit_list$size,
+      prob = fit_list$prob
     )
   }
   return_obj
