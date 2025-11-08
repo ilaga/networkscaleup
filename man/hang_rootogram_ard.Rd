@@ -6,8 +6,8 @@
 \usage{
 hang_rootogram_ard(
   y,
-  fit = NULL,
-  dist = "poisson",
+  model_fit = NULL,
+  family = "poisson",
   size = NULL,
   prob = NULL,
   width = 0.9,
@@ -17,9 +17,7 @@ hang_rootogram_ard(
 \arguments{
 \item{y}{ard matrix}
 
-\item{fit}{matrix of (estimated) means of each entry if poisson ARD model}
-
-\item{dist}{whether ard model poisson or negative binomial}
+\item{family}{whether ard model poisson or negative binomial}
 
 \item{size}{if negative binomial, matrix of size estimate}
 
@@ -28,6 +26,8 @@ hang_rootogram_ard(
 \item{width}{width of bars}
 
 \item{x_max}{the maximum x value to display}
+
+\item{fit}{matrix of (estimated) means of each entry if poisson ARD model}
 }
 \value{
 a ggplot of the hanging rootogram

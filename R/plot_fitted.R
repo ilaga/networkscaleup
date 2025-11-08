@@ -1,66 +1,54 @@
 #' Plot residuals against fitted values
 #'
 #' @param y ARD matrix (may be needed)
-#' @param p if binomial distribution, success probability (single value)
-#' @param fit if poisson distribution, rate matrix
-#' @param size if negative binomial, size matrix
-#' @param prob if negative binomial, prob matrix
-#' @param dist the distribution to be fit
+#' @param model_fit fitted model
+#' @param family the distribution to be fit
 #' @param resid the type of residuals to be used
 #'
 #' @returns a ggplot showing fitted values against residuals
 #' @export
 #'
-plot_fitted <- function(y, p = NULL, fit = NULL, size = NULL, prob = NULL,
-                        dist = c("binomial", "negbin", "poisson"),
+plot_fitted <- function(y, model_fit = NULL,
+                        family = c("binomial", "negbin", "poisson"),
                         resid = c("rqr", "pearson", "surrogate")) {
   
-  if (!is.matrix(y)) {
-    stop("ARD must be a matrix", call. = FALSE)
-  }
-  if (dist == "poisson" & !is.matrix(fit)) {
-    stop("Supplied Poisson fit must be a matrix",
+  n_samp <- nrow(y)
+  family <- match.arg(family, c("poisson", "nbinomial", "binomial"))
+  if (family == "poisson") {
+    pois_lambda_est <- model_fit$mu
+    fit_vec <- as.numeric(pois_lambda_est)
+  } else if (family == "nbinomial") {
+    nb_prob_est <- model_fit$prob
+    nb_size_est <- model_fit$size
+    size_vec <- as.numeric(nb_size_est)
+    prob_vec <- as.numeric(nb_prob_est)
+    full_prob <- rep(prob_vec, each = n_samp)
+  } else {
+    stop("Invalid family argument. Must be one of poisson or nbinomial.",
          call. = FALSE)
   }
-  if(dist == "poisson" & (!identical(dim(y), dim(fit))) ){
-    stop("Parameters don't match ARD matrix", call. = FALSE)
-  }
-  if (dist == "negbin" & (!is.matrix(size) | !is.matrix(prob)) ) {
-    stop("Supplied Negative Binomial fit must be specified with matrices",
-         call. = FALSE)
-  }
-  if(dist == "negbin" & (!identical(dim(y), dim(size))) ){
-    stop("Parameters don't match ARD matrix", call. = FALSE)
-  }
-  ## transform matrices to vector
-  y_vec <- as.numeric(y)
-  mu_vec <- as.numeric(fit)
-  size_vec <- as.numeric(size)
-  prob_vec <- as.numeric(prob)
   
   if(resid == "rqr") {
-    resids <- get_rqr(y, p = p, fit = fit, size = size, 
-                      prob = prob, dist = dist)
+    resids <- construct_rqr(y, model_fit = model_fit, family = family)
     plot_label <- "Randomized Quantile Residuals"
   } else if(resid == "pearson") {
-    resids <- construct_pearson(y, dist = dist, fit = fit,
-                                size = size, prob = prob)
+    resids <- construct_pearson(y, model_fit = model_fit, family = family)
     plot_label <- "Pearson Residuals"
   } else if(resid == "surrogate") {
-    resids <- get_surrogate(p = p, fit = fit, size = size, 
-                            prob = prob, dist = dist)
+    resids <- get_surrogate(y, model_fit = model_fit, family = family)
     plot_label <- "Surrogate Residuals"
   } else{
     stop("Invalid residuals specified")
   }
   # then construct data for plot
-  if(dist == "poisson") {
-    plot_data <- base::data.frame(fit = as.numeric(fit), resid = resids)
-  } else if(dist == "negbin") {
-    plot_data <- base::data.frame(fit = as.numeric(size) * 
-                                    as.numeric(1 - prob)/(as.numeric(prob)),
+  if(family == "poisson") {
+    plot_data <- base::data.frame(fit = as.numeric(fit_vec), resid = resids)
+  } else if(family == "negbin") {
+    plot_data <- base::data.frame(fit = as.numeric(size_vec) * 
+                                    as.numeric(1 - full_prob)/(as.numeric(full_prob)),
                                   resid = resids)
-  } else if(dist == "binomial") {
+  } else if(family == "binomial") {
+    ## TO DO, not completed
     plot_data <- base::data.frame(fit = as.numeric(size) * p,
                                   resid = resids)
   }

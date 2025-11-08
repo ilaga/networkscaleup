@@ -1,7 +1,3 @@
-library(cmdstanr)
-
-
-
 #' Find MAP estimates of basic Poisson and Negative Binomial models using Stan optimization
 #'
 #' @param ard n_i by n_k ARD matrix
@@ -12,7 +8,6 @@ library(cmdstanr)
 #' @return Stan fit
 #' @export
 #'
-#' @examples
 fit_stan_optim <- function(ard,
                            x_cov_global = NULL,
                            x_cov_local = NULL,
@@ -20,12 +15,10 @@ fit_stan_optim <- function(ard,
                            ...) {
   ## Grab family
   family <- match.arg(family, c("poisson", "nbinomial"))
-
   n_local <- ncol(x_cov_local)
   n_global <- ncol(x_cov_global)
-  
-  n_i = nrow(ard)
-  n_k = ncol(ard)
+  n_i <- nrow(ard)
+  n_k <- ncol(ard)
 
   if (is.null(x_cov_global) & is.null(x_cov_local)) {
     # No cov
@@ -35,9 +28,9 @@ fit_stan_optim <- function(ard,
       n_k = n_k
     )
     if (family == "poisson") {
-      mod <- cmdstan_model("./Stan_Files/Poisson.stan")
+      mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson.stan")
     } else {
-      mod <- cmdstan_model("./Stan_Files/Overdispersed.stan")
+      mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed.stan")
     }
   } else if (is.null(x_cov_global)) {
     # Only subpop cov
@@ -49,9 +42,9 @@ fit_stan_optim <- function(ard,
       z_subpop = x_cov_local
     )
     if (family == "poisson") {
-      mod <- cmdstan_model("./Stan_Files/Poisson_zsubpop.stan")
+      mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson_zsubpop.stan")
     } else {
-      mod <- cmdstan_model("./Stan_Files/Overdispersed_zsubpop.stan")
+      mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zsubpop.stan")
     }
   } else if (is.null(x_cov_local)) {
     # Only global cov
@@ -63,9 +56,9 @@ fit_stan_optim <- function(ard,
       z_global = x_cov_global
     )
     if (family == "poisson") {
-      mod <- cmdstan_model("./Stan_Files/Poisson_zglobal.stan")
+      mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson_zglobal.stan")
     } else {
-      mod <- cmdstan_model("./Stan_Files/Overdispersed_zglobal.stan")
+      mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zglobal.stan")
     }
   } else {
     # Both types of covariates
@@ -79,41 +72,33 @@ fit_stan_optim <- function(ard,
       z_global = x_cov_global
     )
     if (family == "poisson") {
-      mod <- cmdstan_model("./Stan_Files/Poisson_zglobal_zsubpop.stan")
+      mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson_zglobal_zsubpop.stan")
     } else {
-      mod <- cmdstan_model("./Stan_Files/Overdispersed_zglobal_zsubpop.stan")
+      mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zglobal_zsubpop.stan")
     }
   }
-
-
-
-
-
   fit <- mod$optimize(data = stan_data, ...)
-
-
   ## Add residuals
   if (family == "poisson") {
-    pois_lambda_est <- fit$summary(variables = "mu")$estimate
+    fit_list <- list(fit = fit, 
+                     mu = fit$summary(variables = "mu")$estimate)
+    # pois_lambda_est <- fit$summary(variables = "mu")$estimate
+    # fit$mu <- fit$summary(variables = "mu")$estimate
     alphas <- fit$summary(variables = "alphas")$estimate
-    
     # Pearson residuals
     pearson_vec <- construct_pearson(
-      data.frame(value = c(ard)),
+      y = ard,
       family = "poisson",
-      fit = pois_lambda_est
+      model_fit = fit_list
     )
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
-    
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
-      data.frame(value = c(ard)),
+      y = ard,
       family = "poisson",
-      fit = pois_lambda_est
+      model_fit = fit_list
     )
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
-    
-    
     ## Return both sets of residuals
     return_obj <- list(
       fit = fit,
@@ -125,33 +110,28 @@ fit_stan_optim <- function(ard,
       rqr = rqr_resids,
       x_cov_local = x_cov_local,
       x_cov_global = x_cov_global,
-      mu = pois_lambda_est
+      mu = fit_list$mu
     )
     
   } else if (family == "nbinomial") {
-    nb_prob_est <- fit$summary(variables = "inv_omegas")$estimate
-    nb_size_est <- fit$summary(variables = "par1")$estimate
+    # nb_prob_est <- fit$summary(variables = "inv_omegas")$estimate
+    # nb_size_est <- fit$summary(variables = "par1")$estimate
+    fit_list <- list(fit = fit, 
+                     size = fit$summary(variables = "par1")$estimate,
+                     prob = fit$summary(variables = "inv_omegas")$estimate)
     alphas <- fit$summary(variables = "alphas")$estimate
-    
     # Pearson residuals
     pearson_vec <- construct_pearson(
-      data.frame(value = c(ard)),
+      y = ard,
       family = "nbinomial",
-      size = nb_size_est,
-      prob = rep(nb_prob_est, each = n_i)
-    )
+      model_fit = fit_list)
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
-    
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
-      data.frame(value = c(ard)),
+      y = ard,
       family = "nbinomial",
-      size = nb_size_est,
-      prob = rep(nb_prob_est, each = n_i)
-    )
+      model_fit = fit)
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
-    
-    
     ## Return both sets of residuals
     return_obj <- list(
       fit = fit,
@@ -167,9 +147,5 @@ fit_stan_optim <- function(ard,
       prob = nb_prob_est
     )
   }
-  
-
-  
-  return(return_obj)
-  
+  return_obj
 }
