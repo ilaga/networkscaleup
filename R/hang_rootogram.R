@@ -13,24 +13,18 @@
 #' @importFrom rlang .data
 hang_rootogram_ard <- function(y,
                                model_fit = NULL,         # fitted stan model
-                               family = "poisson",   # default family to fit
-                               size = NULL,        # NB dispersion if needed
-                               prob = NULL,        # NB size if needed 
                                width  = 0.9,       # bar width (0–1)
                                x_max = NULL){      
   
   n_samp <- nrow(y)
   
-  family <- match.arg(family, c("poisson", "nbinomial"))
+  family <- model_fit$family
   if (family == "poisson") {
-    pois_lambda_est <- model_fit$summary(variables = "mu")$estimate
+    pois_lambda_est <- model_fit$mu
     fit_vec <- as.numeric(pois_lambda_est)
   } else if (family == "nbinomial") {
-    nb_prob_est <- model_fit$summary(variables = "inv_omegas")$estimate
-    nb_size_est <- model_fit$summary(variables = "par1")$estimate
-    size_vec <- as.numeric(nb_size_est)
-    prob_vec <- as.numeric(nb_prob_est)
-    prob_vec <- rep(prob_vec, each = n_samp)
+    prob_vec <- rep(model_fit$prob, each = n_samp)
+    size_vec <- model_fit$size
   } else {
     stop("Invalid family argument. Must be one of poisson or nbinomial.",
          call. = FALSE)
@@ -116,3 +110,4 @@ hang_rootogram_ard <- function(y,
     ggplot2::theme(legend.position = "none") +
     ggplot2::scale_x_continuous(breaks = scales::breaks_pretty(n = 6)) 
 }
+
