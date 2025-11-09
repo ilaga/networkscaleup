@@ -34,7 +34,7 @@ make_ard_tidy <- function(y){
 #' @export
 #'
 #' @importFrom rlang .data
-construct_pearson <- function(y, model_fit = NULL, 
+construct_pearson <- function(y, model_fit, 
                               family = "poisson") {
   long_ard <- make_ard_tidy(y)
   n_i <- nrow(y)
@@ -87,7 +87,7 @@ construct_pearson <- function(y, model_fit = NULL,
 #'
 #' @returns a vector of residuals (column by column)
 #' @export
-construct_rqr <- function(y, model_fit = NULL,
+construct_rqr <- function(y, model_fit,
                     family = c("binomial", "nbinomial", "poisson")) {
   
   n_i <- nrow(y)
