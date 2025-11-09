@@ -1,24 +1,26 @@
 #' Hanging Rootogram for Fitted ARD Model
 #'
 #' @param y ard matrix 
-#' @param fit matrix of (estimated) means of each entry if poisson ARD model
+#' @param model_fit fitted model object
 #' @param width width of bars
 #' @param x_max the maximum x value to display
+#' @param by_group logical; if TRUE, create separate rootograms for each column (group)
 #'
-#' @return a ggplot of the hanging rootogram
+#' @return a ggplot of the hanging rootogram (single plot if by_group=FALSE, combined plot if by_group=TRUE)
 #' @export
 #' @importFrom rlang .data
 hang_rootogram_ard <- function(y,
-                               model_fit,         # fitted stan model
-                               width  = 0.9,       # bar width (0–1)
-                               x_max = NULL){      
+                               model_fit,
+                               width = 0.9,
+                               x_max = NULL,
+                               by_group = FALSE) {
   
   n_i <- nrow(y)
+  n_k <- ncol(y)
   
   family <- model_fit$family
   if (family == "poisson") {
     pois_lambda_est <- model_fit$mu
-    fit_vec <- as.numeric(pois_lambda_est)
   } else if (family == "nbinomial") {
     prob_vec <- rep(model_fit$prob, each = n_i)
     size_vec <- model_fit$size
@@ -27,86 +29,137 @@ hang_rootogram_ard <- function(y,
          call. = FALSE)
   }
   
-  ## transform matrix to vector
-  y_vec <- as.numeric(y)
-  
-  if(is.null(x_max)){
-    ## 1. support (integer counts)
-    k <- 0:max(y_vec, floor(max(y_vec) * 1.25))   
+  # Helper function to create a single rootogram
+  create_rootogram <- function(y_vec, fit_vec, group_label = NULL, 
+                               size_vec = NULL, prob_vec = NULL) {
+    
+    if (is.null(x_max)) {
+      k <- 0:max(y_vec, floor(max(y_vec) * 1.25))
+    } else {
+      k <- 0:floor(x_max)
+    }
+    
+    # Observed bin counts
+    obs_counts <- as.numeric(table(factor(y_vec, levels = k)))
+    
+    # Expected bin counts
+    exp_counts <- vapply(
+      k,
+      function(j) {
+        if (family == "poisson")
+          sum(stats::dpois(j, lambda = fit_vec))
+        else if (family == "nbinomial") {
+          sum(stats::dnbinom(j, size = size_vec, prob = prob_vec))
+        }
+      },
+      numeric(1)
+    )
+    
+    # Square-root transform and bar coordinates
+    obs_root <- sqrt(obs_counts)
+    exp_root <- sqrt(exp_counts)
+    baseline <- exp_root
+    tips <- exp_root - obs_root
+    
+    df <- data.frame(
+      k,
+      xmin = k - width/2,
+      xmax = k + width/2,
+      ymin = pmin(baseline, tips),
+      ymax = pmax(baseline, tips)
+    ) |> 
+      dplyr::mutate(middle = (.data$xmin + .data$xmax)/2)
+    
+    # Plot label
+    if (family == "poisson") {
+      plot_lab <- "Poisson"
+    } else if (family == "nbinomial") {
+      plot_lab <- "Negative Binomial"
+    }
+    
+    # Add group label if provided
+    title <- if (!is.null(group_label)) {
+      paste0("Hanging Rootogram - ", group_label)
+    } else {
+      "Hanging Rootogram"
+    }
+    
+    # Create plot
+    ggplot2::ggplot(df) +
+      ggplot2::geom_rect(
+        ggplot2::aes(xmin = .data$xmin,
+                     xmax = .data$xmax,
+                     ymin = .data$ymin,
+                     ymax = .data$ymax),
+        colour = "lightgray",
+        fill = "gray"
+      ) +
+      ggplot2::geom_hline(yintercept = 0) +
+      ggplot2::labs(
+        x = "Count",
+        y = expression(sqrt(count)),
+        title = title,
+        subtitle = plot_lab
+      ) +
+      ggplot2::theme_bw() +
+      ggplot2::geom_line(ggplot2::aes(x = .data$middle, y = .data$ymax),
+                         col = "red") +
+      ggplot2::geom_point(ggplot2::aes(x = .data$middle, y = .data$ymax),
+                          col = "red") +
+      ggplot2::theme(legend.position = "none") +
+      ggplot2::scale_x_continuous(breaks = scales::breaks_pretty(n = 6))
   }
-  else{
-    # k <- 0:max(y_vec, floor(x_max))
-    k <- 0:floor(x_max)
-  }
-  # generous upper limit
   
-  ## 2. observed bin counts
-  obs_counts <- as.numeric(table(factor(y_vec, levels = k)))
-  
-  ## 3. expected bin counts
-  exp_counts <- vapply(
-    k,
-    function(j) {
-      if (family == "poisson")
-        sum(stats::dpois(j, lambda = fit_vec))
-      else if (family == "nbinomial") {
-        if (is.null(size_vec) | is.null(prob_vec))
-          stop("Please supply 'size' and 'prob' for the negative-binomial model")
-        sum(stats::dnbinom(j, size = size_vec, prob = prob_vec))
+  # If by_group = FALSE, create single rootogram with all data
+  if (!by_group) {
+    y_vec <- as.numeric(y)
+    fit_vec <- as.numeric(pois_lambda_est)
+    
+    if (family == "nbinomial") {
+      return(create_rootogram(y_vec, fit_vec, 
+                              size_vec = size_vec, prob_vec = prob_vec))
+    } else {
+      return(create_rootogram(y_vec, fit_vec))
+    }
+  } else {
+    # If by_group = TRUE, create separate rootograms for each column
+    plot_list <- list()
+    
+    pois_lambda_mat = matrix(pois_lambda_est, nrow = n_i)
+    for (k in 1:n_k) {
+      y_vec_k <- y[, k]
+      fit_vec_k <- pois_lambda_mat[, k]
+      
+      if (family == "nbinomial") {
+        size_vec_k <- size_vec[k]
+        prob_vec_k <- prob_vec[((k-1)*n_i + 1):(k*n_i)]
+        plot_list[[k]] <- create_rootogram(y_vec_k, fit_vec_k, 
+                                           group_label = paste0("Group ", k),
+                                           size_vec = size_vec_k, 
+                                           prob_vec = prob_vec_k)
+      } else {
+        plot_list[[k]] <- create_rootogram(y_vec_k, fit_vec_k, 
+                                           group_label = paste0("Group ", k))
       }
-    },
-    numeric(1)
-  )
-  
-  ## 4. square-root transform and bar coordinates
-  obs_root <- sqrt(obs_counts)
-  exp_root <- sqrt(exp_counts)
-  baseline <- exp_root                 # hanging baseline, changed from -
-  tips     <- exp_root - obs_root       # expected - observed
-  
-  df <- data.frame(
-    k,
-    xmin = k - width/2,
-    xmax = k + width/2,
-    ymin = pmin(baseline, tips),      # bottom of bar
-    ymax = pmax(baseline, tips)       # top of bar
-    # pos  = tips >= baseline         # TRUE = observed > expected
-  ) |> 
-    dplyr::mutate(middle = (.data$xmin + .data$xmax)/2)
-  
-  ## add poisson or negative binomial model
-  if(family == "poisson"){
-    plot_lab <- "Poisson"
+    }
+    
+    # Combine plots using patchwork or gridExtra
+    if (requireNamespace("patchwork", quietly = TRUE)) {
+      combined_plot <- patchwork::wrap_plots(plot_list, ncol = min(3, n_k))
+    } else {
+      # Fall back to gridExtra
+      ncol_val <- min(3, n_k)
+      combined_plot <- gridExtra::arrangeGrob(grobs = plot_list, ncol = ncol_val)
+    }
+    
+    return(combined_plot)
   }
-  else if(family == "nbinomial") {
-    plot_lab <- "Negative Binomial"
-  }
-  
-  ## 5. plot
-  ggplot2::ggplot(df) +
-    ggplot2::geom_rect(
-      ggplot2::aes(xmin = .data$xmin,
-                   xmax = .data$xmax,
-                   ymin = .data$ymin,
-                   ymax = .data$ymax),
-      colour = "lightgray",
-      fill = "gray"
-    ) +
-    ggplot2::geom_hline(yintercept = 0) +
-    ggplot2::labs(
-      x = "Count",
-      y = expression(sqrt(count)),
-      title = "Hanging Rootogram",
-      subtitle = plot_lab
-    ) +
-    ggplot2::theme_bw() +
-    ggplot2::geom_line(ggplot2::aes(x = .data$middle, y = .data$ymax),
-                       col = "red") +
-    ggplot2::geom_point(ggplot2::aes(x = .data$middle, y = .data$ymax),
-                        col = "red") +
-    ggplot2::theme(legend.position = "none") +
-    ggplot2::scale_x_continuous(breaks = scales::breaks_pretty(n = 6)) 
 }
+
+
+
+
+
 
 #' Dispersion Metric for Fitted ARD Model
 #'
