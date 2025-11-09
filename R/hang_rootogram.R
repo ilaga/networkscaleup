@@ -21,16 +21,19 @@ hang_rootogram_ard <- function(y,
   family <- model_fit$family
   if (family == "poisson") {
     pois_lambda_est <- model_fit$mu
+    pois_lambda_mat = matrix(pois_lambda_est, nrow = n_i)
   } else if (family == "nbinomial") {
     prob_vec <- rep(model_fit$prob, each = n_i)
     size_vec <- model_fit$size
+    prob_vec_mat <- matrix(prob_vec, nrow = n_i)
+    size_vec_mat <- matrix(size_vec, nrow = n_i)
   } else {
     stop("Invalid family argument. Must be one of poisson or nbinomial.",
          call. = FALSE)
   }
   
   # Helper function to create a single rootogram
-  create_rootogram <- function(y_vec, fit_vec, group_label = NULL, 
+  create_rootogram <- function(y_vec, fit_vec = NULL, group_label = NULL, 
                                size_vec = NULL, prob_vec = NULL) {
     
     if (is.null(x_max)) {
@@ -113,44 +116,38 @@ hang_rootogram_ard <- function(y,
   # If by_group = FALSE, create single rootogram with all data
   if (!by_group) {
     y_vec <- as.numeric(y)
-    fit_vec <- as.numeric(pois_lambda_est)
     
     if (family == "nbinomial") {
-      return(create_rootogram(y_vec, fit_vec, 
-                              size_vec = size_vec, prob_vec = prob_vec))
+      return(create_rootogram(y_vec, size_vec = size_vec, prob_vec = prob_vec))
     } else {
+      fit_vec <- as.numeric(pois_lambda_est)
       return(create_rootogram(y_vec, fit_vec))
     }
   } else {
     # If by_group = TRUE, create separate rootograms for each column
     plot_list <- list()
     
-    pois_lambda_mat = matrix(pois_lambda_est, nrow = n_i)
+
     for (k in 1:n_k) {
       y_vec_k <- y[, k]
-      fit_vec_k <- pois_lambda_mat[, k]
+
       
       if (family == "nbinomial") {
-        size_vec_k <- size_vec[k]
-        prob_vec_k <- prob_vec[((k-1)*n_i + 1):(k*n_i)]
-        plot_list[[k]] <- create_rootogram(y_vec_k, fit_vec_k, 
+        size_vec_k <- size_vec_mat[,k]
+        prob_vec_k <- prob_vec_mat[,k]
+        plot_list[[k]] <- create_rootogram(y_vec_k,
                                            group_label = paste0("Group ", k),
                                            size_vec = size_vec_k, 
                                            prob_vec = prob_vec_k)
       } else {
+        fit_vec_k <- pois_lambda_mat[, k]
         plot_list[[k]] <- create_rootogram(y_vec_k, fit_vec_k, 
                                            group_label = paste0("Group ", k))
       }
     }
-    
-    # Combine plots using patchwork or gridExtra
-    if (requireNamespace("patchwork", quietly = TRUE)) {
-      combined_plot <- patchwork::wrap_plots(plot_list, ncol = min(3, n_k))
-    } else {
-      # Fall back to gridExtra
-      ncol_val <- min(3, n_k)
-      combined_plot <- gridExtra::arrangeGrob(grobs = plot_list, ncol = ncol_val)
-    }
+
+    combined_plot <- gridExtra::arrangeGrob(grobs = plot_list, ncol = min(3, n_k))
+    plot(combined_plot)
     
     return(combined_plot)
   }
@@ -204,6 +201,7 @@ dispersion_metric <- function(y, model_fit) {
     
     # Degrees of freedom (n - number of parameters)
     # For simple case, use n - 1; adjust if you know exact df
+    # TODO: Fix
     df <- n_i - 1
     
     # P-value from chi-squared distribution
