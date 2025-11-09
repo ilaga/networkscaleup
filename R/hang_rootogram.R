@@ -13,7 +13,7 @@
 #' @importFrom rlang .data
 hang_rootogram_ard <- function(y,
                                model_fit = NULL,         # fitted stan model
-                               family = "poisson",   # default familyribution to fit
+                               family = "poisson",   # default family to fit
                                size = NULL,        # NB dispersion if needed
                                prob = NULL,        # NB size if needed 
                                width  = 0.9,       # bar width (0–1)
