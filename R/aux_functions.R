@@ -37,7 +37,7 @@ make_ard_tidy <- function(y){
 construct_pearson <- function(y, model_fit = NULL, 
                               family = "poisson") {
   long_ard <- make_ard_tidy(y)
-  n_samp <- nrow(y)
+  n_i <- nrow(y)
   family <- match.arg(family, c("poisson", "nbinomial"))
   if (family == "poisson") {
     pois_lambda_est <- model_fit$mu
@@ -47,7 +47,7 @@ construct_pearson <- function(y, model_fit = NULL,
     nb_size_est <- model_fit$size
     size_vec <- as.numeric(nb_size_est)
     prob_vec <- as.numeric(nb_prob_est)
-    prob_vec <- rep(prob_vec, each = n_samp)
+    prob_vec <- rep(prob_vec, each = n_i)
   } else {
     stop("Invalid family argument. Must be one of poisson or nbinomial.",
          call. = FALSE)
@@ -90,7 +90,7 @@ construct_pearson <- function(y, model_fit = NULL,
 construct_rqr <- function(y, model_fit = NULL,
                     family = c("binomial", "nbinomial", "poisson")) {
   
-  n_samp <- nrow(y)
+  n_i <- nrow(y)
   
   family <- match.arg(family, c("poisson", "nbinomial", "binomial"))
   if (family == "poisson") {
@@ -101,7 +101,7 @@ construct_rqr <- function(y, model_fit = NULL,
     nb_size_est <- model_fit$size
     size_vec <- as.numeric(nb_size_est)
     prob_vec <- as.numeric(nb_prob_est)
-    prob_vec <- rep(prob_vec, each = n_samp)
+    prob_vec <- rep(prob_vec, each = n_i)
   } else {
     stop("Invalid family argument. Must be one of poisson or nbinomial.",
          call. = FALSE)
