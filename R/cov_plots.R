@@ -2,8 +2,8 @@
 #'
 #' Plots of the estimated covariance structure from a given fitted model
 #'
-#' @param model_fit output of a fitted model, including pearson residuals
 #' @param ard ard matrix
+#' @param model_fit a fitted object from [fit_mle()] or [fit_map()]
 #' @param x_cov covariate matrix
 #' @param method the method to use
 #' @param se whether to compute standard errors of estimates
@@ -11,8 +11,8 @@
 #' @return a list of ggplots, corresponding to covariance structure
 #' @export
 #'
-cov_plots <- function(model_fit,
-                      ard,
+cov_plots <- function(ard,
+                      model_fit,
                       x_cov,
                       resid_type = c("rqr", "pearson_residuals"),
                       method = "lm",
