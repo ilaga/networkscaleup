@@ -1,16 +1,16 @@
 # PCA-based residual test for residual correlation (permute each column independently)
 #' Title
 #'
-#' @param model_fit 
 #' @param ard 
+#' @param model_fit 
 #' @param b 
 #'
 #' @returns
 #' @export
 #'
 #' @examples
-pca_group_corr_test <- function(model_fit,
-                                ard,
+pca_group_corr_test <- function(ard,
+                                model_fit,
                                 b = 1000) {
   ## Obtain residuals
   resid_mat <- model_fit$rqr
