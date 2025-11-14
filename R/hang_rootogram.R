@@ -32,6 +32,18 @@ hang_rootogram_ard <- function(y,
          call. = FALSE)
   }
   
+  # Create column name vector for group rootogram
+  col_names <- colnames(y)
+  if (is.null(col_names)) {
+    col_names <- names(y)
+  }
+  
+  if (!is.null(col_names)) {
+    group_labels <- col_names
+  } else {
+    group_labels <- paste0("Group ", 1:n_k)
+  }
+  
   # Helper function to create a single rootogram
   create_rootogram <- function(y_vec, fit_vec = NULL, group_label = NULL, 
                                size_vec = NULL, prob_vec = NULL) {
@@ -136,13 +148,13 @@ hang_rootogram_ard <- function(y,
         size_vec_k <- size_vec_mat[,k]
         prob_vec_k <- prob_vec_mat[,k]
         plot_list[[k]] <- create_rootogram(y_vec_k,
-                                           group_label = paste0("Group ", k),
+                                           group_label = group_labels[k],
                                            size_vec = size_vec_k, 
                                            prob_vec = prob_vec_k)
       } else {
         fit_vec_k <- pois_lambda_mat[, k]
         plot_list[[k]] <- create_rootogram(y_vec_k, fit_vec_k, 
-                                           group_label = paste0("Group ", k))
+                                           group_label = group_labels[k])
       }
     }
 
