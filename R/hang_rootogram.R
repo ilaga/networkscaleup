@@ -1,6 +1,6 @@
 #' Hanging Rootogram for Fitted ARD Model
 #'
-#' @param y ard matrix 
+#' @param ard ard matrix 
 #' @param model_fit fitted model object
 #' @param width width of bars
 #' @param x_max the maximum x value to display
@@ -9,14 +9,14 @@
 #' @return a ggplot of the hanging rootogram (single plot if by_group=FALSE, combined plot if by_group=TRUE)
 #' @export
 #' @importFrom rlang .data
-hang_rootogram_ard <- function(y,
+hang_rootogram_ard <- function(ard,
                                model_fit,
                                width = 0.9,
                                x_max = NULL,
                                by_group = FALSE) {
   
-  n_i <- nrow(y)
-  n_k <- ncol(y)
+  n_i <- nrow(ard)
+  n_k <- ncol(ard)
   
   family <- model_fit$family
   if (family == "poisson") {
@@ -33,9 +33,9 @@ hang_rootogram_ard <- function(y,
   }
   
   # Create column name vector for group rootogram
-  col_names <- colnames(y)
+  col_names <- colnames(ard)
   if (is.null(col_names)) {
-    col_names <- names(y)
+    col_names <- names(ard)
   }
   
   if (!is.null(col_names)) {
@@ -127,7 +127,7 @@ hang_rootogram_ard <- function(y,
   
   # If by_group = FALSE, create single rootogram with all data
   if (!by_group) {
-    y_vec <- as.numeric(y)
+    y_vec <- as.numeric(ard)
     
     if (family == "nbinomial") {
       return(create_rootogram(y_vec, size_vec = size_vec, prob_vec = prob_vec))
@@ -141,7 +141,7 @@ hang_rootogram_ard <- function(y,
     
 
     for (k in 1:n_k) {
-      y_vec_k <- y[, k]
+      y_vec_k <- ard[, k]
 
       
       if (family == "nbinomial") {
@@ -172,16 +172,16 @@ hang_rootogram_ard <- function(y,
 
 #' Dispersion Metric for Fitted ARD Model
 #'
-#' @param y ard matrix 
+#' @param ard ard matrix 
 #' @param fit matrix of (estimated) means of each entry if poisson ARD model
 #'
 #' @return a ggplot of the hanging rootogram
 #' @export
 #' @importFrom rlang .data
-dispersion_metric <- function(y, model_fit) {
+dispersion_metric <- function(ard, model_fit) {
   
-  n_i <- nrow(y)
-  n_k <- ncol(y)
+  n_i <- nrow(ard)
+  n_k <- ncol(ard)
   
   family <- model_fit$family
   if (family == "poisson") {
@@ -202,7 +202,7 @@ dispersion_metric <- function(y, model_fit) {
   
   # Calculate dispersion test for each column
   for (k in 1:n_k) {
-    y_k <- y[, k]
+    y_k <- ard[, k]
     mu_k <- pois_lambda_est[, k]
     
     # Pearson residuals
