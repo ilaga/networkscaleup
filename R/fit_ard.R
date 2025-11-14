@@ -245,7 +245,7 @@ fit_mle <- function(ard,
     fit <- glmmTMB::glmmTMB(
       formula = formula_full,
       data = y_long,
-      family = nbinom1,
+      family = glmmTMB::nbinom1,
       dispformula = ~ factor(k) - 1 # Group-specific dispersion
     )
   }
