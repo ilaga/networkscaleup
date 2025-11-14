@@ -30,7 +30,7 @@ pca_group_corr_test <- function(model_fit,
     # Permute each column independently
     perm_df <- apply(resid_mat, 2, sample)
 
-    tmp_pca <- prcomp(perm_df, center = TRUE, scale. = TRUE)
+    tmp_pca <- stats::prcomp(perm_df, center = TRUE, scale. = TRUE)
     perm_var[i] <- tmp_pca$sdev[1]^2 / sum(tmp_pca$sdev^2)
     perm_var_all[i, ] <- tmp_pca$sdev^2 / sum(tmp_pca$sdev^2)
   }
@@ -39,20 +39,20 @@ pca_group_corr_test <- function(model_fit,
   p_val <-
     mean(abs(perm_var - mean(perm_var)) >= abs(obs_var - mean(perm_var)))
 
-  hist_plot <- ggplot(data.frame(perm_var), aes(x = perm_var)) +
-    geom_histogram(binwidth = diff(range(perm_var)) / 30, fill = "gray80", color = "black") +
-    geom_vline(xintercept = obs_var, color = "red", linewidth = 1) +
-    labs(
+  hist_plot <- ggplot2::ggplot(data.frame(perm_var), ggplot2::aes(x = perm_var)) +
+    ggplot2::geom_histogram(binwidth = diff(range(perm_var)) / 30, fill = "gray80", color = "black") +
+    ggplot2::geom_vline(xintercept = obs_var, color = "red", linewidth = 1) +
+    ggplot2::labs(
       x = "Variance explained by first PC",
       y = "Count",
       title = "PCA Residual Test"
     ) +
-    theme_minimal()
+    ggplot2::theme_minimal()
 
 
   perm_df <- as.data.frame(t(perm_var_all)) |>
-    mutate(PC = 1:n()) |>
-    pivot_longer(
+    dplyr::mutate(PC = 1:dplyr::n()) |>
+    tidyr::pivot_longer(
       cols = -PC,
       names_to = "Permutation",
       values_to = "Variance"
@@ -65,32 +65,32 @@ pca_group_corr_test <- function(model_fit,
 
   ymax <- max(c(obs_var_all, perm_var_all), na.rm = TRUE)
 
-  scree_plot <- ggplot() +
-    geom_line(
+  scree_plot <- ggplot2::ggplot() +
+    ggplot2::geom_line(
       data = perm_df,
-      aes(x = PC, y = Variance, group = Permutation),
+      ggplot2::aes(x = PC, y = Variance, group = Permutation),
       color = rgb(0, 0, 0, 0.2)
     ) +
-    geom_line(
+    ggplot2::geom_line(
       data = obs_df,
-      aes(x = PC, y = Variance),
+      ggplot2::aes(x = PC, y = Variance),
       color = "red",
       linewidth = 1.2
     ) +
-    geom_point(
+    ggplot2::geom_point(
       data = obs_df,
-      aes(x = PC, y = Variance),
+      ggplot2::aes(x = PC, y = Variance),
       color = "red"
     ) +
-    labs(
+    ggplot2::labs(
       x = "PC index",
       y = "Proportion variance explained",
       title = "Scree plots (obs vs permuted)"
     ) +
-    coord_cartesian(ylim = c(0, ymax)) +
-    theme_minimal() +
-    theme(legend.position = "top") +
-    guides(color = "none")
+    ggplot2::coord_cartesian(ylim = c(0, ymax)) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = "top") +
+    ggplot2::guides(color = "none")
 
   return(
     list(
