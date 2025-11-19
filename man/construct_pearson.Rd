@@ -4,14 +4,12 @@
 \alias{construct_pearson}
 \title{Compute Pearson Residuals for ARD matrix and fitted model}
 \usage{
-construct_pearson(y, model_fit = NULL, family = "poisson")
+construct_pearson(y, model_fit)
 }
 \arguments{
 \item{y}{ARD matrix y}
 
 \item{model_fit}{estimated model}
-
-\item{family}{poisson or negative binomial}
 }
 \value{
 a vector (column by column) of corresponding residuals from ARD matrix

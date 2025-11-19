@@ -9,6 +9,13 @@
 Provides a variety of Network Scale-up Models for researchers to
   analyze Aggregated Relational Data, mostly through the use of Stan.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://ilaga.github.io/networkscaleup/}
+}
+
+}
 \author{
 \strong{Maintainer}: Ian Laga \email{ilaga25@gmail.com} (\href{https://orcid.org/0000-0002-5164-4856}{ORCID})
 

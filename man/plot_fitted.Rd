@@ -4,21 +4,16 @@
 \alias{plot_fitted}
 \title{Plot residuals against fitted values}
 \usage{
-plot_fitted(
-  y,
-  model_fit = NULL,
-  family = c("binomial", "negbin", "poisson"),
-  resid = c("rqr", "pearson", "surrogate")
-)
+plot_fitted(y, model_fit = NULL, resid = c("rqr", "pearson", "surrogate"))
 }
 \arguments{
 \item{y}{ARD matrix (may be needed)}
 
 \item{model_fit}{fitted model}
 
-\item{family}{the distribution to be fit}
-
 \item{resid}{the type of residuals to be used}
+
+\item{family}{the distribution to be fit}
 }
 \value{
 a ggplot showing fitted values against residuals

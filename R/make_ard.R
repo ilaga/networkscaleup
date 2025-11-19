@@ -44,14 +44,14 @@ make_ard <- function(n_i = 500,
   if (group_corr & degree_corr) {
     stop("Cannot have group_corr and degree_corr together")
   }
-  nk_prev <- runif(n_k, 0.01, 0.15)
+  nk_prev <- stats::runif(n_k, 0.01, 0.15)
   nk_size <- round(nk_prev * N)
-  omega <- runif(n_k, omega_range[1], omega_range[2]) ## Unused if Poisson
+  omega <- stats::runif(n_k, omega_range[1], omega_range[2]) ## Unused if Poisson
   betas <- log(nk_size / N)
-  alphas <- rnorm(n_i, alpha_mean, alpha_sd)
+  alphas <- stats::rnorm(n_i, alpha_mean, alpha_sd)
 
   ## Correlated parameters
-  tau.N <- runif(n_k, min = 0.5, max = 1.5)
+  tau.N <- stats::runif(n_k, min = 0.5, max = 1.5)
 
 
   if (group_corr) {
@@ -81,9 +81,6 @@ make_ard <- function(n_i = 500,
     bias[, 1] <- alphas
   }
 
-
-
-
   ## Handle covariates
   if (p_global_nonzero > 0) {
     p_global_nonzero_ind <- sample(p, p_global_nonzero)
@@ -101,8 +98,6 @@ make_ard <- function(n_i = 500,
     x_beta_local[p_local_nonzero_ind, ] <- runif(p_local_nonzero * n_k, -2, 2)
   }
 
-
-
   # Center to have mean 0
   row_means <- rowMeans(x_beta_local)
   x_beta_local <- x_beta_local - row_means
@@ -111,7 +106,7 @@ make_ard <- function(n_i = 500,
   ard <- matrix(NA, nrow = n_i, ncol = n_k)
   if (family == "poisson") {
     for (k in 1:n_k) {
-      ard[, k] <- rpois(
+      ard[, k] <- stats::rpois(
         n_i,
         lambda = exp(
           bias[, 1] + betas[k] +
@@ -123,7 +118,7 @@ make_ard <- function(n_i = 500,
     }
   } else {
     for (k in 1:n_k) {
-      ard[, k] <- rnbinom(
+      ard[, k] <- stats::rnbinom(
         n_i,
         size = exp(
           bias[, 1] + betas[k] +

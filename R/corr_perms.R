@@ -1,14 +1,13 @@
 # PCA-based residual test for residual correlation (permute each column independently)
 #' Title
 #'
-#' @param ard 
-#' @param model_fit 
-#' @param b 
+#' @param ard ARD data
+#' @param model_fit list containing fitted model and additional details
+#' @param b number of replications to do
 #'
-#' @returns
+#' @returns list containing plots, test statistics, etc
 #' @export
 #'
-#' @examples
 pca_group_corr_test <- function(ard,
                                 model_fit,
                                 b = 1000) {

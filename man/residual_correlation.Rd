@@ -7,11 +7,11 @@
 residual_correlation(ard_residuals, y, type = "column")
 }
 \arguments{
-\item{ard_residuals}{}
+\item{ard_residuals}{vector of residuals}
 
 \item{y}{ard matrix y}
 
-\item{type}{}
+\item{type}{type of correlation to use (row or column)}
 }
 \value{
 a ggplot of the specified correlation matrix

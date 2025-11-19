@@ -17,7 +17,6 @@ hang_rootogram_ard <- function(ard,
   
   n_i <- nrow(ard)
   n_k <- ncol(ard)
-  
   family <- model_fit$family
   if (family == "poisson") {
     pois_lambda_est <- model_fit$mu
@@ -138,12 +137,9 @@ hang_rootogram_ard <- function(ard,
   } else {
     # If by_group = TRUE, create separate rootograms for each column
     plot_list <- list()
-    
-
     for (k in 1:n_k) {
       y_vec_k <- ard[, k]
 
-      
       if (family == "nbinomial") {
         size_vec_k <- size_vec_mat[,k]
         prob_vec_k <- prob_vec_mat[,k]
@@ -173,7 +169,7 @@ hang_rootogram_ard <- function(ard,
 #' Dispersion Metric for Fitted ARD Model
 #'
 #' @param ard ard matrix 
-#' @param fit matrix of (estimated) means of each entry if poisson ARD model
+#' @param model_fit list of fitted model and details
 #'
 #' @return a ggplot of the hanging rootogram
 #' @export
@@ -182,7 +178,6 @@ dispersion_metric <- function(ard, model_fit) {
   
   n_i <- nrow(ard)
   n_k <- ncol(ard)
-  
   family <- model_fit$family
   if (family == "poisson") {
     pois_lambda_est <- matrix(model_fit$mu, nrow = n_i, ncol = n_k)
@@ -217,9 +212,9 @@ dispersion_metric <- function(ard, model_fit) {
     df <- n_i - 1
     
     # P-value from chi-squared distribution
-    p_val <- pchisq(disp_stat, df = df, lower.tail = FALSE)
+    p_val <- stats::pchisq(disp_stat, df = df, lower.tail = FALSE)
     
-    # Dispersion ratio (should be ~1 for Poisson)
+    # Dispersion ratio (should be approx 1 for Poisson)
     disp_ratio <- disp_stat / df
     
     dispersion_stats[k, ] <- c(k, disp_stat, df, p_val, disp_ratio)
@@ -235,8 +230,9 @@ dispersion_metric <- function(ard, model_fit) {
   
   # Dispersion ratio plot
   disp_plot <- ggplot2::ggplot(plot_data, 
-                               ggplot2::aes(x = column, y = dispersion_ratio,
-                                            fill = significant)) +
+                               ggplot2::aes(x = .data$column,
+                                            y = .data$dispersion_ratio,
+                                            fill = .data$significant)) +
     ggplot2::geom_col(color = "black") +
     ggplot2::geom_hline(yintercept = 1, linetype = "dashed", 
                         color = "red", linewidth = 1) +
@@ -245,7 +241,7 @@ dispersion_metric <- function(ard, model_fit) {
                                           "TRUE" = "Significant (p < 0.05)")) +
     ggplot2::labs(
       x = "Column",
-      y = "Dispersion Ratio (χ²/df)",
+      y = expression("Dispersion Ratio " * (frac(chi^2, df))),
       title = "Dispersion Test by Column",
       subtitle = "Ratio = 1 indicates Poisson fit; >1 indicates overdispersion",
       fill = "Dispersion Test"
@@ -259,8 +255,9 @@ dispersion_metric <- function(ard, model_fit) {
   
   # P-value plot
   pval_plot <- ggplot2::ggplot(plot_data,
-                               ggplot2::aes(x = column, y = -log10(p_value),
-                                            fill = significant)) +
+                               ggplot2::aes(x = .data$column, 
+                                            y = -log10(.data$p_value),
+                                            fill = .data$significant)) +
     ggplot2::geom_col(color = "black") +
     ggplot2::geom_hline(yintercept = -log10(0.05), linetype = "dashed",
                         color = "red", linewidth = 1) +
@@ -290,7 +287,7 @@ dispersion_metric <- function(ard, model_fit) {
     n_columns = n_k,
     prop_significant = mean(dispersion_stats$p_value < 0.05),
     mean_dispersion_ratio = mean(dispersion_stats$dispersion_ratio),
-    median_dispersion_ratio = median(dispersion_stats$dispersion_ratio)
+    median_dispersion_ratio = stats::median(dispersion_stats$dispersion_ratio)
   )
   
   return(list(
