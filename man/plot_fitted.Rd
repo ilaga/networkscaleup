@@ -12,8 +12,6 @@ plot_fitted(y, model_fit = NULL, resid = c("rqr", "pearson", "surrogate"))
 \item{model_fit}{fitted model}
 
 \item{resid}{the type of residuals to be used}
-
-\item{family}{the distribution to be fit}
 }
 \value{
 a ggplot showing fitted values against residuals

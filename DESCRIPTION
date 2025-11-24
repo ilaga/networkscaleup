@@ -12,7 +12,7 @@ Encoding: UTF-8
 RoxygenNote: 7.3.2
 Biarch: true
 Depends: R (>= 4.1.0)
-Imports: methods, Rcpp (>= 0.12.0), RcppParallel (>= 5.0.1), rstan (>=
+Imports: methods, Rcpp (>= 0.12.0), rstan (>=
         2.26.0), LaplacesDemon (>= 16.1.6), dplyr, 
         ggplot2, scales, stats, readr, tibble, tidyr, graphics, rlang, glmmTMB,
         gridExtra, purrr, stringr, trialr, tidyselect, cmdstanr

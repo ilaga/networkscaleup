@@ -4,7 +4,6 @@
 #' @param x_cov_global n_i by p_global covariate matrix of global covariates 
 #' @param x_cov_local n_i by p_local covariate matrix of lobal covariates
 #' @param family Distribution to fit, either "poisson" or "nbinomial"
-#' @param ... additional arguments to the stan fit
 #'
 #' @return Stan fit
 #' @export
@@ -12,8 +11,7 @@
 fit_stan_optim <- function(ard,
                            x_cov_global = NULL,
                            x_cov_local = NULL,
-                           family = c("poisson", "nbinomial"),
-                           ...) {
+                           family = c("poisson", "nbinomial")) {
   ## Grab family
   family <- match.arg(family, c("poisson", "nbinomial"))
   n_local <- ncol(x_cov_local)
@@ -78,7 +76,7 @@ fit_stan_optim <- function(ard,
       mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zglobal_zsubpop.stan")
     }
   }
-  fit <- mod$optimize(data = stan_data, ...)
+  fit <- mod$optimize(data = stan_data)
   ## Add residuals
   if (family == "poisson") {
     fit_list <- list(fit = fit, 

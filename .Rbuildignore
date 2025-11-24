@@ -1,9 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-<<<<<<< HEAD
-=======
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
 ^\.github$
->>>>>>> 07fbbf8b4c2c6f785d6bda1566b8ed09b984a092
+^sims$

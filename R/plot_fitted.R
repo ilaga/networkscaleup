@@ -2,7 +2,6 @@
 #'
 #' @param y ARD matrix (may be needed)
 #' @param model_fit fitted model
-#' @param family the distribution to be fit
 #' @param resid the type of residuals to be used
 #'
 #' @returns a ggplot showing fitted values against residuals

@@ -152,7 +152,7 @@ residual_heatmap <- function(ard_residuals, y){
   long_ard$residuals <- ard_residuals
   n_cols <- max(long_ard$col)
   n_rows <- max(long_ard$row)
-  ggplot2::ggplot(long_ard, ggplot2::aes(y = row, x = col, fill = residuals)) +
+  ggplot2::ggplot(long_ard, ggplot2::aes(y = row, x = col, fill = .data$residuals)) +
     ggplot2::geom_tile() +
     ggplot2::coord_fixed() +
     ggplot2::scale_fill_gradient2(
@@ -197,7 +197,7 @@ residual_correlation <- function(ard_residuals, y,
     as.matrix()
   
   if(type == "column"){
-    cors <- cor(resid_mat, use = "pairwise.complete.obs",
+    cors <- stats::cor(resid_mat, use = "pairwise.complete.obs",
                 method = "pearson")
     cors_long <- cors |>
       as.data.frame() |>
@@ -212,7 +212,7 @@ residual_correlation <- function(ard_residuals, y,
     if(nrow(y) > 500){
       stop("ARD too large for row-wise correlation plot", call. = FALSE)
     }
-    cors <- cor(t(resid_mat), use = "pairwise.complete.obs",
+    cors <- stats::cor(t(resid_mat), use = "pairwise.complete.obs",
                 method = "pearson")
     cors_long <- cors |>
       as.data.frame() |>
@@ -225,7 +225,7 @@ residual_correlation <- function(ard_residuals, y,
     plot_axis <- ggplot2::element_blank()
   }
   
-  ggplot2::ggplot(cors_long, ggplot2::aes(col, row, fill = corr)) +
+  ggplot2::ggplot(cors_long, ggplot2::aes(col, row, fill = .data$corr)) +
     ggplot2::geom_tile(colour = "white") +
     ggplot2::coord_fixed() +
     ggplot2::scale_fill_gradient2(
