@@ -11,8 +11,7 @@
 fit_stan_optim <- function(ard,
                            x_cov_global = NULL,
                            x_cov_local = NULL,
-                           family = c("poisson", "nbinomial"),
-                           ...) {
+                           family = c("poisson", "nbinomial")) {
   ## Grab family
   family <- match.arg(family, c("poisson", "nbinomial"))
   n_local <- ncol(x_cov_local)
@@ -77,11 +76,12 @@ fit_stan_optim <- function(ard,
       mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zglobal_zsubpop.stan")
     }
   }
-  fit <- mod$optimize(data = stan_data, ...)
+  fit <- mod$optimize(data = stan_data)
   ## Add residuals
   if (family == "poisson") {
     fit_list <- list(fit = fit, 
-                     mu = fit$summary(variables = "mu")$estimate)
+                     mu = fit$summary(variables = "mu")$estimate,
+                     family = "poisson")
     # pois_lambda_est <- fit$summary(variables = "mu")$estimate
     # fit$mu <- fit$summary(variables = "mu")$estimate
     alphas <- fit$summary(variables = "alphas")$estimate
@@ -89,14 +89,12 @@ fit_stan_optim <- function(ard,
     # Pearson residuals
     pearson_vec <- construct_pearson(
       y = ard,
-      family = "poisson",
       model_fit = fit_list
     )
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
       y = ard,
-      family = "poisson",
       model_fit = fit_list
     )
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
@@ -122,19 +120,17 @@ fit_stan_optim <- function(ard,
     nb_prob_est <- par2_est / (par2_est + 1)
     fit_list <- list(fit = fit, 
                      size = fit$summary(variables = "par1")$estimate,
-                     prob = nb_prob_est)
+                     prob = nb_prob_est, family = "nbinomial")
     alphas <- fit$summary(variables = "alphas")$estimate
     betas <- fit$summary(variables = "betas")$estimate
     # Pearson residuals
     pearson_vec <- construct_pearson(
       y = ard,
-      family = "nbinomial",
       model_fit = fit_list)
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
       y = ard,
-      family = "nbinomial",
       model_fit = fit_list)
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
     ## Return both sets of residuals
@@ -173,9 +169,7 @@ fit_stan_optim <- function(ard,
 fit_mle <- function(ard,
                     x_cov_global = NULL,
                     x_cov_local = NULL,
-                    family = c("poisson", "nbinomial"),
-                    ...) {
-
+                    family = c("poisson", "nbinomial")) {
   ## Grab family
   family <- match.arg(family, c("poisson", "nbinomial"))
   n_i <- nrow(ard)
@@ -231,15 +225,13 @@ fit_mle <- function(ard,
   } else {
     formula_str <- paste("count ~", paste(fixed_terms, collapse = " + "), "+", random_terms)
   }
-  
-  formula_full <- as.formula(formula_str)
-
+  formula_full <- stats::as.formula(formula_str)
   # Fit model
   if (family == "poisson") {
     fit <- glmmTMB::glmmTMB(
       formula = formula_full,
       data = y_long,
-      family = poisson()
+      family = stats::poisson()
     )
   } else {
     fit <- glmmTMB::glmmTMB(
@@ -255,18 +247,15 @@ fit_mle <- function(ard,
   betas <- glmmTMB::ranef(fit)$cond$k[[1]]
 
   # Get predictions
-  y_long$mu_pred <- predict(fit, type = "response")
+  y_long$mu_pred <- stats::predict(fit, type = "response")
 
   # Create model_fit object for residual functions
   if (family == "poisson") {
     mu_mat <- matrix(y_long$mu_pred, nrow = n_i, ncol = n_k)
-
-    fit_list <- list(fit = fit, mu = mu_mat)
-
+    fit_list <- list(fit = fit, mu = mu_mat, family = "poisson")
     # Pearson residuals
     pearson_vec <- construct_pearson(
       y = ard,
-      family = "poisson",
       model_fit = fit_list
     )
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
@@ -274,7 +263,6 @@ fit_mle <- function(ard,
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
       y = ard,
-      family = "poisson",
       model_fit = fit_list
     )
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
@@ -312,13 +300,13 @@ fit_mle <- function(ard,
     fit_list <- list(
       fit = fit,
       size = y_long$size,
-      prob = prob_mat[1,]
+      prob = prob_mat[1,],
+      family = "nbinomial"
     )
 
     # Pearson residuals
     pearson_vec <- construct_pearson(
       y = ard,
-      family = "nbinomial",
       model_fit = fit_list
     )
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
@@ -326,11 +314,9 @@ fit_mle <- function(ard,
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
       y = ard,
-      family = "nbinomial",
       model_fit = fit_list
     )
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
-
     return_obj <- list(
       fit = fit,
       family = family,

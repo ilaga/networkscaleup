@@ -1,14 +1,14 @@
 # PCA-based residual test for residual correlation (permute each column independently)
 #' Title
 #'
-#' @param ard 
-#' @param model_fit 
-#' @param b 
+#' @param ard ARD data
+#' @param model_fit list containing fitted model and additional details
+#' @param b number of replications to do
 #'
-#' @returns
+#' @returns list containing plots, test statistics, etc
 #' @export
 #'
-#' @examples
+#' @importFrom rlang .data
 pca_group_corr_test <- function(ard,
                                 model_fit,
                                 b = 1000) {
@@ -53,7 +53,7 @@ pca_group_corr_test <- function(ard,
   perm_df <- as.data.frame(t(perm_var_all)) |>
     dplyr::mutate(PC = 1:dplyr::n()) |>
     tidyr::pivot_longer(
-      cols = -PC,
+      cols = -.data$PC,
       names_to = "Permutation",
       values_to = "Variance"
     )
@@ -68,18 +68,19 @@ pca_group_corr_test <- function(ard,
   scree_plot <- ggplot2::ggplot() +
     ggplot2::geom_line(
       data = perm_df,
-      ggplot2::aes(x = PC, y = Variance, group = Permutation),
-      color = rgb(0, 0, 0, 0.2)
+      ggplot2::aes(x = .data$PC, y = .data$Variance, group = .data$Permutation),
+      # color = rgb(0, 0, 0, 0.2)
+      ## TO DO: Add this in correctly
     ) +
     ggplot2::geom_line(
       data = obs_df,
-      ggplot2::aes(x = PC, y = Variance),
+      ggplot2::aes(x = .data$PC, y = .data$Variance),
       color = "red",
       linewidth = 1.2
     ) +
     ggplot2::geom_point(
       data = obs_df,
-      ggplot2::aes(x = PC, y = Variance),
+      ggplot2::aes(x = .data$PC, y = .data$Variance),
       color = "red"
     ) +
     ggplot2::labs(

@@ -4,15 +4,12 @@
 \alias{get_surrogate}
 \title{Compute Surrogate Residuals for ARD Models}
 \usage{
-get_surrogate(y, model_fit = NULL, family = c("binomial", "negbin", "poisson"))
+get_surrogate(y, model_fit = NULL)
 }
 \arguments{
 \item{y}{the ARD matrix}
 
-\item{model_fit}{if poisson distribution, rate matrix}
-
-\item{family}{the distribution to fit, which will choose prev pars to be
-specified}
+\item{model_fit}{list containing fitted model, details}
 }
 \value{
 a vector of residuals (column by column)

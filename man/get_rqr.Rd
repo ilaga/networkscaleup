@@ -4,27 +4,12 @@
 \alias{get_rqr}
 \title{Compute Randomized Quantile Residuals for ARD Models}
 \usage{
-get_rqr(
-  y,
-  p = NULL,
-  fit = NULL,
-  size = NULL,
-  prob = NULL,
-  dist = c("binomial", "negbin", "poisson")
-)
+get_rqr(y, model_fit = NULL)
 }
 \arguments{
 \item{y}{ard matrix}
 
-\item{p}{if binomial distribution, success probability (single value)}
-
-\item{fit}{if poisson distribution, rate matrix}
-
-\item{size}{if negative binomial, size matrix}
-
-\item{prob}{if negative binomial, size matrix}
-
-\item{dist}{the distribution to fit, which will choose prev pars to be
+\item{model_fit}{list of details of fitted model
 specified}
 }
 \value{

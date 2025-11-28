@@ -4,33 +4,21 @@
 \alias{hang_rootogram_ard}
 \title{Hanging Rootogram for Fitted ARD Model}
 \usage{
-hang_rootogram_ard(
-  y,
-  model_fit = NULL,
-  family = "poisson",
-  size = NULL,
-  prob = NULL,
-  width = 0.9,
-  x_max = NULL
-)
+hang_rootogram_ard(ard, model_fit, width = 0.9, x_max = NULL, by_group = FALSE)
 }
 \arguments{
-\item{y}{ard matrix}
+\item{ard}{ard matrix}
 
-\item{family}{whether ard model poisson or negative binomial}
-
-\item{size}{if negative binomial, matrix of size estimate}
-
-\item{prob}{if negative binomial, matrix of prob estimate}
+\item{model_fit}{fitted model object}
 
 \item{width}{width of bars}
 
 \item{x_max}{the maximum x value to display}
 
-\item{fit}{matrix of (estimated) means of each entry if poisson ARD model}
+\item{by_group}{logical; if TRUE, create separate rootograms for each column (group)}
 }
 \value{
-a ggplot of the hanging rootogram
+a ggplot of the hanging rootogram (single plot if by_group=FALSE, combined plot if by_group=TRUE)
 }
 \description{
 Hanging Rootogram for Fitted ARD Model

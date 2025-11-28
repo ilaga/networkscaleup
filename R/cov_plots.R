@@ -5,12 +5,14 @@
 #' @param ard ard matrix
 #' @param model_fit a fitted object from [fit_mle()] or [fit_map()]
 #' @param x_cov covariate matrix
+#' @param resid_type the type of residuals to use
 #' @param method the method to use
 #' @param se whether to compute standard errors of estimates
 #'
 #' @return a list of ggplots, corresponding to covariance structure
 #' @export
 #'
+#' @importFrom rlang .data
 cov_plots <- function(ard,
                       model_fit,
                       x_cov,
@@ -40,24 +42,24 @@ cov_plots <- function(ard,
   ard_x <- data.frame(resid = resid_mat, cov = x_cov, alpha = alpha_est)
   ard_long <- ard_x |> 
     tidyr::pivot_longer(
-      cols = starts_with("resid."),
+      cols = tidyselect::starts_with("resid."),
       names_to = "Group",
       values_to = "resid"
     )
   ard_longer <- ard_long |> 
     tidyr::pivot_longer(
-      cols = starts_with("cov."),
+      cols = tidyselect::starts_with("cov."),
       names_to = "cov_names",
       values_to = "CovValue"
     ) |> 
-    dplyr::mutate(cov_label = stringr::str_remove(cov_names, "^cov\\."),
-                  cov_label = factor(cov_label, levels = colnames(x_cov)))
+    dplyr::mutate(cov_label = stringr::str_remove(.data$cov_names, "^cov\\."),
+                  cov_label = factor(.data$cov_label, levels = colnames(x_cov)))
   ## Produce plot 1, group-specific plots
   gg1 <- ggplot2::ggplot(ard_longer, ggplot2::aes(
-    x = CovValue,
-    y = resid,
-    col = Group,
-    group = Group
+    x = .data$CovValue,
+    y = .data$resid,
+    col = .data$Group,
+    group = .data$Group
   )) +
     ggplot2::geom_smooth(method = method, se = se) +
     ggplot2::facet_wrap(~cov_label, scales = "free") +
@@ -84,11 +86,14 @@ cov_plots <- function(ard,
 
   # Produce plot 2, averaged over groups
   gg2 <- ggplot2::ggplot(ard_longer, 
-                         ggplot2::aes(x = CovValue, y = alpha, color = cov_label)) +
+                         ggplot2::aes(x = .data$CovValue,
+                                      y = .data$alpha,
+                                      color = .data$cov_label)) +
     ggplot2::geom_smooth(method = method, se = se) +
     ggplot2::geom_text(
       data = label_df,
-      ggplot2::aes(x = x, y = y, label = cov_label, color = cov_label),
+      ggplot2::aes(x = .data$x, y = .data$y, 
+                   label = .data$cov_label, color = .data$cov_label),
       hjust = -0.1,
       show.legend = FALSE
     ) +

@@ -44,14 +44,14 @@ make_ard <- function(n_i = 500,
   if (group_corr & degree_corr) {
     stop("Cannot have group_corr and degree_corr together")
   }
-  nk_prev <- runif(n_k, 0.01, 0.15)
+  nk_prev <- stats::runif(n_k, 0.01, 0.15)
   nk_size <- round(nk_prev * N)
-  omega <- runif(n_k, omega_range[1], omega_range[2]) ## Unused if Poisson
+  omega <- stats::runif(n_k, omega_range[1], omega_range[2]) ## Unused if Poisson
   betas <- log(nk_size / N)
-  alphas <- rnorm(n_i, alpha_mean, alpha_sd)
+  alphas <- stats::rnorm(n_i, alpha_mean, alpha_sd)
 
   ## Correlated parameters
-  tau.N <- runif(n_k, min = 0.5, max = 1.5)
+  tau.N <- stats::runif(n_k, min = 0.5, max = 1.5)
 
 
   if (group_corr) {
@@ -59,7 +59,7 @@ make_ard <- function(n_i = 500,
     tau <- sqrt(log(1 + tau.N^2))
     Omega <- trialr::rlkjcorr(1, n_k, eta = eta)
     L.omega <- t(chol(Omega))
-    eps <- matrix(rnorm(n_i * n_k), nrow = n_i, ncol = n_k)
+    eps <- matrix(stats::rnorm(n_i * n_k), nrow = n_i, ncol = n_k)
     bias <- matrix(NA, nrow = n_i, ncol = n_k + 1)
     for (i in 1:n_i) {
       bias[i, -1] <- mu + diag(tau) %*% L.omega %*% eps[i, ]
@@ -70,7 +70,7 @@ make_ard <- function(n_i = 500,
     tau <- c(alpha_sd, sqrt(log(1 + tau.N^2)))
     Omega <- trialr::rlkjcorr(1, n_k + 1, eta = eta)
     L.omega <- t(chol(Omega))
-    eps <- matrix(rnorm(n_i * (n_k + 1)), nrow = n_i, ncol = n_k + 1)
+    eps <- matrix(stats::rnorm(n_i * (n_k + 1)), nrow = n_i, ncol = n_k + 1)
     bias <- matrix(NA, nrow = n_i, ncol = n_k + 1)
     for (i in 1:n_i) {
       bias[i, ] <- mu + diag(tau) %*% L.omega %*% eps[i, ]
@@ -81,27 +81,22 @@ make_ard <- function(n_i = 500,
     bias[, 1] <- alphas
   }
 
-
-
-
   ## Handle covariates
   if (p_global_nonzero > 0) {
     p_global_nonzero_ind <- sample(p, p_global_nonzero)
     p_local_nonzero_ind <- sample(c(1:p)[-p_global_nonzero_ind], p_local_nonzero)
-    x_cov <- matrix(runif(n_i * p, -1, 1), nrow = n_i, ncol = p)
+    x_cov <- matrix(stats::runif(n_i * p, -1, 1), nrow = n_i, ncol = p)
     x_beta_global <- matrix(0, nrow = p, ncol = 1)
-    x_beta_global[p_global_nonzero_ind, ] <- runif(p_global_nonzero, -2, 2)
+    x_beta_global[p_global_nonzero_ind, ] <- stats::runif(p_global_nonzero, -2, 2)
     x_beta_local <- matrix(0, nrow = p, ncol = n_k)
-    x_beta_local[p_local_nonzero_ind, ] <- runif(p_local_nonzero * n_k, -2, 2)
+    x_beta_local[p_local_nonzero_ind, ] <- stats::runif(p_local_nonzero * n_k, -2, 2)
   } else {
     p_local_nonzero_ind <- sample(c(1:p), p_local_nonzero)
-    x_cov <- matrix(runif(n_i * p, -1, 1), nrow = n_i, ncol = p)
+    x_cov <- matrix(stats::runif(n_i * p, -1, 1), nrow = n_i, ncol = p)
     x_beta_global <- matrix(0, nrow = p, ncol = 1)
     x_beta_local <- matrix(0, nrow = p, ncol = n_k)
-    x_beta_local[p_local_nonzero_ind, ] <- runif(p_local_nonzero * n_k, -2, 2)
+    x_beta_local[p_local_nonzero_ind, ] <- stats::runif(p_local_nonzero * n_k, -2, 2)
   }
-
-
 
   # Center to have mean 0
   row_means <- rowMeans(x_beta_local)
@@ -111,7 +106,7 @@ make_ard <- function(n_i = 500,
   ard <- matrix(NA, nrow = n_i, ncol = n_k)
   if (family == "poisson") {
     for (k in 1:n_k) {
-      ard[, k] <- rpois(
+      ard[, k] <- stats::rpois(
         n_i,
         lambda = exp(
           bias[, 1] + betas[k] +
@@ -123,7 +118,7 @@ make_ard <- function(n_i = 500,
     }
   } else {
     for (k in 1:n_k) {
-      ard[, k] <- rnbinom(
+      ard[, k] <- stats::rnbinom(
         n_i,
         size = exp(
           bias[, 1] + betas[k] +

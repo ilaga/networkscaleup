@@ -28,16 +28,15 @@ make_ard_tidy <- function(y){
 #'
 #' @param y ARD matrix y
 #' @param model_fit estimated model 
-#' @param family poisson or negative binomial
-#'
+#' 
 #' @return a vector (column by column) of corresponding residuals from ARD matrix
 #' @export
 #'
 #' @importFrom rlang .data
-construct_pearson <- function(y, model_fit, 
-                              family = "poisson") {
+construct_pearson <- function(y, model_fit) {
   long_ard <- make_ard_tidy(y)
   n_i <- nrow(y)
+  family <- model_fit$family
   family <- match.arg(family, c("poisson", "nbinomial"))
   if (family == "poisson") {
     pois_lambda_est <- model_fit$mu
@@ -78,20 +77,13 @@ construct_pearson <- function(y, model_fit,
 #' Compute Randomized Quantile Residuals for ARD Models
 #'
 #' @param y ard matrix
-#' @param p if binomial familyribution, success probability (single value)
-#' @param fit if poisson familyribution, rate matrix
-#' @param size if negative binomial, size matrix
-#' @param prob if negative binomial, size matrix
-#' @param family the familyribution to fit, which will choose prev pars to be
-#' specified
+#' @param model_fit fitted model, along with required details
 #'
 #' @returns a vector of residuals (column by column)
 #' @export
-construct_rqr <- function(y, model_fit,
-                    family = c("binomial", "nbinomial", "poisson")) {
-  
+construct_rqr <- function(y, model_fit) {
   n_i <- nrow(y)
-  
+  family <- model_fit$family
   family <- match.arg(family, c("poisson", "nbinomial", "binomial"))
   if (family == "poisson") {
     pois_lambda_est <- model_fit$mu
@@ -111,15 +103,16 @@ construct_rqr <- function(y, model_fit,
   rqr <- rep(NA, length(y_vec))
   
   if (family == "binomial") {
+    stop("Not implemented yet, the probability not passed in below.")
     for (i in 1:length(y_vec)) {
       # Get CDF at y[i] and at y[i] - 1
       F_lower <- NA
       if (y_vec[i] == 0) {
         F_lower <- 0
       } else {
-        F_lower <- stats::pbinom(y_vec[i] - 1, size = size_vec[i], prob = p)
+        F_lower <- stats::pbinom(y_vec[i] - 1, size = size_vec[i], prob = 0.5)
       }
-      F_upper <- stats::pbinom(y_vec[i], size = size_vec[i], prob = p)
+      F_upper <- stats::pbinom(y_vec[i], size = size_vec[i], prob = 0.5)
       
       # Sample a uniform value between F_lower and F_upper
       u <- stats::runif(1, min = F_lower, max = F_upper)
@@ -159,7 +152,7 @@ residual_heatmap <- function(ard_residuals, y){
   long_ard$residuals <- ard_residuals
   n_cols <- max(long_ard$col)
   n_rows <- max(long_ard$row)
-  ggplot2::ggplot(long_ard, aes(y = row, x = col, fill = residuals)) +
+  ggplot2::ggplot(long_ard, ggplot2::aes(y = row, x = col, fill = .data$residuals)) +
     ggplot2::geom_tile() +
     ggplot2::coord_fixed() +
     ggplot2::scale_fill_gradient2(
@@ -171,8 +164,8 @@ residual_heatmap <- function(ard_residuals, y){
     ggplot2::labs(x = "Column", y = "Row", fill = "Residual") +
     ggplot2::theme_minimal() +
     ggplot2::theme(
-      axis.ticks = element_blank(),
-      panel.grid = element_blank()
+      axis.ticks = ggplot2::element_blank(),
+      panel.grid = ggplot2::element_blank()
     ) +
     ggplot2::coord_fixed(ratio = n_cols / n_rows)
 }
@@ -181,13 +174,14 @@ residual_heatmap <- function(ard_residuals, y){
 
 #' Construction Residual (row/column) correlation matrix
 #'
-#' @param ard_residuals 
+#' @param ard_residuals vector of residuals
 #' @param y ard matrix y
-#' @param type 
+#' @param type type of correlation to use (row or column)
 #'
 #' @return a ggplot of the specified correlation matrix
 #' @export
 #'
+#' @importFrom rlang .data
 residual_correlation <- function(ard_residuals, y,
                                  type = "column") {
   
@@ -196,14 +190,14 @@ residual_correlation <- function(ard_residuals, y,
   n_cols <- max(long_ard$col)
   n_rows <- max(long_ard$row)
   resid_mat <- long_ard |>
-    dplyr::select(-value) |> 
+    dplyr::select(-.data$value) |> 
     tidyr::pivot_wider(names_from = col,
-                       values_from = residuals) |> 
+                       values_from = .data$residuals) |> 
     dplyr::select(-row) |>                     # drop row id
     as.matrix()
   
   if(type == "column"){
-    cors <- cor(resid_mat, use = "pairwise.complete.obs",
+    cors <- stats::cor(resid_mat, use = "pairwise.complete.obs",
                 method = "pearson")
     cors_long <- cors |>
       as.data.frame() |>
@@ -218,7 +212,7 @@ residual_correlation <- function(ard_residuals, y,
     if(nrow(y) > 500){
       stop("ARD too large for row-wise correlation plot", call. = FALSE)
     }
-    cors <- cor(t(resid_mat), use = "pairwise.complete.obs",
+    cors <- stats::cor(t(resid_mat), use = "pairwise.complete.obs",
                 method = "pearson")
     cors_long <- cors |>
       as.data.frame() |>
@@ -231,7 +225,7 @@ residual_correlation <- function(ard_residuals, y,
     plot_axis <- ggplot2::element_blank()
   }
   
-  ggplot2::ggplot(cors_long, ggplot2::aes(col, row, fill = corr)) +
+  ggplot2::ggplot(cors_long, ggplot2::aes(col, row, fill = .data$corr)) +
     ggplot2::geom_tile(colour = "white") +
     ggplot2::coord_fixed() +
     ggplot2::scale_fill_gradient2(

@@ -4,25 +4,12 @@
 \alias{construct_rqr}
 \title{Compute Randomized Quantile Residuals for ARD Models}
 \usage{
-construct_rqr(
-  y,
-  model_fit = NULL,
-  family = c("binomial", "nbinomial", "poisson")
-)
+construct_rqr(y, model_fit)
 }
 \arguments{
 \item{y}{ard matrix}
 
-\item{family}{the familyribution to fit, which will choose prev pars to be
-specified}
-
-\item{p}{if binomial familyribution, success probability (single value)}
-
-\item{fit}{if poisson familyribution, rate matrix}
-
-\item{size}{if negative binomial, size matrix}
-
-\item{prob}{if negative binomial, size matrix}
+\item{model_fit}{fitted model, along with required details}
 }
 \value{
 a vector of residuals (column by column)
