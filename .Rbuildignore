@@ -6,3 +6,9 @@
 ^\.github$
 ^sims$
 ^README\.Rmd$
+^inst/stan/.+\.exe$
+^inst/stan/.+\.o$
+^inst/stan/.+\.dSYM$
+^inst/stan/.+_model$
+^Makefile$
+^Stan_Files$
