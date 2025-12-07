@@ -1,9 +1,13 @@
 Package: networkscaleup
 Title: Network Scale-Up Models for Aggregated Relational Data
-Version: 0.1-2
+Version: 0.2-1
 Authors@R: 
     c(person("Ian", "Laga", , "ilaga25@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5164-4856")),
+           person("Owen G.", "Ward", , "oward@sfu.ca", role = c("aut")),
+           person("Anna L.", "Smith", role = c("aut")),
+           person("Benjamin", "Vogel", role = c("aut")),
+           person("Jieyun", "Wang", role = c("aut")),
            person("Le", "Bao", , "lebao@psu.edu", role = c("aut")),
            person("Xiaoyue", "Niu", , "Xiaoyue@psu.edu", role = c("aut")))
 Description: Provides a variety of Network Scale-up Models for researchers to 
@@ -34,6 +38,10 @@ LazyData: true
 NeedsCompilation: yes
 Packaged: 2024-02-04 21:57:54 UTC; samidhashetty
 Author: Ian Laga [aut, cre] (<https://orcid.org/0000-0002-5164-4856>),
+  Owen G. Ward [aut],
+  Anna L. Smith [aut],
+  Benjamin Vogel [aut],
+  Jieyun Wang [aut],
   Le Bao [aut],
   Xiaoyue Niu [aut]
 Maintainer: Ian Laga <ilaga25@gmail.com>
