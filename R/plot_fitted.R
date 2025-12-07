@@ -1,16 +1,16 @@
 #' Plot residuals against fitted values
 #'
-#' @param y ARD matrix (may be needed)
+#' @param ard ARD matrix (may be needed)
 #' @param model_fit fitted model
 #' @param resid the type of residuals to be used
 #'
 #' @returns a ggplot showing fitted values against residuals
 #' @export
 #'
-plot_fitted <- function(y, model_fit = NULL,
+plot_fitted <- function(ard, model_fit = NULL,
                         resid = c("rqr", "pearson", "surrogate")) {
   
-  n_samp <- nrow(y)
+  n_samp <- nrow(ard)
   family <- model_fit$family
   family <- match.arg(family, c("poisson", "nbinomial", "binomial"))
   if (family == "poisson") {
@@ -28,13 +28,13 @@ plot_fitted <- function(y, model_fit = NULL,
   }
   
   if(resid == "rqr") {
-    resids <- construct_rqr(y, model_fit = model_fit)
+    resids <- construct_rqr(ard, model_fit = model_fit)
     plot_label <- "Randomized Quantile Residuals"
   } else if(resid == "pearson") {
-    resids <- construct_pearson(y, model_fit = model_fit)
+    resids <- construct_pearson(ard, model_fit = model_fit)
     plot_label <- "Pearson Residuals"
   } else if(resid == "surrogate") {
-    resids <- get_surrogate(y, model_fit = model_fit)
+    resids <- get_surrogate(ard, model_fit = model_fit)
     plot_label <- "Surrogate Residuals"
   } else{
     stop("Invalid residuals specified")

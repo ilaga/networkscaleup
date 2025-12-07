@@ -4,10 +4,10 @@
 \alias{plot_fitted}
 \title{Plot residuals against fitted values}
 \usage{
-plot_fitted(y, model_fit = NULL, resid = c("rqr", "pearson", "surrogate"))
+plot_fitted(ard, model_fit = NULL, resid = c("rqr", "pearson", "surrogate"))
 }
 \arguments{
-\item{y}{ARD matrix (may be needed)}
+\item{ard}{ARD matrix (may be needed)}
 
 \item{model_fit}{fitted model}
 
