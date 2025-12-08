@@ -71,26 +71,29 @@
 #' \dontrun{
 #' data(example_data)
 #'
-#' ard = example_data$ard
-#' subpop_sizes = example_data$subpop_sizes
-#' known_ind = c(1, 2, 4)
-#' N = example_data$N
+#' ard <- example_data$ard
+#' subpop_sizes <- example_data$subpop_sizes
+#' known_ind <- c(1, 2, 4)
+#' N <- example_data$N
 #'
-#' overdisp.est = overdispersedStan(ard,
-#' known_sizes = subpop_sizes[known_ind],
-#' known_ind = known_ind,
-#' G1_ind = 1,
-#' G2_ind = 2,
-#' B2_ind = 4,
-#' N = N,
-#' chains = 1,
-#' cores = 1,
-#' warmup = 250,
-#' iter = 500)
+#' overdisp.est <- overdispersedStan(ard,
+#'   known_sizes = subpop_sizes[known_ind],
+#'   known_ind = known_ind,
+#'   G1_ind = 1,
+#'   G2_ind = 2,
+#'   B2_ind = 4,
+#'   N = N,
+#'   chains = 1,
+#'   cores = 1,
+#'   warmup = 250,
+#'   iter = 500
+#' )
 #'
 #' # Compare size estimates
-#' round(data.frame(true = subpop_sizes,
-#' basic = colMeans(overdisp.est$sizes)))
+#' round(data.frame(
+#'   true = subpop_sizes,
+#'   basic = colMeans(overdisp.est$sizes)
+#' ))
 #'
 #' # Compare degree estimates
 #' plot(example_data$degrees, colMeans(overdisp.est$degrees))
@@ -113,31 +116,32 @@ overdispersedStan <-
            thin = 1,
            return_fit = FALSE,
            ...) {
-    N_i = nrow(ard)
-    N_k = ncol(ard)
+    N_i <- nrow(ard)
+    N_k <- ncol(ard)
 
 
-
-    known_prevalences = known_sizes / N
-    prevalences_vec = rep(NA, N_k)
-    prevalences_vec[known_ind] = known_prevalences
+    known_prevalences <- known_sizes / N
+    prevalences_vec <- rep(NA, N_k)
+    prevalences_vec[known_ind] <- known_prevalences
     if (!is.null(G1_ind)) {
-      Pg1 = sum(prevalences_vec[G1_ind])
+      Pg1 <- sum(prevalences_vec[G1_ind])
     }
     if (!is.null(G2_ind)) {
-      Pg2 = sum(prevalences_vec[G2_ind])
+      Pg2 <- sum(prevalences_vec[G2_ind])
     }
     if (!is.null(B2_ind)) {
-      Pb2 = sum(prevalences_vec[B2_ind])
+      Pb2 <- sum(prevalences_vec[B2_ind])
     }
 
-    stan_data = list(n_i = N_i,
-                     n_k = N_k,
-                     y = ard)
+    stan_data <- list(
+      n_i = N_i,
+      n_k = N_k,
+      y = ard
+    )
 
 
     ## Fit model
-    overdispersed_fit = rstan::sampling(
+    overdispersed_fit <- rstan::sampling(
       object = stanmodels$Overdispersed_Stan,
       data = stan_data,
       chains = chains,
@@ -152,66 +156,63 @@ overdispersedStan <-
     ## Extract variables
 
 
-    draws = rstan::extract(overdispersed_fit)
+    draws <- rstan::extract(overdispersed_fit)
 
 
-    betas = draws$betas
-    mu_beta = draws$mu_beta
-    alphas = draws$alphas
+    betas <- draws$betas
+    mu_beta <- draws$mu_beta
+    alphas <- draws$alphas
 
-    mu_alpha = rep(NA, nrow(betas))
+    mu_alpha <- rep(NA, nrow(betas))
 
     ## Perform scaling
     if (is.null(G1_ind)) {
       ## Perform no scaling
-
     } else if (is.null(G2_ind) |
-               is.null(B2_ind)) {
+      is.null(B2_ind)) {
       ## Perform scaling with only main
 
       for (ind in 1:nrow(betas)) {
-        C1 = log(sum(exp(betas[ind, G1_ind]) / Pg1))
-        C = C1
+        C1 <- log(sum(exp(betas[ind, G1_ind]) / Pg1))
+        C <- C1
 
-        alphas[ind, ] = alphas[ind, ] + C
-        mu_alpha[ind] = C
-        betas[ind, ] = betas[ind, ] - C
-        mu_beta[ind] = mu_beta[ind] - C
+        alphas[ind, ] <- alphas[ind, ] + C
+        mu_alpha[ind] <- C
+        betas[ind, ] <- betas[ind, ] - C
+        mu_beta[ind] <- mu_beta[ind] - C
       }
 
-      draws$betas = betas
-      draws$alphas = alphas
-      draws$mu_beta = mu_beta
-      draws$mu_alpha = mu_alpha
-      draws$degrees = exp(draws$alphas)
-      draws$sizes = exp(draws$betas) * N
-
-    } else{
+      draws$betas <- betas
+      draws$alphas <- alphas
+      draws$mu_beta <- mu_beta
+      draws$mu_alpha <- mu_alpha
+      draws$degrees <- exp(draws$alphas)
+      draws$sizes <- exp(draws$betas) * N
+    } else {
       ## Perform scaling with secondary groups
       for (ind in 1:nrow(betas)) {
-        C1 = log(sum(exp(betas[ind, G1_ind]) / Pg1))
-        C2 = log(sum(exp(betas[ind, B2_ind]) / Pb2)) - log(sum(exp(betas[ind, G2_ind]) / Pg2))
-        C = C1 + 1 / 2 * C2
+        C1 <- log(sum(exp(betas[ind, G1_ind]) / Pg1))
+        C2 <- log(sum(exp(betas[ind, B2_ind]) / Pb2)) - log(sum(exp(betas[ind, G2_ind]) / Pg2))
+        C <- C1 + 1 / 2 * C2
 
-        alphas[ind, ] = alphas[ind, ] + C
-        mu_alpha[ind] = C
-        betas[ind, ] = betas[ind, ] - C
-        mu_beta[ind] = mu_beta[ind] - C
+        alphas[ind, ] <- alphas[ind, ] + C
+        mu_alpha[ind] <- C
+        betas[ind, ] <- betas[ind, ] - C
+        mu_beta[ind] <- mu_beta[ind] - C
       }
 
-      draws$betas = betas
-      draws$alphas = alphas
-      draws$mu_beta = mu_beta
-      draws$mu_alpha = mu_alpha
-      draws$degrees = exp(draws$alphas)
-      draws$sizes = exp(draws$betas) * N
+      draws$betas <- betas
+      draws$alphas <- alphas
+      draws$mu_beta <- mu_beta
+      draws$mu_alpha <- mu_alpha
+      draws$degrees <- exp(draws$alphas)
+      draws$sizes <- exp(draws$betas) * N
     }
 
     ## Return values
     if (return_fit) {
       return(overdispersed_fit)
-    } else{
+    } else {
       return(draws)
     }
-
   }
