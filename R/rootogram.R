@@ -1,12 +1,12 @@
 #' Hanging Rootogram for Fitted ARD Model
 #'
 #' @param ard ard matrix 
-#' @param model_fit fitted model object
-#' @param width width of bars
-#' @param x_max the maximum x value to display
-#' @param by_group logical; if TRUE, create separate rootograms for each column (group)
+#' @param model_fit Fitted model object
+#' @param width Width of bars
+#' @param x_max The maximum x value to display
+#' @param by_group Logical; if TRUE, create separate rootograms for each column (group)
 #'
-#' @return a ggplot of the hanging rootogram (single plot if by_group=FALSE, combined plot if by_group=TRUE)
+#' @return A ggplot of the hanging rootogram (single plot if by_group=FALSE, combined plot if by_group=TRUE)
 #' @export
 #' @importFrom rlang .data
 hang_rootogram_ard <- function(ard,
