@@ -22,7 +22,7 @@ Description: Provides a variety of Network Scale-up Models for researchers to
     Johnsen, E. C. (1998) <doi:10.1177/0193841X9802200205>.
 License: GPL (>= 3)
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Biarch: true
 Depends: R (>= 4.1.0)
 Imports: methods, Rcpp (>= 0.12.0), rstan (>=
