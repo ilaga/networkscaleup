@@ -23,9 +23,9 @@ fit_mle <- function(ard,
     k = rep(1:n_k, each = n_i),
     count = as.vector(ard)
   )
-  
-  y_long$k = factor(y_long$k)
-  y_long$i = factor(y_long$i)
+
+  y_long$k <- factor(y_long$k)
+  y_long$i <- factor(y_long$i)
 
   # Add covariates if provided
   if (!is.null(x_cov_global)) {
@@ -46,21 +46,21 @@ fit_mle <- function(ard,
   # Build formula
   fixed_terms <- c()
   random_terms <- "(1 | i) + (1 | k)"
-  
+
   if (!is.null(x_cov_global)) {
     global_vars <- paste0("x_global_", 1:ncol(x_cov_global))
     fixed_terms <- c(fixed_terms, global_vars)
   }
-  
+
   if (!is.null(x_cov_local)) {
     local_vars <- paste0("x_local_", 1:ncol(x_cov_local))
     fixed_terms <- c(fixed_terms, local_vars)
-    
+
     # Add random slopes for local covariates with respect to k
     random_slopes <- paste0("(", local_vars, " | k)", collapse = " + ")
     random_terms <- paste(random_terms, "+", random_slopes)
   }
-  
+
   # Construct full formula
   if (length(fixed_terms) == 0) {
     formula_str <- paste("count ~ 1 +", random_terms)
@@ -142,7 +142,7 @@ fit_mle <- function(ard,
     fit_list <- list(
       fit = fit,
       size = y_long$size,
-      prob = prob_mat[1,],
+      prob = prob_mat[1, ],
       family = "nbinomial"
     )
 
@@ -171,7 +171,7 @@ fit_mle <- function(ard,
       x_cov_local = x_cov_local,
       x_cov_global = x_cov_global,
       size = y_long$size,
-      prob = prob_mat[1,],
+      prob = prob_mat[1, ],
       omega = omega_est,
       phi = phi_est
     )

@@ -33,7 +33,8 @@ one with no covariate information and one with covariates.
 ```{r}
 set.seed(2)
 sim_dat_1 <- make_ard(family = "poisson")
-sim_dat_2 <- make_ard(p = 6,
+sim_dat_2 <- make_ard(
+  p = 6,
   p_local_nonzero = 2,
   p_global_nonzero = 1,
   family = "poisson"
