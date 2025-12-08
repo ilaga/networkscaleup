@@ -4,10 +4,10 @@
 \alias{construct_rqr}
 \title{Compute Randomized Quantile Residuals for ARD Models}
 \usage{
-construct_rqr(y, model_fit)
+construct_rqr(ard, model_fit)
 }
 \arguments{
-\item{y}{ard matrix}
+\item{ard}{ard matrix}
 
 \item{model_fit}{fitted model, along with required details}
 }

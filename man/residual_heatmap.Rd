@@ -4,12 +4,12 @@
 \alias{residual_heatmap}
 \title{Construct heatmap of residuals}
 \usage{
-residual_heatmap(ard_residuals, y)
+residual_heatmap(ard_residuals, ard)
 }
 \arguments{
 \item{ard_residuals}{a vector (column wise) of estimated residuals}
 
-\item{y}{an ard matrix}
+\item{ard}{an ard matrix}
 }
 \value{
 A ggplot of residual heatmap

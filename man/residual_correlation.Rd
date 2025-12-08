@@ -4,12 +4,12 @@
 \alias{residual_correlation}
 \title{Construction Residual (row/column) correlation matrix}
 \usage{
-residual_correlation(ard_residuals, y, type = "column")
+residual_correlation(ard_residuals, ard, type = "column")
 }
 \arguments{
 \item{ard_residuals}{vector of residuals}
 
-\item{y}{ard matrix y}
+\item{ard}{ard matrix}
 
 \item{type}{type of correlation to use (row or column)}
 }

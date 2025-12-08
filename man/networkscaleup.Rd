@@ -21,6 +21,10 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Owen G. Ward \email{oward@sfu.ca}
+  \item Anna L. Smith
+  \item Benjamin Vogel
+  \item Jieyun Wang
   \item Le Bao \email{lebao@psu.edu}
   \item Xiaoyue Niu \email{Xiaoyue@psu.edu}
 }

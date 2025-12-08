@@ -26,16 +26,16 @@ make_ard_tidy <- function(y){
 
 #' Compute Pearson Residuals for ARD matrix and fitted model
 #'
-#' @param y ARD matrix y
+#' @param ard ARD matrix y
 #' @param model_fit estimated model 
 #' 
 #' @return a vector (column by column) of corresponding residuals from ARD matrix
 #' @export
 #'
 #' @importFrom rlang .data
-construct_pearson <- function(y, model_fit) {
-  long_ard <- make_ard_tidy(y)
-  n_i <- nrow(y)
+construct_pearson <- function(ard, model_fit) {
+  long_ard <- make_ard_tidy(ard)
+  n_i <- nrow(ard)
   family <- model_fit$family
   family <- match.arg(family, c("poisson", "nbinomial"))
   if (family == "poisson") {
@@ -53,7 +53,7 @@ construct_pearson <- function(y, model_fit) {
   }
   
   ## transform matrix to vector
-  y_vec <- as.numeric(y)
+  y_vec <- as.numeric(ard)
   if(family == "poisson") {
     long_ard |> 
       dplyr::mutate(est = fit_vec,
@@ -76,13 +76,13 @@ construct_pearson <- function(y, model_fit) {
 
 #' Compute Randomized Quantile Residuals for ARD Models
 #'
-#' @param y ard matrix
+#' @param ard ard matrix
 #' @param model_fit fitted model, along with required details
 #'
 #' @returns a vector of residuals (column by column)
 #' @export
-construct_rqr <- function(y, model_fit) {
-  n_i <- nrow(y)
+construct_rqr <- function(ard, model_fit) {
+  n_i <- nrow(ard)
   family <- model_fit$family
   family <- match.arg(family, c("poisson", "nbinomial", "binomial"))
   if (family == "poisson") {
@@ -99,7 +99,7 @@ construct_rqr <- function(y, model_fit) {
          call. = FALSE)
   }
   ## TO DO: Add Binomial correctly here and extract the p
-  y_vec <- as.numeric(y)
+  y_vec <- as.numeric(ard)
   rqr <- rep(NA, length(y_vec))
   
   if (family == "binomial") {
@@ -142,13 +142,13 @@ construct_rqr <- function(y, model_fit) {
 #' Construct heatmap of residuals
 #'
 #' @param ard_residuals a vector (column wise) of estimated residuals
-#' @param y an ard matrix
+#' @param ard an ard matrix
 #'
 #' @return A ggplot of residual heatmap
 #' @export
 #'
-residual_heatmap <- function(ard_residuals, y){
-  long_ard <- make_ard_tidy(y)
+residual_heatmap <- function(ard_residuals, ard){
+  long_ard <- make_ard_tidy(ard)
   long_ard$residuals <- ard_residuals
   n_cols <- max(long_ard$col)
   n_rows <- max(long_ard$row)
@@ -175,17 +175,17 @@ residual_heatmap <- function(ard_residuals, y){
 #' Construction Residual (row/column) correlation matrix
 #'
 #' @param ard_residuals vector of residuals
-#' @param y ard matrix y
+#' @param ard ard matrix 
 #' @param type type of correlation to use (row or column)
 #'
 #' @return a ggplot of the specified correlation matrix
 #' @export
 #'
 #' @importFrom rlang .data
-residual_correlation <- function(ard_residuals, y,
+residual_correlation <- function(ard_residuals, ard,
                                  type = "column") {
   
-  long_ard <- make_ard_tidy(y)
+  long_ard <- make_ard_tidy(ard)
   long_ard$residuals <- ard_residuals
   n_cols <- max(long_ard$col)
   n_rows <- max(long_ard$row)
@@ -209,7 +209,7 @@ residual_correlation <- function(ard_residuals, y,
     plot_axis <- ggplot2::element_text(angle = 45, hjust = 1)
   }
   if(type == "row"){
-    if(nrow(y) > 500){
+    if(nrow(ard) > 500){
       stop("ARD too large for row-wise correlation plot", call. = FALSE)
     }
     cors <- stats::cor(t(resid_mat), use = "pairwise.complete.obs",
