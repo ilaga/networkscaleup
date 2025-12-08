@@ -38,30 +38,10 @@ tw_group_corr_test <- function(model_fit,
   tw_stat <- (lambda_max - mu_n) / sigma_n
   p_value <- 1 - RMTstat::ptw(tw_stat, beta = 1)
 
-  # Eigenvalue spectrum plot
-
-  eigenvalue_plot <- ggplot2::ggplot(
-    data.frame(index = 1:n_k, eigenvalue = eigenvalues),
-    ggplot2::aes(x = index, y = eigenvalue)
-  ) +
-    ggplot2::geom_point(size = 2) +
-    ggplot2::geom_line() +
-    ggplot2::geom_hline(
-      yintercept = mu_n,
-      color = "blue", linetype = "dashed", linewidth = 1
-    ) +
-    ggplot2::labs(
-      x = "Eigenvalue index",
-      y = "Eigenvalue",
-      title = "Eigenvalue Spectrum",
-      subtitle = sprintf("TW stat = %.3f, p = %.4f", tw_stat, p_value)
-    ) +
-    ggplot2::theme_minimal()
-
   # Tracy-Widom density plot with observed statistic
 
   if (plot) {
-    tw_density_plot <- ggplot2::ggplot(data.frame(x = c(-5, 10)), aes(x)) +
+    tw_density_plot <- ggplot2::ggplot(data.frame(x = c(-5, 10)), ggplot2::aes(x)) +
       ggplot2::stat_function(
         fun = function(x) RMTstat::dtw(x, beta = 1),
         linewidth = 1, color = "black"
@@ -93,7 +73,6 @@ tw_group_corr_test <- function(model_fit,
     all_eigenvalues = eigenvalues,
     n_i = n_i,
     n_k = n_k,
-    eigenvalue_plot = eigenvalue_plot,
     tw_density_plot = tw_density_plot
   ))
 }
