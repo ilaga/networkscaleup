@@ -1,13 +1,13 @@
 #' Compute Surrogate Residuals for ARD Models
 #'
-#' @param y the ARD matrix
+#' @param ard the ARD matrix
 #' @param model_fit list containing fitted model, details
 #'
 #' @returns a vector of residuals (column by column)
 #' @export
-get_surrogate <- function(y, model_fit = NULL) {
+get_surrogate <- function(ard, model_fit = NULL) {
   
-  n_samp <- nrow(y)
+  n_samp <- nrow(ard)
   family <- model_fit$family
   family <- match.arg(family, c("poisson", "nbinomial", "binomial"))
   if (family == "poisson") {

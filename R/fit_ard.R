@@ -3,9 +3,9 @@
 #' @param ard n_i by n_k ARD matrix
 #' @param x_cov_global n_i by p_global covariate matrix of global covariates
 #' @param x_cov_local n_i by p_local covariate matrix of local covariates
-#' @param family Distribution to fit, either "poisson" or "nbinomial"
+#' @param family distribution to fit, either "poisson" or "nbinomial"
 #'
-#' @return List containing fitted model and extracted parameters
+#' @return list containing fitted model and extracted parameters
 #' @export
 #' @import glmmTMB
 fit_mle <- function(ard,

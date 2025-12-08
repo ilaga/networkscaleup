@@ -1,10 +1,10 @@
 #' Tracy-Widom test for residual group correlation
 #'
-#' @param model_fit Fitted model object
-#' @param correction Correction constant, either "none", "half"
-#' @param plot A logical, whether to return a ggplot density plot of TW with observed statistic
+#' @param model_fit fitted model object
+#' @param correction correction constant, either "none", "half"
+#' @param plot a logical, whether to return a ggplot density plot of TW with observed statistic
 #'
-#' @return A list containing test statistic, p-value, and diagnostic plots
+#' @return a list containing test statistic, p-value, and diagnostic plots
 #' @export
 tw_group_corr_test <- function(model_fit,
                                correction = c("none", "half"),
