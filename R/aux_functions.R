@@ -1,12 +1,12 @@
 #' Construct tibble from ARD matrix
 #'
-#' @param y ARD matrix
+#' @param ard the ARD matrix
 #'
 #' @return a tibble of ARD, with columns for row/col index
 #'
-make_ard_tidy <- function(y){
-  ard_df <- as.data.frame(y)
-  colnames(ard_df) <- 1:ncol(y)
+make_ard_tidy <- function(ard){
+  ard_df <- as.data.frame(ard)
+  colnames(ard_df) <- 1:ncol(ard)
   
   long_ard_tidy <- tibble::as_tibble(ard_df) |>                    # <- the matrix
     # as_tibble(.name_repair = "universal") |>       # keep column names as-is
