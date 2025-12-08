@@ -178,6 +178,9 @@ hang_rootogram_ard <- function(ard,
 dispersion_metric <- function(ard, model_fit) {
   n_i <- nrow(ard)
   n_k <- ncol(ard)
+  
+  p <- NCOL(model_fit$x_cov_local) + NCOL(model_fit$x_cov_global)
+  
   family <- model_fit$family
   if (family == "poisson") {
     pois_lambda_est <- matrix(model_fit$mu, nrow = n_i, ncol = n_k)
@@ -208,9 +211,7 @@ dispersion_metric <- function(ard, model_fit) {
     disp_stat <- sum(pearson_resid^2)
 
     # Degrees of freedom (n - number of parameters)
-    # For simple case, use n - 1; adjust if you know exact df
-    # TODO: Fix
-    df <- n_i - 1
+    df <- n_i - p
 
     # P-value from chi-squared distribution
     p_val <- stats::pchisq(disp_stat, df = df, lower.tail = FALSE)
@@ -254,7 +255,6 @@ dispersion_metric <- function(ard, model_fit) {
       x = "Column",
       y = expression("Dispersion Ratio " * (frac(chi^2, df))),
       title = "Dispersion Test by Column",
-      subtitle = "Ratio = 1 indicates Poisson fit; >1 indicates overdispersion",
       fill = "Dispersion Test"
     ) +
     ggplot2::theme_minimal() +
@@ -263,44 +263,6 @@ dispersion_metric <- function(ard, model_fit) {
       plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
       plot.subtitle = ggplot2::element_text(hjust = 0.5, size = 9)
     )
-
-  # P-value plot
-  pval_plot <- ggplot2::ggplot(
-    plot_data,
-    ggplot2::aes(
-      x = .data$column,
-      y = -log10(.data$p_value),
-      fill = .data$significant
-    )
-  ) +
-    ggplot2::geom_col(color = "black") +
-    ggplot2::geom_hline(
-      yintercept = -log10(0.05), linetype = "dashed",
-      color = "red", linewidth = 1
-    ) +
-    ggplot2::scale_fill_manual(
-      values = c("TRUE" = "coral", "FALSE" = "gray70"),
-      labels = c(
-        "FALSE" = "Not significant",
-        "TRUE" = "Significant (p < 0.05)"
-      )
-    ) +
-    ggplot2::labs(
-      x = "Column",
-      y = "-log10(p-value)",
-      title = "Dispersion Test P-values",
-      subtitle = "Dashed line at p = 0.05",
-      fill = "Dispersion Test"
-    ) +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(
-      legend.position = "bottom",
-      plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
-      plot.subtitle = ggplot2::element_text(hjust = 0.5, size = 9)
-    )
-
-  # Combined plot
-  combined_plot <- gridExtra::grid.arrange(disp_plot, pval_plot, ncol = 2)
 
   # Summary statistics
   summary_stats <- list(
@@ -313,11 +275,7 @@ dispersion_metric <- function(ard, model_fit) {
 
   return(list(
     dispersion_stats = dispersion_stats,
-    plots = list(
-      dispersion_plot = disp_plot,
-      pvalue_plot = pval_plot,
-      combined_plot = combined_plot
-    ),
+    plots = disp_plot,
     summary = summary_stats
   ))
 }
