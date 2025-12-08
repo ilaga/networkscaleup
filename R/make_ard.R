@@ -138,10 +138,9 @@ make_ard <- function(n_i = 500,
       prev = nk_prev,
       size = nk_size,
       omega = omega,
-      # Again, unused if Poisson, should throw inside if statement
+      # TODO: unused if Poisson, should throw inside if statement
       eta = eta,
-      # Again, unused if uncorrelated, should throw inside if statement
-      # d = d,
+      # TODO: unused if uncorrelated, should throw inside if statement
       alphas = alphas,
       betas = betas,
       x_cov = x_cov,
