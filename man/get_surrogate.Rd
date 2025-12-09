@@ -4,10 +4,10 @@
 \alias{get_surrogate}
 \title{Compute Surrogate Residuals for ARD Models}
 \usage{
-get_surrogate(y, model_fit = NULL)
+get_surrogate(ard, model_fit = NULL)
 }
 \arguments{
-\item{y}{the ARD matrix}
+\item{ard}{the ARD matrix}
 
 \item{model_fit}{list containing fitted model, details}
 }

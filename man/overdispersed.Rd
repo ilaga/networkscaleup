@@ -119,24 +119,27 @@ This function fits the overdispersed NSUM model using the
 # Note that in practice, both warmup and iter should be much higher
 data(example_data)
 
-ard = example_data$ard
-subpop_sizes = example_data$subpop_sizes
-known_ind = c(1, 2, 4)
-N = example_data$N
+ard <- example_data$ard
+subpop_sizes <- example_data$subpop_sizes
+known_ind <- c(1, 2, 4)
+N <- example_data$N
 
-overdisp.est = overdispersed(ard,
-known_sizes = subpop_sizes[known_ind],
-known_ind = known_ind,
-G1_ind = 1,
-G2_ind = 2,
-B2_ind = 4,
-N = N,
-warmup = 50,
-iter = 100)
+overdisp.est <- overdispersed(ard,
+  known_sizes = subpop_sizes[known_ind],
+  known_ind = known_ind,
+  G1_ind = 1,
+  G2_ind = 2,
+  B2_ind = 4,
+  N = N,
+  warmup = 50,
+  iter = 100
+)
 
 # Compare size estimates
-data.frame(true = subpop_sizes,
-basic = colMeans(overdisp.est$sizes))
+data.frame(
+  true = subpop_sizes,
+  basic = colMeans(overdisp.est$sizes)
+)
 
 # Compare degree estimates
 plot(example_data$degrees, colMeans(overdisp.est$degrees))

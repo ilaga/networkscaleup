@@ -22,33 +22,33 @@ make_ard(
 )
 }
 \arguments{
-\item{n_i}{Number of respondents (rows)}
+\item{n_i}{number of respondents (rows)}
 
-\item{n_k}{Number of groups (columns)}
+\item{n_k}{number of groups (columns)}
 
-\item{N}{Total population size}
+\item{N}{total population size}
 
-\item{p}{Number of collected covariates}
+\item{p}{number of collected covariates}
 
-\item{p_global_nonzero}{Number of non-zero global covariates}
+\item{p_global_nonzero}{number of non-zero global covariates}
 
-\item{p_local_nonzero}{Number of non-zero local covariates}
+\item{p_local_nonzero}{number of non-zero local covariates}
 
-\item{group_corr}{Group correlation}
+\item{group_corr}{group correlation}
 
-\item{degree_corr}{Degree correlation}
+\item{degree_corr}{degree correlation}
 
-\item{family}{Sampling distribution}
+\item{family}{sampling distribution}
 
-\item{omega_range}{Minimum and maximum omega for negative binomial overdispersion}
+\item{omega_range}{minimum and maximum omega for negative binomial overdispersion}
 
-\item{alpha_mean}{Mean of alphas}
+\item{alpha_mean}{mean of alphas}
 
-\item{alpha_sd}{Variance of alphas}
+\item{alpha_sd}{variance of alphas}
 
-\item{eta}{Correlation hyperparameter for LKJ prior}
+\item{eta}{correlation hyperparameter for LKJ prior}
 
-\item{seed}{Random seed}
+\item{seed}{random seed}
 }
 \value{
 simulated ARD along with all true parameters
