@@ -12,7 +12,7 @@ Provides a variety of Network Scale-up Models for researchers to
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://ilaga.github.io/networkscaleup/}
+  \item \url{https://github.com/ilaga/networkscaleup}
 }
 
 }
