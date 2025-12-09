@@ -28,7 +28,7 @@ Depends: R (>= 4.1.0)
 Imports: methods, Rcpp (>= 0.12.0), rstan (>=
         2.26.0), LaplacesDemon (>= 16.1.6), dplyr, 
         ggplot2, scales, stats, readr, tibble, tidyr, graphics, rlang, glmmTMB,
-        gridExtra, purrr, stringr, trialr, tidyselect
+        gridExtra, purrr, stringr, trialr, tidyselect, RMTstat
 LinkingTo: BH (>= 1.66.0), Rcpp (>= 0.12.0), RcppEigen (>= 0.3.3.3.0),
             rstan (>= 2.26.0), StanHeaders (>= 2.26.0)
 SystemRequirements: GNU make
