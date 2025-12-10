@@ -6,6 +6,7 @@
 #'
 #' @return a list containing test statistic, p-value, and diagnostic plots
 #' @export
+#' @importFrom rlang .data
 tw_group_corr_test <- function(model_fit,
                                correction = c("none", "half"),
                                plot = TRUE) {
@@ -41,7 +42,7 @@ tw_group_corr_test <- function(model_fit,
   # Tracy-Widom density plot with observed statistic
 
   if (plot) {
-    tw_density_plot <- ggplot2::ggplot(data.frame(x = c(-5, 10)), ggplot2::aes(x)) +
+    tw_density_plot <- ggplot2::ggplot(data.frame(x = c(-5, 10)), ggplot2::aes(.data$x)) +
       ggplot2::stat_function(
         fun = RMTstat::dtw,
         args = list(beta = 1),
