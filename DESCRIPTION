@@ -11,7 +11,7 @@ Authors@R:
            person("Le", "Bao", , "lebao@psu.edu", role = c("aut")),
            person("Xiaoyue", "Niu", , "Xiaoyue@psu.edu", role = c("aut")))
 Description: Provides a variety of Network Scale-up Models for researchers to 
-    analyze Aggregated Relational Data, through the use of Stan and glmmTMB.
+    analyze Aggregated Relational Data, through the use of Stan and 'glmmTMB'.
     Also provides tools for model checking
     In this version, the package implements models from 
     Laga, I., Bao, L., and Niu, X (2023) <doi:10.1080/01621459.2023.2165929>,
