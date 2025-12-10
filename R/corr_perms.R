@@ -43,7 +43,8 @@ tw_group_corr_test <- function(model_fit,
   if (plot) {
     tw_density_plot <- ggplot2::ggplot(data.frame(x = c(-5, 10)), ggplot2::aes(x)) +
       ggplot2::stat_function(
-        fun = function(x) RMTstat::dtw(x, beta = 1),
+        fun = RMTstat::dtw,
+        args = list(beta = 1),
         linewidth = 1, color = "black"
       ) +
       ggplot2::geom_vline(xintercept = tw_stat, color = "red", linewidth = 1) +
