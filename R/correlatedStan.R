@@ -107,53 +107,58 @@
 #' \dontrun{
 #' data(example_data)
 #'
-#' x = example_data$x
-#' z_global = example_data$z[,1:2]
-#' z_subpop = example_data$z[,3:4]
+#' x <- example_data$x
+#' z_global <- example_data$z[, 1:2]
+#' z_subpop <- example_data$z[, 3:4]
 #'
-#' basic_corr_est = correlatedStan(example_data$ard,
-#'      known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
-#'      known_ind = c(1, 2, 4),
-#'      N = example_data$N,
-#'      model = "correlated",
-#'      scaling = "weighted",
-#'      chains = 1,
-#'      cores = 1,
-#'      warmup = 50,
-#'      iter = 100)
+#' basic_corr_est <- correlatedStan(example_data$ard,
+#'   known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
+#'   known_ind = c(1, 2, 4),
+#'   N = example_data$N,
+#'   model = "correlated",
+#'   scaling = "weighted",
+#'   chains = 1,
+#'   cores = 1,
+#'   warmup = 50,
+#'   iter = 100
+#' )
 #'
-#' cov_uncorr_est = correlatedStan(example_data$ard,
-#'      known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
-#'      known_ind = c(1, 2, 4),
-#'      N = example_data$N,
-#'      model = "uncorrelated",
-#'      scaling = "all",
-#'      x = x,
-#'      z_global = z_global,
-#'      z_subpop = z_subpop,
-#'      chains = 1,
-#'      cores = 1,
-#'      warmup = 50,
-#'      iter = 100)
+#' cov_uncorr_est <- correlatedStan(example_data$ard,
+#'   known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
+#'   known_ind = c(1, 2, 4),
+#'   N = example_data$N,
+#'   model = "uncorrelated",
+#'   scaling = "all",
+#'   x = x,
+#'   z_global = z_global,
+#'   z_subpop = z_subpop,
+#'   chains = 1,
+#'   cores = 1,
+#'   warmup = 50,
+#'   iter = 100
+#' )
 #'
-#' cov_corr_est = correlatedStan(example_data$ard,
-#'      known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
-#'      known_ind = c(1, 2, 4),
-#'      N = example_data$N,
-#'      model = "correlated",
-#'      scaling = "all",
-#'      x = x,
-#'      z_subpop = z_subpop,
-#'      chains = 1,
-#'      cores = 1,
-#'      warmup = 50,
-#'      iter = 100)
+#' cov_corr_est <- correlatedStan(example_data$ard,
+#'   known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
+#'   known_ind = c(1, 2, 4),
+#'   N = example_data$N,
+#'   model = "correlated",
+#'   scaling = "all",
+#'   x = x,
+#'   z_subpop = z_subpop,
+#'   chains = 1,
+#'   cores = 1,
+#'   warmup = 50,
+#'   iter = 100
+#' )
 #'
 #' # Compare size estimates
-#' round(data.frame(true = example_data$subpop_sizes,
-#'      corr_basic = colMeans(basic_corr_est$sizes),
-#'      uncorr_x_zsubpop_zglobal = colMeans(cov_uncorr_est$sizes),
-#'      corr_x_zsubpop = colMeans(cov_corr_est$sizes)))
+#' round(data.frame(
+#'   true = example_data$subpop_sizes,
+#'   corr_basic = colMeans(basic_corr_est$sizes),
+#'   uncorr_x_zsubpop_zglobal = colMeans(cov_uncorr_est$sizes),
+#'   corr_x_zsubpop = colMeans(cov_corr_est$sizes)
+#' ))
 #'
 #' # Look at z slope parameters
 #' colMeans(cov_uncorr_est$beta_global)
@@ -184,11 +189,11 @@ correlatedStan <-
            thin = 1,
            return_fit = FALSE,
            ...) {
-    N_i = nrow(ard)
-    N_k = ncol(ard)
+    N_i <- nrow(ard)
+    N_k <- ncol(ard)
 
-    model = match.arg(model)
-    scaling = match.arg(scaling)
+    model <- match.arg(model)
+    scaling <- match.arg(scaling)
 
     ## Check dimensions of x
     if (!is.null(x)) {
@@ -199,7 +204,7 @@ correlatedStan <-
 
     ## Check for scaling method
     if (model == "uncorrelated" &
-        (scaling == "weighted" | scaling == "weighted_sq")) {
+      (scaling == "weighted" | scaling == "weighted_sq")) {
       stop("Model must be `correlated` to using `weighted` or `weighted_sq` scaling")
     }
 
@@ -207,16 +212,16 @@ correlatedStan <-
     if (!is.null(z_global)) {
       if ((nrow(z_global) != N_i)) {
         stop("Dimensions of z_global do not match dimensions of ard")
-      } else{
-        z_global_size = ncol(z_global)
+      } else {
+        z_global_size <- ncol(z_global)
       }
     }
 
     if (!is.null(z_subpop)) {
       if ((nrow(z_subpop) != N_i)) {
         stop("Dimensions of z_subpop do not match dimensions of ard")
-      } else{
-        z_subpop_size = ncol(z_subpop)
+      } else {
+        z_subpop_size <- ncol(z_subpop)
       }
     }
 
@@ -230,14 +235,14 @@ correlatedStan <-
           if (is.null(z_subpop)) {
             ## No subpop covariates
             ## Basic model
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Correlated_basic,
               data = stan_data,
               chains = chains,
@@ -247,9 +252,9 @@ correlatedStan <-
               thin = thin,
               ...
             )
-          } else{
+          } else {
             ## Includes only zsubpop
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -258,7 +263,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Correlated_zsubpop,
               data = stan_data,
               chains = chains,
@@ -269,13 +274,12 @@ correlatedStan <-
               ...
             )
           }
-
-        } else{
+        } else {
           ## Does include global covariates
           if (is.null(z_subpop)) {
             ## No subpop covariates
             ## Only global
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -284,7 +288,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Correlated_zglobal,
               data = stan_data,
               chains = chains,
@@ -294,9 +298,9 @@ correlatedStan <-
               thin = thin,
               ...
             )
-          } else{
+          } else {
             ## Includes zglobal and zsubpop
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -307,7 +311,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Correlated_zsubpop_zglobal,
               data = stan_data,
               chains = chains,
@@ -318,16 +322,15 @@ correlatedStan <-
               ...
             )
           }
-
         }
-      } else{
+      } else {
         ## Includes x
         if (is.null(z_global)) {
           ## No global covariates
           if (is.null(z_subpop)) {
             ## No subpop covariates
             ## Only x
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -335,7 +338,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Correlated_x,
               data = stan_data,
               chains = chains,
@@ -345,9 +348,9 @@ correlatedStan <-
               thin = thin,
               ...
             )
-          } else{
+          } else {
             ## Includes x and z_subpop
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -357,7 +360,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Correlated_x_zsubpop,
               data = stan_data,
               chains = chains,
@@ -368,13 +371,12 @@ correlatedStan <-
               ...
             )
           }
-
-        } else{
+        } else {
           ## Does include global covariates
           if (is.null(z_subpop)) {
             ## No subpop covariates
             ## Includes x and zglobal
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -384,7 +386,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Correlated_x_zglobal,
               data = stan_data,
               chains = chains,
@@ -394,9 +396,9 @@ correlatedStan <-
               thin = thin,
               ...
             )
-          } else{
+          } else {
             ## Includes x, zglobal, and zsubpop
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -407,7 +409,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Correlated_x_zsubpop_zglobal,
               data = stan_data,
               chains = chains,
@@ -418,7 +420,6 @@ correlatedStan <-
               ...
             )
           }
-
         }
       }
     } else if (model == "uncorrelated") {
@@ -429,14 +430,14 @@ correlatedStan <-
           if (is.null(z_subpop)) {
             ## No subpop covariates
             ## Basic model
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Uncorrelated_basic,
               data = stan_data,
               chains = chains,
@@ -446,9 +447,9 @@ correlatedStan <-
               thin = thin,
               ...
             )
-          } else{
+          } else {
             ## Includes only zsubpop
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -457,7 +458,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Uncorrelated_zsubpop,
               data = stan_data,
               chains = chains,
@@ -468,13 +469,12 @@ correlatedStan <-
               ...
             )
           }
-
-        } else{
+        } else {
           ## Does include global covariates
           if (is.null(z_subpop)) {
             ## No subpop covariates
             ## Only global
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -483,7 +483,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Uncorrelated_zglobal,
               data = stan_data,
               chains = chains,
@@ -493,9 +493,9 @@ correlatedStan <-
               thin = thin,
               ...
             )
-          } else{
+          } else {
             ## Includes zglobal and zsubpop
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -506,7 +506,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Uncorrelated_zsubpop_zglobal,
               data = stan_data,
               chains = chains,
@@ -517,16 +517,15 @@ correlatedStan <-
               ...
             )
           }
-
         }
-      } else{
+      } else {
         ## Includes x
         if (is.null(z_global)) {
           ## No global covariates
           if (is.null(z_subpop)) {
             ## No subpop covariates
             ## Only x
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -534,7 +533,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Uncorrelated_x,
               data = stan_data,
               chains = chains,
@@ -544,9 +543,9 @@ correlatedStan <-
               thin = thin,
               ...
             )
-          } else{
+          } else {
             ## Includes x and z_subpop
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -556,7 +555,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Uncorrelated_x_zsubpop,
               data = stan_data,
               chains = chains,
@@ -567,13 +566,12 @@ correlatedStan <-
               ...
             )
           }
-
-        } else{
+        } else {
           ## Does include global covariates
           if (is.null(z_subpop)) {
             ## No subpop covariates
             ## Includes x and zglobal
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -583,7 +581,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Uncorrelated_x_zglobal,
               data = stan_data,
               chains = chains,
@@ -593,9 +591,9 @@ correlatedStan <-
               thin = thin,
               ...
             )
-          } else{
+          } else {
             ## Includes x, zglobal, and zsubpop
-            stan_data = list(
+            stan_data <- list(
               N = N,
               n_i = N_i,
               n_k = N_k,
@@ -606,7 +604,7 @@ correlatedStan <-
               y = ard
             )
             ## Fit model
-            model_fit = rstan::sampling(
+            model_fit <- rstan::sampling(
               object = stanmodels$Uncorrelated_x_zsubpop_zglobal,
               data = stan_data,
               chains = chains,
@@ -617,10 +615,9 @@ correlatedStan <-
               ...
             )
           }
-
         }
       }
-    } else{
+    } else {
       stop("Invalid model choice")
     }
 
@@ -628,28 +625,29 @@ correlatedStan <-
     ## Extract draws
     ## Exclude eps and L_Omega  (if correlated) for memory
     if (model == "correlated") {
-      draws = rstan::extract(model_fit,
-                             pars = c("eps", "L_Omega"),
-                             include = FALSE)
-    } else{
-      draws = rstan::extract(model_fit, pars = c("eps"), include = FALSE)
+      draws <- rstan::extract(model_fit,
+        pars = c("eps", "L_Omega"),
+        include = FALSE
+      )
+    } else {
+      draws <- rstan::extract(model_fit, pars = c("eps"), include = FALSE)
     }
 
 
     ## Perform scaling procedure
-    delta = draws$delta
-    sigma_delta = draws$sigma_delta
-    log_degrees = matrix(NA, nrow = nrow(delta), ncol = ncol(delta))
+    delta <- draws$delta
+    sigma_delta <- draws$sigma_delta
+    log_degrees <- matrix(NA, nrow = nrow(delta), ncol = ncol(delta))
     for (i in 1:nrow(log_degrees)) {
-      log_degrees[i, ] = delta[i, ] * sigma_delta[i]
+      log_degrees[i, ] <- delta[i, ] * sigma_delta[i]
     }
 
     if (!is.null(scaling)) {
       if ((scaling == "weighted") | (scaling == "weighted_sq")) {
         ## First get point estimate for correlation matrix
-        Correlation = draws$Corr
-        Correlation = apply(Correlation, c(2, 3), mean)
-        scaling_res = networkscaleup::scaling(
+        Correlation <- draws$Corr
+        Correlation <- apply(Correlation, c(2, 3), mean)
+        scaling_res <- networkscaleup::scaling(
           log_degrees,
           draws$rho,
           scaling = scaling,
@@ -658,10 +656,8 @@ correlatedStan <-
           Correlation = Correlation,
           N = N
         )
-
-
       } else if (scaling == "all") {
-        scaling_res = networkscaleup::scaling(
+        scaling_res <- networkscaleup::scaling(
           log_degrees,
           draws$rho,
           scaling = scaling,
@@ -669,9 +665,8 @@ correlatedStan <-
           known_ind = known_ind,
           N = N
         )
-
       } else if (scaling == "overdispersed") {
-        scaling_res = networkscaleup::scaling(
+        scaling_res <- networkscaleup::scaling(
           log_degrees,
           draws$rho,
           scaling = scaling,
@@ -684,22 +679,18 @@ correlatedStan <-
         )
       }
 
-      draws$log_degrees = scaling_res$log_degrees
-      draws$degrees = exp(draws$log_degrees)
-      draws$log_prevalences = scaling_res$log_prevalences
-      draws$sizes = exp(draws$log_prevalences) * N
+      draws$log_degrees <- scaling_res$log_degrees
+      draws$degrees <- exp(draws$log_degrees)
+      draws$log_prevalences <- scaling_res$log_prevalences
+      draws$sizes <- exp(draws$log_prevalences) * N
     }
-
-
-
 
 
     ## Return values
 
     if (return_fit) {
       return(model_fit)
-    } else{
+    } else {
       return(draws)
     }
-
   }

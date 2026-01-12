@@ -1,110 +1,80 @@
-# PCA-based residual test for residual correlation (permute each column independently)
-#' Title
+#' Tracy-Widom test for residual group correlation
 #'
-#' @param ard ARD data
-#' @param model_fit list containing fitted model and additional details
-#' @param b number of replications to do
+#' @param model_fit fitted model object
+#' @param correction correction constant, either "none", "half"
+#' @param plot a logical, whether to return a ggplot density plot of TW with observed statistic
 #'
-#' @returns list containing plots, test statistics, etc
+#' @return a list containing test statistic, p-value, and diagnostic plots
 #' @export
-#'
 #' @importFrom rlang .data
-pca_group_corr_test <- function(ard,
-                                model_fit,
-                                b = 1000) {
-  ## Obtain residuals
+tw_group_corr_test <- function(model_fit,
+                               correction = c("none", "half"),
+                               plot = TRUE) {
+  correction <- match.arg(correction)
+
+  # Residual matrix
   resid_mat <- model_fit$rqr
-  # PCA on observed data
-  obs_pca <- stats::prcomp(resid_mat, center = TRUE, scale. = TRUE)
-  obs_var <-
-    obs_pca$sdev[1]^2 / sum(obs_pca$sdev^2) # first PC variance
-  obs_var_all <-
-    obs_pca$sdev^2 / sum(obs_pca$sdev^2) # all PCs (scree)
+  n_i <- nrow(resid_mat)
+  n_k <- ncol(resid_mat)
 
-  # Permutation test
-  n_cols <- ncol(resid_mat)
-  perm_var <- numeric(b)
-  perm_var_all <- matrix(NA, nrow = b, ncol = n_cols)
+  # Eigenvalues of covariance matrix
+  S <- (1 / (n_i - 1)) * t(resid_mat) %*% resid_mat
+  eigenvalues <- eigen(S)$values
+  lambda_max <- max(eigenvalues)
 
-  for (i in 1:b) {
-    # Permute each column independently
-    perm_df <- apply(resid_mat, 2, sample)
+  # Centering and scaling constants
 
-    tmp_pca <- stats::prcomp(perm_df, center = TRUE, scale. = TRUE)
-    perm_var[i] <- tmp_pca$sdev[1]^2 / sum(tmp_pca$sdev^2)
-    perm_var_all[i, ] <- tmp_pca$sdev^2 / sum(tmp_pca$sdev^2)
+  if (correction == "none") {
+    mu_n <- (sqrt(n_i) + sqrt(n_k))^2 / n_i
+    sigma_n <- (sqrt(n_i) + sqrt(n_k)) / n_i *
+      (1 / sqrt(n_i) + 1 / sqrt(n_k))^(1 / 3)
+  } else if (correction == "half") {
+    mu_n <- (sqrt(n_i - 1 / 2) + sqrt(n_k - 1 / 2))^2 / n_i
+    sigma_n <- (sqrt(n_i - 1 / 2) + sqrt(n_k - 1 / 2)) / n_i *
+      (1 / sqrt(n_i - 1 / 2) + 1 / sqrt(n_k - 1 / 2))^(1 / 3)
   }
 
-  # Two-sided p-value
-  p_val <-
-    mean(abs(perm_var - mean(perm_var)) >= abs(obs_var - mean(perm_var)))
+  # Tracy-Widom statistic and p-value
 
-  hist_plot <- ggplot2::ggplot(data.frame(perm_var), ggplot2::aes(x = perm_var)) +
-    ggplot2::geom_histogram(binwidth = diff(range(perm_var)) / 30, fill = "gray80", color = "black") +
-    ggplot2::geom_vline(xintercept = obs_var, color = "red", linewidth = 1) +
-    ggplot2::labs(
-      x = "Variance explained by first PC",
-      y = "Count",
-      title = "PCA Residual Test"
-    ) +
-    ggplot2::theme_minimal()
+  tw_stat <- (lambda_max - mu_n) / sigma_n
+  p_value <- 1 - RMTstat::ptw(tw_stat, beta = 1)
+
+  # Tracy-Widom density plot with observed statistic
+
+  if (plot) {
+    tw_density_plot <- ggplot2::ggplot(data.frame(x = c(-5, 10)), ggplot2::aes(.data$x)) +
+      ggplot2::stat_function(
+        fun = RMTstat::dtw,
+        args = list(beta = 1),
+        linewidth = 1, color = "black"
+      ) +
+      ggplot2::geom_vline(xintercept = tw_stat, color = "red", linewidth = 1) +
+      ggplot2::annotate("text",
+        x = tw_stat,
+        y = 0,
+        label = sprintf(" T = %.2f", tw_stat),
+        vjust = -1, color = "red"
+      ) +
+      ggplot2::labs(
+        title = "Tracy-Widom Density with Observed Statistic",
+        x = "TW_1 value",
+        y = "Density"
+      ) +
+      ggplot2::theme_minimal()
+  } else {
+    tw_density_plot <- NULL
+  }
 
 
-  perm_df <- as.data.frame(t(perm_var_all)) |>
-    dplyr::mutate(PC = 1:dplyr::n()) |>
-    tidyr::pivot_longer(
-      cols = -.data$PC,
-      names_to = "Permutation",
-      values_to = "Variance"
-    )
-
-  obs_df <- data.frame(
-    PC = 1:length(obs_var_all),
-    Variance = obs_var_all
-  )
-
-  ymax <- max(c(obs_var_all, perm_var_all), na.rm = TRUE)
-
-  scree_plot <- ggplot2::ggplot() +
-    ggplot2::geom_line(
-      data = perm_df,
-      ggplot2::aes(x = .data$PC, y = .data$Variance, group = .data$Permutation),
-      # color = rgb(0, 0, 0, 0.2)
-      ## TO DO: Add this in correctly
-    ) +
-    ggplot2::geom_line(
-      data = obs_df,
-      ggplot2::aes(x = .data$PC, y = .data$Variance),
-      color = "red",
-      linewidth = 1.2
-    ) +
-    ggplot2::geom_point(
-      data = obs_df,
-      ggplot2::aes(x = .data$PC, y = .data$Variance),
-      color = "red"
-    ) +
-    ggplot2::labs(
-      x = "PC index",
-      y = "Proportion variance explained",
-      title = "Scree plots (obs vs permuted)"
-    ) +
-    ggplot2::coord_cartesian(ylim = c(0, ymax)) +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(legend.position = "top") +
-    ggplot2::guides(color = "none")
-
-  return(
-    list(
-      test_stat = obs_var,
-      bootstrap_stat = perm_var,
-      p_value = p_val,
-      obs_scree = obs_var_all,
-      perm_scree = perm_var_all,
-      hist_plot = hist_plot,
-      scree_plot = scree_plot
-    )
-  )
+  return(list(
+    lambda_max = lambda_max,
+    tw_statistic = tw_stat,
+    p_value = p_value,
+    mu_n = mu_n,
+    sigma_n = sigma_n,
+    all_eigenvalues = eigenvalues,
+    n_i = n_i,
+    n_k = n_k,
+    tw_density_plot = tw_density_plot
+  ))
 }
-
-
-

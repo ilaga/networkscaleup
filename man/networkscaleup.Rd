@@ -12,15 +12,19 @@ Provides a variety of Network Scale-up Models for researchers to
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://ilaga.github.io/networkscaleup/}
+  \item \url{https://github.com/ilaga/networkscaleup}
 }
 
 }
 \author{
-\strong{Maintainer}: Ian Laga \email{ilaga25@gmail.com} (\href{https://orcid.org/0000-0002-5164-4856}{ORCID})
+\strong{Maintainer}: Ian Laga \email{owengward@gmail.com} (\href{https://orcid.org/0000-0002-5164-4856}{ORCID})
 
 Authors:
 \itemize{
+  \item Owen G. Ward \email{oward@sfu.ca}
+  \item Anna L. Smith
+  \item Benjamin Vogel
+  \item Jieyun Wang
   \item Le Bao \email{lebao@psu.edu}
   \item Xiaoyue Niu \email{Xiaoyue@psu.edu}
 }

@@ -83,24 +83,27 @@
 #' # Note that in practice, both warmup and iter should be much higher
 #' data(example_data)
 #'
-#' ard = example_data$ard
-#' subpop_sizes = example_data$subpop_sizes
-#' known_ind = c(1, 2, 4)
-#' N = example_data$N
+#' ard <- example_data$ard
+#' subpop_sizes <- example_data$subpop_sizes
+#' known_ind <- c(1, 2, 4)
+#' N <- example_data$N
 #'
-#' overdisp.est = overdispersed(ard,
-#' known_sizes = subpop_sizes[known_ind],
-#' known_ind = known_ind,
-#' G1_ind = 1,
-#' G2_ind = 2,
-#' B2_ind = 4,
-#' N = N,
-#' warmup = 50,
-#' iter = 100)
+#' overdisp.est <- overdispersed(ard,
+#'   known_sizes = subpop_sizes[known_ind],
+#'   known_ind = known_ind,
+#'   G1_ind = 1,
+#'   G2_ind = 2,
+#'   B2_ind = 4,
+#'   N = N,
+#'   warmup = 50,
+#'   iter = 100
+#' )
 #'
 #' # Compare size estimates
-#' data.frame(true = subpop_sizes,
-#' basic = colMeans(overdisp.est$sizes))
+#' data.frame(
+#'   true = subpop_sizes,
+#'   basic = colMeans(overdisp.est$sizes)
+#' )
 #'
 #' # Compare degree estimates
 #' plot(example_data$degrees, colMeans(overdisp.est$degrees))
@@ -125,220 +128,219 @@ overdispersed <-
            omega_tune = 0.2,
            init = "MLE") {
     ## Extract dimensions
-    N_i = nrow(ard) ## Number of respondents
-    N_k = ncol(ard) ## Number of subpopulations
+    N_i <- nrow(ard) ## Number of respondents
+    N_k <- ncol(ard) ## Number of subpopulations
 
     if (is.null(refresh)) {
       ## By default, refresh every 10% of iterations
-      refresh = round(iter / 10)
+      refresh <- round(iter / 10)
     }
 
-    known_prevalences = known_sizes / N
-    prevalences_vec = rep(NA, N_k)
-    prevalences_vec[known_ind] = known_prevalences
+    known_prevalences <- known_sizes / N
+    prevalences_vec <- rep(NA, N_k)
+    prevalences_vec[known_ind] <- known_prevalences
     if (!is.null(G1_ind)) {
-      Pg1 = sum(prevalences_vec[G1_ind])
+      Pg1 <- sum(prevalences_vec[G1_ind])
     }
     if (!is.null(G2_ind)) {
-      Pg2 = sum(prevalences_vec[G2_ind])
+      Pg2 <- sum(prevalences_vec[G2_ind])
     }
     if (!is.null(B2_ind)) {
-      Pb2 = sum(prevalences_vec[B2_ind])
+      Pb2 <- sum(prevalences_vec[B2_ind])
     }
 
 
     ## Initialize parameters
-    alphas = matrix(NA, nrow = iter, ncol = N_i)
-    betas = matrix(NA, nrow = iter, ncol = N_k)
-    omegas = matrix(NA, nrow = iter, ncol = N_k)
-    mu_alpha = mu_beta = sigma_sq_alpha = sigma_sq_beta = rep(NA, iter)
-    C1 = C2 = C = NA
+    alphas <- matrix(NA, nrow = iter, ncol = N_i)
+    betas <- matrix(NA, nrow = iter, ncol = N_k)
+    omegas <- matrix(NA, nrow = iter, ncol = N_k)
+    mu_alpha <- mu_beta <- sigma_sq_alpha <- sigma_sq_beta <- rep(NA, iter)
+    C1 <- C2 <- C <- NA
 
     if (inherits(init, "list")) {
       if ("alpha" %in% names(init)) {
-        alphas[1,] = init$alpha
-      } else{
-        alphas[1,] = stats::rnorm(N_i)
+        alphas[1, ] <- init$alpha
+      } else {
+        alphas[1, ] <- stats::rnorm(N_i)
       }
 
       if ("beta" %in% names(init)) {
-        betas[1,] = init$beta
-      } else{
-        betas[1,] = stats::rnorm(N_k)
+        betas[1, ] <- init$beta
+      } else {
+        betas[1, ] <- stats::rnorm(N_k)
       }
 
       if ("omega" %in% names(init)) {
-        omegas[1,] = init$omega
-      } else{
-        omegas[1,] = 20
+        omegas[1, ] <- init$omega
+      } else {
+        omegas[1, ] <- 20
       }
-
     } else if (init == "random") {
-      alphas[1,] = stats::rnorm(N_i)
-      betas[1,] = stats::rnorm(N_k)
-      omegas[1,] = 20
-    } else{
+      alphas[1, ] <- stats::rnorm(N_i)
+      betas[1, ] <- stats::rnorm(N_k)
+      omegas[1, ] <- 20
+    } else {
       ## Based on MLE
-      killworth_init = networkscaleup::killworth(ard, known_sizes, known_ind, N, model = "MLE")
-      alphas[1,] = log(killworth_init$degrees)
-      alphas[1, which(is.infinite(alphas[1,]))] = -10
-      beta_vec = rep(NA, N_k)
-      beta_vec[known_ind] = known_sizes
-      beta_vec[-known_ind] = killworth_init$sizes
-      beta_vec = log(beta_vec / N)
-      betas[1,] = beta_vec
-      omegas[1,] = 20
+      killworth_init <- networkscaleup::killworth(ard, known_sizes, known_ind, N, model = "MLE")
+      alphas[1, ] <- log(killworth_init$degrees)
+      alphas[1, which(is.infinite(alphas[1, ]))] <- -10
+      beta_vec <- rep(NA, N_k)
+      beta_vec[known_ind] <- known_sizes
+      beta_vec[-known_ind] <- killworth_init$sizes
+      beta_vec <- log(beta_vec / N)
+      betas[1, ] <- beta_vec
+      omegas[1, ] <- 20
     }
 
-    mu_alpha[1] = mean(alphas[1,])
+    mu_alpha[1] <- mean(alphas[1, ])
 
-    sigma_alpha_hat = mean((alphas[1,] - mu_alpha[1]) ^ 2)
-    sigma_sq_alpha[1] = LaplacesDemon::rinvchisq(1, N_i - 1, sigma_alpha_hat)
+    sigma_alpha_hat <- mean((alphas[1, ] - mu_alpha[1])^2)
+    sigma_sq_alpha[1] <- LaplacesDemon::rinvchisq(1, N_i - 1, sigma_alpha_hat)
 
-    mu_beta[1] = mean(betas[1,])
+    mu_beta[1] <- mean(betas[1, ])
 
-    sigma_beta_hat = mean((betas[1,] - mu_beta[1]) ^ 2)
-    sigma_sq_beta[1] = LaplacesDemon::rinvchisq(1, N_k - 1, sigma_beta_hat)
-
+    sigma_beta_hat <- mean((betas[1, ] - mu_beta[1])^2)
+    sigma_sq_beta[1] <- LaplacesDemon::rinvchisq(1, N_k - 1, sigma_beta_hat)
 
 
     for (ind in 2:iter) {
       ## Step 1
       for (i in 1:N_i) {
-        alpha_prop = alphas[ind - 1, i] + stats::rnorm(1, 0, alpha_tune)
-        zeta_prop = exp(alpha_prop + betas[ind - 1,]) / (omegas[ind - 1,] - 1)
-        zeta_old = exp(alphas[ind - 1, i] + betas[ind - 1,]) / (omegas[ind - 1,] - 1)
-        sum1 = sum(lgamma(ard[i,] + zeta_prop) - lgamma(zeta_prop) - zeta_prop * log(omegas[ind - 1,])) +
+        alpha_prop <- alphas[ind - 1, i] + stats::rnorm(1, 0, alpha_tune)
+        zeta_prop <- exp(alpha_prop + betas[ind - 1, ]) / (omegas[ind - 1, ] - 1)
+        zeta_old <- exp(alphas[ind - 1, i] + betas[ind - 1, ]) / (omegas[ind - 1, ] - 1)
+        sum1 <- sum(lgamma(ard[i, ] + zeta_prop) - lgamma(zeta_prop) - zeta_prop * log(omegas[ind - 1, ])) +
           stats::dnorm(alpha_prop, mu_alpha[ind - 1], sqrt(sigma_sq_alpha[ind - 1]), log = T)
-        sum2 = sum(lgamma(ard[i,] + zeta_old) - lgamma(zeta_old) - zeta_old * log(omegas[ind - 1,])) +
+        sum2 <- sum(lgamma(ard[i, ] + zeta_old) - lgamma(zeta_old) - zeta_old * log(omegas[ind - 1, ])) +
           stats::dnorm(alphas[ind - 1, i], mu_alpha[ind - 1], sqrt(sigma_sq_alpha[ind - 1]), log = T)
-        prob.acc = exp(sum1 - sum2)
+        prob.acc <- exp(sum1 - sum2)
 
         if (prob.acc > stats::runif(1)) {
-          alphas[ind, i] = alpha_prop
-        } else{
-          alphas[ind, i] = alphas[ind - 1, i]
+          alphas[ind, i] <- alpha_prop
+        } else {
+          alphas[ind, i] <- alphas[ind - 1, i]
         }
       }
 
       ## Step 2
       for (k in 1:N_k) {
-        beta_prop = betas[ind - 1, k] + stats::rnorm(1, 0, beta_tune)
-        zeta_prop = exp(alphas[ind, ] + beta_prop) / (omegas[ind - 1, k] - 1)
-        zeta_old = exp(alphas[ind, ] + betas[ind - 1, k]) / (omegas[ind - 1, k] - 1)
-        sum1 = sum(lgamma(ard[, k] + zeta_prop) - lgamma(zeta_prop) - zeta_prop * log(omegas[ind - 1, k])) +
+        beta_prop <- betas[ind - 1, k] + stats::rnorm(1, 0, beta_tune)
+        zeta_prop <- exp(alphas[ind, ] + beta_prop) / (omegas[ind - 1, k] - 1)
+        zeta_old <- exp(alphas[ind, ] + betas[ind - 1, k]) / (omegas[ind - 1, k] - 1)
+        sum1 <- sum(lgamma(ard[, k] + zeta_prop) - lgamma(zeta_prop) - zeta_prop * log(omegas[ind - 1, k])) +
           stats::dnorm(beta_prop, mu_beta[ind - 1], sqrt(sigma_sq_beta[ind - 1]), log = T)
-        sum2 = sum(lgamma(ard[, k] + zeta_old) - lgamma(zeta_old) - zeta_old * log(omegas[ind - 1, k])) +
+        sum2 <- sum(lgamma(ard[, k] + zeta_old) - lgamma(zeta_old) - zeta_old * log(omegas[ind - 1, k])) +
           stats::dnorm(betas[ind - 1, k], mu_beta[ind - 1], sqrt(sigma_sq_beta[ind - 1]), log = T)
-        prob.acc = exp(sum1 - sum2)
+        prob.acc <- exp(sum1 - sum2)
 
         if (prob.acc > stats::runif(1)) {
-          betas[ind, k] = beta_prop
-        } else{
-          betas[ind, k] = betas[ind - 1, k]
+          betas[ind, k] <- beta_prop
+        } else {
+          betas[ind, k] <- betas[ind - 1, k]
         }
       }
 
       ## Step 3
-      mu_alpha_hat = mean(alphas[ind,])
-      mu_alpha[ind] = stats::rnorm(1, mu_alpha_hat, sqrt(sigma_sq_alpha[ind - 1] / 2))
+      mu_alpha_hat <- mean(alphas[ind, ])
+      mu_alpha[ind] <- stats::rnorm(1, mu_alpha_hat, sqrt(sigma_sq_alpha[ind - 1] / 2))
 
       ## Step 4
-      sigma_alpha_hat = mean((alphas[ind,] - mu_alpha[ind]) ^ 2)
-      sigma_sq_alpha[ind] = LaplacesDemon::rinvchisq(1, N_i - 1, sigma_alpha_hat)
+      sigma_alpha_hat <- mean((alphas[ind, ] - mu_alpha[ind])^2)
+      sigma_sq_alpha[ind] <- LaplacesDemon::rinvchisq(1, N_i - 1, sigma_alpha_hat)
 
       ## Step 5
-      mu_beta_hat = mean(betas[ind,])
-      mu_beta[ind] = stats::rnorm(1, mu_beta_hat, sqrt(sigma_sq_beta[ind - 1] / 2))
+      mu_beta_hat <- mean(betas[ind, ])
+      mu_beta[ind] <- stats::rnorm(1, mu_beta_hat, sqrt(sigma_sq_beta[ind - 1] / 2))
 
       ## Step 6
-      sigma_beta_hat = mean((betas[ind,] - mu_beta[ind]) ^ 2)
-      sigma_sq_beta[ind] = LaplacesDemon::rinvchisq(1, N_k - 1, sigma_beta_hat)
+      sigma_beta_hat <- mean((betas[ind, ] - mu_beta[ind])^2)
+      sigma_sq_beta[ind] <- LaplacesDemon::rinvchisq(1, N_k - 1, sigma_beta_hat)
 
 
       ## Step 7
       for (k in 1:N_k) {
-        omega_prop = omegas[ind - 1, k] + stats::rnorm(1, 0, omega_tune)
+        omega_prop <- omegas[ind - 1, k] + stats::rnorm(1, 0, omega_tune)
         if (omega_prop > 1) {
-          zeta_prop = exp(alphas[ind, ] + betas[ind, k]) / (omega_prop - 1)
-          zeta_old = exp(alphas[ind, ] + betas[ind, k]) / (omegas[ind - 1, k] - 1)
-          sum1 = sum(
+          zeta_prop <- exp(alphas[ind, ] + betas[ind, k]) / (omega_prop - 1)
+          zeta_old <- exp(alphas[ind, ] + betas[ind, k]) / (omegas[ind - 1, k] - 1)
+          sum1 <- sum(
             lgamma(ard[, k] + zeta_prop) - lgamma(zeta_prop) - zeta_prop * log(omega_prop) +
               ard[, k] * log((omega_prop - 1) / omega_prop)
           )
-          sum2 = sum(
+          sum2 <- sum(
             lgamma(ard[, k] + zeta_old) - lgamma(zeta_old) - zeta_old * log(omegas[ind - 1, k]) +
               ard[, k] * log((omegas[ind - 1, k] - 1) / omegas[ind - 1, k])
           )
-          prob.acc = exp(sum1 - sum2)
+          prob.acc <- exp(sum1 - sum2)
 
           if (prob.acc > stats::runif(1)) {
-            omegas[ind, k] = omega_prop
-          } else{
-            omegas[ind, k] = omegas[ind - 1, k]
+            omegas[ind, k] <- omega_prop
+          } else {
+            omegas[ind, k] <- omegas[ind - 1, k]
           }
-        } else{
-          omegas[ind, k] = omegas[ind - 1, k]
+        } else {
+          omegas[ind, k] <- omegas[ind - 1, k]
         }
       }
 
       ## Step 8
       if (is.null(G1_ind)) {
         ## Perform no scaling
-        C = 0
+        C <- 0
       } else if (is.null(G2_ind) |
-                 is.null(B2_ind)) {
+        is.null(B2_ind)) {
         ## Perform scaling with only main
-        C1 = log(sum(exp(betas[ind, G1_ind]) / Pg1))
-        C = C1
-      } else{
+        C1 <- log(sum(exp(betas[ind, G1_ind]) / Pg1))
+        C <- C1
+      } else {
         ## Perform scaling with secondary groups
-        C1 = log(sum(exp(betas[ind, G1_ind]) / Pg1))
-        C2 = log(sum(exp(betas[ind, B2_ind]) / Pb2)) - log(sum(exp(betas[ind, G2_ind]) / Pg2))
-        C = C1 + 1 / 2 * C2
+        C1 <- log(sum(exp(betas[ind, G1_ind]) / Pg1))
+        C2 <- log(sum(exp(betas[ind, B2_ind]) / Pb2)) - log(sum(exp(betas[ind, G2_ind]) / Pg2))
+        C <- C1 + 1 / 2 * C2
       }
 
-      alphas[ind,] = alphas[ind,] + C
-      mu_alpha[ind] = mu_alpha[ind] + C
-      betas[ind,] = betas[ind,] - C
-      mu_beta[ind] = mu_beta[ind] - C
+      alphas[ind, ] <- alphas[ind, ] + C
+      mu_alpha[ind] <- mu_alpha[ind] + C
+      betas[ind, ] <- betas[ind, ] - C
+      mu_beta[ind] <- mu_beta[ind] - C
 
 
       if (verbose) {
         if (ind %% refresh == 0) {
           ## Match update format of Stan
           cat("Iteration: ",
-              ind,
-              " / ",
-              iter,
-              " [",
-              round(ind / iter * 100),
-              "%]\n",
-              sep = "")
+            ind,
+            " / ",
+            iter,
+            " [",
+            round(ind / iter * 100),
+            "%]\n",
+            sep = ""
+          )
         }
       }
     }
 
     ## Burn-in and thin
-    alphas = alphas[-c(1:warmup),]
-    betas = betas[-c(1:warmup),]
-    omegas = omegas[-c(1:warmup),]
-    mu_alpha = mu_alpha[-c(1:warmup)]
-    mu_beta = mu_beta[-c(1:warmup)]
-    sigma_sq_alpha = sigma_sq_alpha[-c(1:warmup)]
-    sigma_sq_beta = sigma_sq_beta[-c(1:warmup)]
+    alphas <- alphas[-c(1:warmup), ]
+    betas <- betas[-c(1:warmup), ]
+    omegas <- omegas[-c(1:warmup), ]
+    mu_alpha <- mu_alpha[-c(1:warmup)]
+    mu_beta <- mu_beta[-c(1:warmup)]
+    sigma_sq_alpha <- sigma_sq_alpha[-c(1:warmup)]
+    sigma_sq_beta <- sigma_sq_beta[-c(1:warmup)]
 
-    thin.ind = seq(1, nrow(alphas), by = thin)
-    alphas = alphas[thin.ind,]
-    betas = betas[thin.ind,]
-    omegas = omegas[thin.ind,]
-    mu_alpha = mu_alpha[thin.ind]
-    mu_beta = mu_beta[thin.ind]
-    sigma_sq_alpha = sigma_sq_alpha[thin.ind]
-    sigma_sq_beta = sigma_sq_beta[thin.ind]
+    thin.ind <- seq(1, nrow(alphas), by = thin)
+    alphas <- alphas[thin.ind, ]
+    betas <- betas[thin.ind, ]
+    omegas <- omegas[thin.ind, ]
+    mu_alpha <- mu_alpha[thin.ind]
+    mu_beta <- mu_beta[thin.ind]
+    sigma_sq_alpha <- sigma_sq_alpha[thin.ind]
+    sigma_sq_beta <- sigma_sq_beta[thin.ind]
 
 
-    return_list = list(
+    return_list <- list(
       alphas = alphas,
       degrees = exp(alphas),
       betas = betas,
@@ -351,5 +353,4 @@ overdispersed <-
     )
 
     return(return_list)
-
   }

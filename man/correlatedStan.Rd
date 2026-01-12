@@ -156,53 +156,58 @@ This function currently fits a variety of models proposed in Laga et
 \dontrun{
 data(example_data)
 
-x = example_data$x
-z_global = example_data$z[,1:2]
-z_subpop = example_data$z[,3:4]
+x <- example_data$x
+z_global <- example_data$z[, 1:2]
+z_subpop <- example_data$z[, 3:4]
 
-basic_corr_est = correlatedStan(example_data$ard,
-     known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
-     known_ind = c(1, 2, 4),
-     N = example_data$N,
-     model = "correlated",
-     scaling = "weighted",
-     chains = 1,
-     cores = 1,
-     warmup = 50,
-     iter = 100)
+basic_corr_est <- correlatedStan(example_data$ard,
+  known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
+  known_ind = c(1, 2, 4),
+  N = example_data$N,
+  model = "correlated",
+  scaling = "weighted",
+  chains = 1,
+  cores = 1,
+  warmup = 50,
+  iter = 100
+)
 
-cov_uncorr_est = correlatedStan(example_data$ard,
-     known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
-     known_ind = c(1, 2, 4),
-     N = example_data$N,
-     model = "uncorrelated",
-     scaling = "all",
-     x = x,
-     z_global = z_global,
-     z_subpop = z_subpop,
-     chains = 1,
-     cores = 1,
-     warmup = 50,
-     iter = 100)
+cov_uncorr_est <- correlatedStan(example_data$ard,
+  known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
+  known_ind = c(1, 2, 4),
+  N = example_data$N,
+  model = "uncorrelated",
+  scaling = "all",
+  x = x,
+  z_global = z_global,
+  z_subpop = z_subpop,
+  chains = 1,
+  cores = 1,
+  warmup = 50,
+  iter = 100
+)
 
-cov_corr_est = correlatedStan(example_data$ard,
-     known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
-     known_ind = c(1, 2, 4),
-     N = example_data$N,
-     model = "correlated",
-     scaling = "all",
-     x = x,
-     z_subpop = z_subpop,
-     chains = 1,
-     cores = 1,
-     warmup = 50,
-     iter = 100)
+cov_corr_est <- correlatedStan(example_data$ard,
+  known_sizes = example_data$subpop_sizes[c(1, 2, 4)],
+  known_ind = c(1, 2, 4),
+  N = example_data$N,
+  model = "correlated",
+  scaling = "all",
+  x = x,
+  z_subpop = z_subpop,
+  chains = 1,
+  cores = 1,
+  warmup = 50,
+  iter = 100
+)
 
 # Compare size estimates
-round(data.frame(true = example_data$subpop_sizes,
-     corr_basic = colMeans(basic_corr_est$sizes),
-     uncorr_x_zsubpop_zglobal = colMeans(cov_uncorr_est$sizes),
-     corr_x_zsubpop = colMeans(cov_corr_est$sizes)))
+round(data.frame(
+  true = example_data$subpop_sizes,
+  corr_basic = colMeans(basic_corr_est$sizes),
+  uncorr_x_zsubpop_zglobal = colMeans(cov_uncorr_est$sizes),
+  corr_x_zsubpop = colMeans(cov_corr_est$sizes)
+))
 
 # Look at z slope parameters
 colMeans(cov_uncorr_est$beta_global)

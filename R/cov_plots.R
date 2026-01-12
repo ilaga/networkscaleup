@@ -38,22 +38,24 @@ cov_plots <- function(ard,
   x_cov <- as.data.frame(lapply(x_cov, function(x) {
     (x - min(x)) / (max(x) - min(x))
   }))
-  
+
   ard_x <- data.frame(resid = resid_mat, cov = x_cov, alpha = alpha_est)
-  ard_long <- ard_x |> 
+  ard_long <- ard_x |>
     tidyr::pivot_longer(
       cols = tidyselect::starts_with("resid."),
       names_to = "Group",
       values_to = "resid"
     )
-  ard_longer <- ard_long |> 
+  ard_longer <- ard_long |>
     tidyr::pivot_longer(
       cols = tidyselect::starts_with("cov."),
       names_to = "cov_names",
       values_to = "CovValue"
-    ) |> 
-    dplyr::mutate(cov_label = stringr::str_remove(.data$cov_names, "^cov\\."),
-                  cov_label = factor(.data$cov_label, levels = colnames(x_cov)))
+    ) |>
+    dplyr::mutate(
+      cov_label = stringr::str_remove(.data$cov_names, "^cov\\."),
+      cov_label = factor(.data$cov_label, levels = colnames(x_cov))
+    )
   ## Produce plot 1, group-specific plots
   gg1 <- ggplot2::ggplot(ard_longer, ggplot2::aes(
     x = .data$CovValue,
@@ -78,22 +80,28 @@ cov_plots <- function(ard,
             ggplot2::geom_smooth(method = method, se = se)
         )$data[[1]]
       )
-      
+
       sm |>
         dplyr::filter(x == max(x, na.rm = TRUE)) |>
         dplyr::mutate(cov_label = .y)
     })
 
   # Produce plot 2, averaged over groups
-  gg2 <- ggplot2::ggplot(ard_longer, 
-                         ggplot2::aes(x = .data$CovValue,
-                                      y = .data$alpha,
-                                      color = .data$cov_label)) +
+  gg2 <- ggplot2::ggplot(
+    ard_longer,
+    ggplot2::aes(
+      x = .data$CovValue,
+      y = .data$alpha,
+      color = .data$cov_label
+    )
+  ) +
     ggplot2::geom_smooth(method = method, se = se) +
     ggplot2::geom_text(
       data = label_df,
-      ggplot2::aes(x = .data$x, y = .data$y, 
-                   label = .data$cov_label, color = .data$cov_label),
+      ggplot2::aes(
+        x = .data$x, y = .data$y,
+        label = .data$cov_label, color = .data$cov_label
+      ),
       hjust = -0.1,
       show.legend = FALSE
     ) +
