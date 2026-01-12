@@ -40,32 +40,32 @@ We will simulate a data set from the Binomial formulation in Killworth, P. D., J
 
 ```{r simulation}
 set.seed(1998)
-N_i = 50
-N_k = 5
-N = 1e5
-sizes = rbinom(N_k, N, prob = runif(N_k, min = 0.01, max = 0.15))
-degrees = round(exp(rnorm(N_i, mean = 5, sd = 1)))
+N_i <- 50
+N_k <- 5
+N <- 1e5
+sizes <- rbinom(N_k, N, prob = runif(N_k, min = 0.01, max = 0.15))
+degrees <- round(exp(rnorm(N_i, mean = 5, sd = 1)))
 
-ard = matrix(NA, nrow = N_i, ncol = N_k)
-for(k in 1:N_k){
-  ard[,k] = rbinom(N_i, degrees, sizes[k] / N)
+ard <- matrix(NA, nrow = N_i, ncol = N_k)
+for (k in 1:N_k) {
+  ard[, k] <- rbinom(N_i, degrees, sizes[k] / N)
 }
 
 ## Create some artificial covariates for use later
-x = matrix(sample(1:5, size = N_i * N_k, replace = T),
-           nrow = N_i,
-           ncol = N_k)
-z = cbind(rbinom(N_i, 1, 0.3), rnorm(N_i), rnorm(N_i), rnorm(N_i))
+x <- matrix(sample(1:5, size = N_i * N_k, replace = T),
+  nrow = N_i,
+  ncol = N_k
+)
+z <- cbind(rbinom(N_i, 1, 0.3), rnorm(N_i), rnorm(N_i), rnorm(N_i))
 ```
 
 We should also prepare the data for modeling by scaling all covariates to have standard deviation 1 and mean 0. Additionally, we need to define which columns of $Z$ belong to $z_{subpop}$ and $z_{global}$.
 
 ```{r prep}
-x = scale(x)
-z = scale(z)
-z_subpop = z[,1:2]
-z_global = z[,3:4]
-
+x <- scale(x)
+z <- scale(z)
+z_subpop <- z[, 1:2]
+z_global <- z[, 3:4]
 ```
 
 
@@ -95,17 +95,20 @@ These estimates are obtained using the following call to the `killworth` functio
 
 
 ```{r pimle}
-pimle.est = killworth(ard,
+pimle.est <- killworth(ard,
   known_sizes = sizes[c(1, 2, 4)],
   known_ind = c(1, 2, 4),
-  N = N, model = "PIMLE")
+  N = N, model = "PIMLE"
+)
 
 
 plot(degrees ~ pimle.est$degrees, xlab = "Estimated PIMLE degrees", ylab = "True Degrees")
 abline(0, 1, col = "red")
 
-round(data.frame(true = sizes[c(3, 5)],
-                 pimle = pimle.est$sizes))
+round(data.frame(
+  true = sizes[c(3, 5)],
+  pimle = pimle.est$sizes
+))
 ```
 
 Note that the function provides a warning saying that at least one $\hat{d}_i$ was 0. This occurs when a respondent does not report knowing anyone in the known subpopulations. This is an issue for the PIMLE since a 0 value is in the denominator for $\hat{N}_u^{PIMLE}$. Thus, we ignore the responses from respondents that correspond to $\hat{d}_i = 0$.
@@ -126,17 +129,20 @@ These estimates are also obtained using a single call to the `Killworth` functio
 
 
 ```{r mle}
-mle.est = killworth(ard,
+mle.est <- killworth(ard,
   known_sizes = sizes[c(1, 2, 4)],
   known_ind = c(1, 2, 4),
-  N = N, model = "MLE")
+  N = N, model = "MLE"
+)
 
 
 plot(degrees ~ mle.est$degrees, xlab = "Estimated MLE degrees", ylab = "True Degrees")
 abline(0, 1, col = "red")
 
-round(data.frame(true = sizes[c(3, 5)],
-                 pimle = mle.est$sizes))
+round(data.frame(
+  true = sizes[c(3, 5)],
+  pimle = mle.est$sizes
+))
 ```
 
 Note that there is no warning here since the denominator depends on the summation of $\hat{d}_i$.
@@ -162,7 +168,7 @@ In order to identity the $\alpha_i$ and $\beta_k$ as log-degrees and log-prevale
 Below we fit both the overdispersed and overdispersedStan implementations to the ARD and compare estimates. Note that in practice, both warmup and iter should be set to higher values.
 
 ```{r overdisp}
-overdisp_gibbs_metrop_est = overdispersed(
+overdisp_gibbs_metrop_est <- overdispersed(
   ard,
   known_sizes = sizes[c(1, 2, 4)],
   known_ind = c(1, 2, 4),
@@ -176,7 +182,7 @@ overdisp_gibbs_metrop_est = overdispersed(
   init = "MLE"
 )
 
-overdisp_stan = overdispersedStan(
+overdisp_stan <- overdispersedStan(
   ard,
   known_sizes = sizes[c(1, 2, 4)],
   known_ind = c(1, 2, 4),
@@ -191,9 +197,11 @@ overdisp_stan = overdispersedStan(
 )
 
 
-round(data.frame(true = sizes,
-                 gibbs_est = colMeans(overdisp_gibbs_metrop_est$sizes),
-                 stan_est = colMeans(overdisp_stan$sizes)))
+round(data.frame(
+  true = sizes,
+  gibbs_est = colMeans(overdisp_gibbs_metrop_est$sizes),
+  stan_est = colMeans(overdisp_stan$sizes)
+))
 
 plot(degrees ~ colMeans(overdisp_stan$degrees), xlab = "Overdispersed Degree Estimates", ylab = "True Degrees")
 abline(0, 1, col = "red")
@@ -217,7 +225,7 @@ i.e. the responses for each respondent are correlated across subpopulations. Aga
 In this package, model parameters are estimated via Stan. Note that while the full model likelihood depends on ${X}$, ${Z}_{global}$, and ${Z}_{subpop}$, any combination of these covariates can be provided. Additionally, we can assume that $\Sigma$ is a diagonal matrix (i.e. no correlation) by setting the argument `model = uncorrelated` in the `correlatedStan` function.
 
 ```{r correlated}
-correlated_cov_stan = correlatedStan(
+correlated_cov_stan <- correlatedStan(
   ard,
   known_sizes = sizes[c(1, 2, 4)],
   known_ind = c(1, 2, 4),
@@ -233,7 +241,7 @@ correlated_cov_stan = correlatedStan(
   iter = 500,
 )
 
-correlated_nocov_stan = correlatedStan(
+correlated_nocov_stan <- correlatedStan(
   ard,
   known_sizes = sizes[c(1, 2, 4)],
   known_ind = c(1, 2, 4),
@@ -247,7 +255,7 @@ correlated_nocov_stan = correlatedStan(
 )
 
 
-uncorrelated_cov_stan = correlatedStan(
+uncorrelated_cov_stan <- correlatedStan(
   ard,
   known_sizes = sizes[c(1, 2, 4)],
   known_ind = c(1, 2, 4),
@@ -263,7 +271,7 @@ uncorrelated_cov_stan = correlatedStan(
   iter = 500,
 )
 
-uncorrelated_x_stan = correlatedStan(
+uncorrelated_x_stan <- correlatedStan(
   ard,
   known_sizes = sizes[c(1, 2, 4)],
   known_ind = c(1, 2, 4),
@@ -278,12 +286,13 @@ uncorrelated_x_stan = correlatedStan(
 )
 
 
-
-round(data.frame(true = sizes,
-                 corr_cov_est = colMeans(correlated_cov_stan$sizes),
-                 corr_nocov_est = colMeans(correlated_nocov_stan$sizes),
-                 uncorr_cov_est = colMeans(uncorrelated_cov_stan$sizes),
-                 uncorr_x_est = colMeans(uncorrelated_x_stan$sizes)))
+round(data.frame(
+  true = sizes,
+  corr_cov_est = colMeans(correlated_cov_stan$sizes),
+  corr_nocov_est = colMeans(correlated_nocov_stan$sizes),
+  uncorr_cov_est = colMeans(uncorrelated_cov_stan$sizes),
+  uncorr_x_est = colMeans(uncorrelated_x_stan$sizes)
+))
 
 plot(degrees ~ colMeans(correlated_cov_stan$degrees), xlab = "Correlated Covariate Degree Estimates", ylab = "True Degrees")
 abline(0, 1, col = "red")

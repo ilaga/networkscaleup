@@ -105,26 +105,29 @@ This function fits the overdispersed NSUM model using the
 \dontrun{
 data(example_data)
 
-ard = example_data$ard
-subpop_sizes = example_data$subpop_sizes
-known_ind = c(1, 2, 4)
-N = example_data$N
+ard <- example_data$ard
+subpop_sizes <- example_data$subpop_sizes
+known_ind <- c(1, 2, 4)
+N <- example_data$N
 
-overdisp.est = overdispersedStan(ard,
-known_sizes = subpop_sizes[known_ind],
-known_ind = known_ind,
-G1_ind = 1,
-G2_ind = 2,
-B2_ind = 4,
-N = N,
-chains = 1,
-cores = 1,
-warmup = 250,
-iter = 500)
+overdisp.est <- overdispersedStan(ard,
+  known_sizes = subpop_sizes[known_ind],
+  known_ind = known_ind,
+  G1_ind = 1,
+  G2_ind = 2,
+  B2_ind = 4,
+  N = N,
+  chains = 1,
+  cores = 1,
+  warmup = 250,
+  iter = 500
+)
 
 # Compare size estimates
-round(data.frame(true = subpop_sizes,
-basic = colMeans(overdisp.est$sizes)))
+round(data.frame(
+  true = subpop_sizes,
+  basic = colMeans(overdisp.est$sizes)
+))
 
 # Compare degree estimates
 plot(example_data$degrees, colMeans(overdisp.est$degrees))

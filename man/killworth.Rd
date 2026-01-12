@@ -42,26 +42,30 @@ population sizes using the plug-in MLE and MLE estimator.
 # Analyze an example ard data set using the killworth function
 data(example_data)
 
-ard = example_data$ard
-subpop_sizes = example_data$subpop_sizes
-N = example_data$N
+ard <- example_data$ard
+subpop_sizes <- example_data$subpop_sizes
+N <- example_data$N
 
-mle.est = killworth(ard,
-known_sizes = subpop_sizes[c(1, 2, 4)],
-known_ind = c(1, 2, 4),
-N = N, model = "MLE")
+mle.est <- killworth(ard,
+  known_sizes = subpop_sizes[c(1, 2, 4)],
+  known_ind = c(1, 2, 4),
+  N = N, model = "MLE"
+)
 
-pimle.est = killworth(ard,
-known_sizes = subpop_sizes[c(1, 2, 4)],
-known_ind = c(1, 2, 4),
-N = N, model = "PIMLE")
+pimle.est <- killworth(ard,
+  known_sizes = subpop_sizes[c(1, 2, 4)],
+  known_ind = c(1, 2, 4),
+  N = N, model = "PIMLE"
+)
 
 ## Compare estimates with the truth
 plot(mle.est$degrees, example_data$degrees)
 
-data.frame(true = subpop_sizes[c(3, 5)],
-mle = mle.est$sizes,
-pimle = pimle.est$sizes)
+data.frame(
+  true = subpop_sizes[c(3, 5)],
+  mle = mle.est$sizes,
+  pimle = pimle.est$sizes
+)
 }
 \references{
 Killworth, P. D., Johnsen, E. C., McCarty, C., Shelley, G. A.,

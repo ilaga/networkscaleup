@@ -18,10 +18,10 @@ fit_mle(
 
 \item{x_cov_local}{n_i by p_local covariate matrix of local covariates}
 
-\item{family}{Distribution to fit, either "poisson" or "nbinomial"}
+\item{family}{distribution to fit, either "poisson" or "nbinomial"}
 }
 \value{
-List containing fitted model and extracted parameters
+list containing fitted model and extracted parameters
 }
 \description{
 Fit basic Poisson and Negative Binomial models using glmmTMB

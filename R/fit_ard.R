@@ -94,7 +94,7 @@ fit_stan_optim <- function(ard,
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
-      y = ard,
+      ard = ard,
       model_fit = fit_list
     )
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
@@ -125,12 +125,12 @@ fit_stan_optim <- function(ard,
     betas <- fit$summary(variables = "betas")$estimate
     # Pearson residuals
     pearson_vec <- construct_pearson(
-      y = ard,
+      ard = ard,
       model_fit = fit_list)
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
-      y = ard,
+      ard = ard,
       model_fit = fit_list)
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
     ## Return both sets of residuals
@@ -255,14 +255,14 @@ fit_mle <- function(ard,
     fit_list <- list(fit = fit, mu = mu_mat, family = "poisson")
     # Pearson residuals
     pearson_vec <- construct_pearson(
-      y = ard,
+      ard = ard,
       model_fit = fit_list
     )
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
 
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
-      y = ard,
+      ard = ard,
       model_fit = fit_list
     )
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)
@@ -306,14 +306,14 @@ fit_mle <- function(ard,
 
     # Pearson residuals
     pearson_vec <- construct_pearson(
-      y = ard,
+      ard = ard,
       model_fit = fit_list
     )
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)
 
     # Randomized quantile residuals
     rqr_vec <- construct_rqr(
-      y = ard,
+      ard = ard,
       model_fit = fit_list
     )
     rqr_resids <- matrix(rqr_vec, nrow = n_i, ncol = n_k)

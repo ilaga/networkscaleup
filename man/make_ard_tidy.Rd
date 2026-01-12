@@ -4,10 +4,10 @@
 \alias{make_ard_tidy}
 \title{Construct tibble from ARD matrix}
 \usage{
-make_ard_tidy(y)
+make_ard_tidy(ard)
 }
 \arguments{
-\item{y}{ARD matrix}
+\item{ard}{the ARD matrix}
 }
 \value{
 a tibble of ARD, with columns for row/col index

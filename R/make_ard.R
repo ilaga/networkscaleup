@@ -1,19 +1,19 @@
 #' Generate simulated ARD
 #'
-#' @param n_i Number of respondents (rows)
-#' @param n_k Number of groups (columns)
-#' @param N Total population size
-#' @param p Number of collected covariates
-#' @param p_global_nonzero Number of non-zero global covariates
-#' @param p_local_nonzero Number of non-zero local covariates
-#' @param group_corr Group correlation
-#' @param degree_corr Degree correlation
-#' @param family Sampling distribution
-#' @param omega_range Minimum and maximum omega for negative binomial overdispersion
-#' @param alpha_mean Mean of alphas
-#' @param alpha_sd Variance of alphas
-#' @param eta Correlation hyperparameter for LKJ prior
-#' @param seed Random seed
+#' @param n_i number of respondents (rows)
+#' @param n_k number of groups (columns)
+#' @param N total population size
+#' @param p number of collected covariates
+#' @param p_global_nonzero number of non-zero global covariates
+#' @param p_local_nonzero number of non-zero local covariates
+#' @param group_corr group correlation
+#' @param degree_corr degree correlation
+#' @param family sampling distribution
+#' @param omega_range minimum and maximum omega for negative binomial overdispersion
+#' @param alpha_mean mean of alphas
+#' @param alpha_sd variance of alphas
+#' @param eta correlation hyperparameter for LKJ prior
+#' @param seed random seed
 #'
 #' @returns simulated ARD along with all true parameters
 #' @export
@@ -138,10 +138,9 @@ make_ard <- function(n_i = 500,
       prev = nk_prev,
       size = nk_size,
       omega = omega,
-      # Again, unused if Poisson, should throw inside if statement
+      # TODO: unused if Poisson, should throw inside if statement
       eta = eta,
-      # Again, unused if uncorrelated, should throw inside if statement
-      # d = d,
+      # TODO: unused if uncorrelated, should throw inside if statement
       alphas = alphas,
       betas = betas,
       x_cov = x_cov,

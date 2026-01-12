@@ -8,11 +8,19 @@
 [![R-CMD-check](https://github.com/ilaga/networkscaleup/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ilaga/networkscaleup/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of networkscaleup is to …
+The `networkscaleup` package provides a suite of functions to both fit
+and diagnose the fit of several popular models for Aggregated Relational
+Data (ARD). These models are fit using Stan (`RStan`) and `glmmTMB`.
 
 ## Installation
 
-You can install the development version of networkscaleup from
+`networkscaleup` can be installed from CRAN with
+
+``` r
+install.packages("networkscaleup)
+```
+
+You can install the development version of `networkscaleup` from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -20,35 +28,68 @@ You can install the development version of networkscaleup from
 pak::pak("ilaga/networkscaleup")
 ```
 
-## Example
+## Simulating Data
 
-This is a basic example which shows you how to solve a common problem:
+The `networkscaleup` package allows simulation of synthetic ARD from
+commonly used models.
 
 ``` r
+## simulate some simple data
 library(networkscaleup)
-## basic example code
+
+set.seed(2)
+sim_dat <- make_ard(family = "poisson")
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+We can then fit the (true) model to this data and evaluate the fit of
+this model. Several diagnostics are provided, including rootograms and
+residual computation.
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+pois_fit_list <- fit_mle(sim_dat$ard, family = "poisson")
+
+pois_root <- hang_rootogram_ard(
+  ard = sim_dat$ard,
+  model_fit = pois_fit_list
+)
+
+pois_root
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
-You can also embed plots, for example:
+We see that the hanging rootogram indicates good fit, as would be
+expected. More flexible models and additional model checking diagnostics
+are also available.
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+<!-- ## Example -->
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+<!-- This is a basic example which shows you how to solve a common problem: -->
+
+<!-- ```{r example} -->
+
+<!-- library(networkscaleup) -->
+
+<!-- ## basic example code -->
+
+<!-- ``` -->
+
+<!-- What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so: -->
+
+<!-- ```{r cars} -->
+
+<!-- summary(cars) -->
+
+<!-- ``` -->
+
+<!-- You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. -->
+
+<!-- You can also embed plots, for example: -->
+
+<!-- ```{r pressure, echo = FALSE} -->
+
+<!-- plot(pressure) -->
+
+<!-- ``` -->
+
+<!-- In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN. -->
