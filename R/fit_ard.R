@@ -27,11 +27,9 @@ fit_stan_optim <- function(ard,
       n_k = n_k
     )
     if (family == "poisson") {
-      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson.stan")
       mod <- instantiate::stan_package_model(name = "Poisson", 
                                              package = "networkscaleup")
     } else {
-      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed.stan")
       mod <- instantiate::stan_package_model(name = "Overdispersed", 
                                              package = "networkscaleup")
     }
@@ -45,11 +43,9 @@ fit_stan_optim <- function(ard,
       z_subpop = x_cov_local
     )
     if (family == "poisson") {
-      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson_zsubpop.stan")
       mod <- instantiate::stan_package_model(name = "Poisson_zsubpop", 
                                              package = "networkscaleup")
     } else {
-      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zsubpop.stan")
       mod <- instantiate::stan_package_model(name = "Overdispersed_zsubpop", 
                                              package = "networkscaleup")
     }
@@ -63,11 +59,9 @@ fit_stan_optim <- function(ard,
       z_global = x_cov_global
     )
     if (family == "poisson") {
-      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson_zglobal.stan")
       mod <- instantiate::stan_package_model(name = "Poisson_zglobal", 
                                              package = "networkscaleup")
     } else {
-      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zglobal.stan")
       mod <- instantiate::stan_package_model(name = "Overdispersed_zglobal", 
                                              package = "networkscaleup")
     }
