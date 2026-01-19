@@ -27,9 +27,13 @@ fit_stan_optim <- function(ard,
       n_k = n_k
     )
     if (family == "poisson") {
-      mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson.stan")
+      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson.stan")
+      mod <- instantiate::stan_package_model(name = "Poisson", 
+                                             package = "networkscaleup")
     } else {
-      mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed.stan")
+      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed.stan")
+      mod <- instantiate::stan_package_model(name = "Overdispersed", 
+                                             package = "networkscaleup")
     }
   } else if (is.null(x_cov_global)) {
     # Only subpop cov
@@ -41,9 +45,13 @@ fit_stan_optim <- function(ard,
       z_subpop = x_cov_local
     )
     if (family == "poisson") {
-      mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson_zsubpop.stan")
+      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson_zsubpop.stan")
+      mod <- instantiate::stan_package_model(name = "Poisson_zsubpop", 
+                                             package = "networkscaleup")
     } else {
-      mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zsubpop.stan")
+      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zsubpop.stan")
+      mod <- instantiate::stan_package_model(name = "Overdispersed_zsubpop", 
+                                             package = "networkscaleup")
     }
   } else if (is.null(x_cov_local)) {
     # Only global cov
@@ -55,9 +63,13 @@ fit_stan_optim <- function(ard,
       z_global = x_cov_global
     )
     if (family == "poisson") {
-      mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson_zglobal.stan")
+      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson_zglobal.stan")
+      mod <- instantiate::stan_package_model(name = "Poisson_zglobal", 
+                                             package = "networkscaleup")
     } else {
-      mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zglobal.stan")
+      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zglobal.stan")
+      mod <- instantiate::stan_package_model(name = "Overdispersed_zglobal", 
+                                             package = "networkscaleup")
     }
   } else {
     # Both types of covariates
@@ -71,9 +83,11 @@ fit_stan_optim <- function(ard,
       z_global = x_cov_global
     )
     if (family == "poisson") {
-      mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson_zglobal_zsubpop.stan")
+      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Poisson_zglobal_zsubpop.stan")
+      stop("This has not yet been added to the package.")
     } else {
-      mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zglobal_zsubpop.stan")
+      # mod <- cmdstanr::cmdstan_model("./Stan_Files/Overdispersed_zglobal_zsubpop.stan")
+      stop("This has not yet been added to the package.")
     }
   }
   fit <- mod$optimize(data = stan_data)
@@ -88,7 +102,7 @@ fit_stan_optim <- function(ard,
     betas <- fit$summary(variables = "betas")$estimate
     # Pearson residuals
     pearson_vec <- construct_pearson(
-      y = ard,
+      ard = ard,
       model_fit = fit_list
     )
     pearson_resids <- matrix(pearson_vec, nrow = n_i, ncol = n_k)

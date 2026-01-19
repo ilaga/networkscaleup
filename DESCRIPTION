@@ -28,13 +28,15 @@ Depends: R (>= 4.1.0)
 Imports: methods, Rcpp (>= 0.12.0),
         rstan (>= 2.26.0), LaplacesDemon (>= 16.1.6), dplyr, 
         ggplot2, scales, stats, readr, tibble, tidyr, rlang, glmmTMB,
-        gridExtra, purrr, stringr, trialr, tidyselect, RMTstat
+        gridExtra, purrr, stringr, trialr, tidyselect, RMTstat, instantiate
 LinkingTo: BH (>= 1.66.0), Rcpp (>= 0.12.0), RcppEigen (>= 0.3.3.3.0),
             rstan (>= 2.26.0), StanHeaders (>= 2.26.0)
 SystemRequirements: GNU make
 Suggests: rmarkdown, knitr
 VignetteBuilder: knitr
 LazyData: true
+Additional_repositories:
+    https://mc-stan.org/r-packages/
 NeedsCompilation: yes
 Packaged: 2024-02-04 21:57:54 UTC; samidhashetty
 Author: Ian Laga [aut, cre] (<https://orcid.org/0000-0002-5164-4856>),
