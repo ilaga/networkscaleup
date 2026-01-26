@@ -35,6 +35,11 @@ bibliography: RJreferences.bib
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(networkscaleup)
+library(palmerpenguins)
+library(ggplot2)
+set.seed(100)
+
 ```
 
 # Introduction
@@ -42,16 +47,21 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 - ARD is ....
 - ARD is widely used in ....
 
-- In this paper we will review how to use `networkscaleup` to fit and diagnose
+- In this paper we will review how to use \CRANpkg{networkscaleup} to fit and diagnose
 popular models for ARD. 
 
 - Aim to provide a suite of functions for applied practitioners who
 wish to use the models for their own ARD, and understand how 
 to compare and contrast popular models.
 
+
+## Outline of the article
+
+
+
 # Background
 
-- A brief description of ARD and the network scale up method in general. 
+- A brief but self contained description of ARD and the network scale up method in general. 
 
 - Then this will be followed by the goal of collecting widely used models
 for this data, and providing software to fit these models quickly 
@@ -60,25 +70,165 @@ for this data, and providing software to fit these models quickly
 
 # The networkscaleup package
 
-- Describe an overview of the functionality of the package and the general
-formatting
+The \CRANpkg{networkscaleup} package provides a complete suite of 
+functions to fit and do model checking for 
+the most widely used models for ARD.
+It allows simulation of synthetic ARD from the widely used models described 
+above, with the possibility to incorporate both local and/or
+global covariates also, as is often the case in real data.
 
-- Describe how to simulate ARD using the package
+The researcher can then utilise either this simulated data or their
+own data to fit a range of candidate models and identify 
+what underlying structure is captured by a model. This provides users with
+a principled way to expand the models they consider for their problem,
+incorporating additional structure only when it is identified by the 
+diagnostic functions described below.
 
-- Describe how to read in and process real ARD in this 
-package (do we need this, we don't really do much for this?)
+To illustrate the workflow possible using this package, we will 
+first generate two synthetic datasets from the widely used Poisson
+model described above (reference eqn). In the first case we will 
+consider a simulated dataset where there are no covariates, meaning 
+the underlying Poisson rates are given exactly by 
+
+$$
+Y_{ik}\sim \text{Poisson}(\exp(\alpha_i + \beta_k)).
+$$
+
+Data from this model can then easily be simulated, specifying the size
+of the ARD sample and the underlying population.
+
+```{r sim_pois_data_1, echo =TRUE}
+sim_dat_1 <- make_ard(family = "poisson", n_i = 500, n_k = 20, N = 1e06)
+```
+
+The underlying values of $\alpha_i$ are drawn from a normal distribution
+(which can be specified) while the $\beta_k$ correspond to 
+uniform subpopulations of size between 1% and 15% of the total population
+(a typical size in real ARD).
+
+
+
+We can also incorporate respondent and group level covariates into this
+model, by specifying the number of non-zero coefficients of each.
+For example, the following code will generate $p=6$ covariates,
+of which two have non-zero local coefficients and one 
+will have a non-zero group coefficient.
+The underlying coefficients and the covariates will then also be stored 
+in this object.
+
+```{r sim_pois_data_2, echo = TRUE}
+sim_dat_2 <- make_ard(p = 6,
+                      p_local_nonzero = 2,
+                      p_global_nonzero = 1,
+                      family = "poisson")
+
+sim_dat_2$x_beta_global ## to see the single non-zero global coefficient
+```
+
+
+TO DO: Incorporate a real data example here also, describe how to read the 
+data in and store it so that it can be used like the simulated data 
+in everything below.
 
 
 # Fitting Models to ARD
 
-- Describe the key functionality we have to do this
+<!-- - Describe the key functionality we have to do this -->
 
-- A worked example with simulated data from the models in the package
+<!-- - A worked example with simulated data from the models in the package -->
 
-- A worked example with real data, where we fit these models.
+<!-- - A worked example with real data, where we fit these models. -->
+
+Given that we have either simulated ARD or used real data, the first task
+is to fit models to this data, so that the fit of these models can then be
+assessed. \CRANpkg{networkscaleup} provides two main options for fitting these models.
+The first uses \CRANpkg{glmmTMB} [@glmmtmb1] [@glmmtmb2] to compute maximum 
+likelihood estimates (MLEs) for each of the models, providing point estimates
+of the underlying parameters. The second approach uses \CRANpkg{rstan} [@rstan],
+a software for Bayesian inference which allows for the incorporation
+of priors into the model. Here, we use Stan only for optimization, 
+which also returns (maximum a posteriori) point estimates.
+The goal of both of these model fitting procedures is to provide the 
+user with reasonable model estimates quickly, allowing them to 
+identify plausible models. For large ARD, fitting a fully Bayesian
+model can require considerable computation time. The goal of these functions
+is to quickly identify an appropriate model, which can then be fit
+using software to generate the underlying posterior density rather 
+than just point estimates.
+
+We first fit the standard Poisson model, ignoring covariate information,
+to both simulated datasets using function `fit_mle`, which can
+specify the ARD, the form of the ARD model to be fit, and 
+covariates to include in the model also. This returns parameter 
+estimates (for $\alpha$ and $\beta$ in this case), along
+with Pearson residuals and Randomized Quantile residuals 
+(cite these here).
+
+
+```{r fit_pois_data, echo = TRUE}
+pois_fit_1 <- fit_mle(sim_dat_1$ard, family = "poisson")
+pois_fit_2 <- fit_mle(sim_dat_2$ard, family = "poisson")
+
+pois_fit_1$alphas[1:10] # the log degree estimates
+```
+
 
 
 # Evaluating ARD Models
+
+
+
+```{r plot_fitted_poisson, fig.cap="Test Caption"}
+plot_fitted(
+  ard = sim_dat_1$ard,
+  model_fit = pois_fit_1,
+  resid = "rqr"
+)
+# 
+# plot_fitted(
+#   ard = sim_dat_2$ard,
+#   model_fit = pois_fit_2,
+#   resid = "pearson"
+# )
+```
+
+
+
+<!-- We also have a function to construct a hanging rootogram for these -->
+<!-- fitted models (cite). -->
+
+<!-- ```{r plot_root_poisson, echo = TRUE} -->
+<!-- pois_root_1 <- hang_rootogram_ard( -->
+<!--   ard = sim_dat_1$ard, -->
+<!--   model_fit = pois_fit_1 -->
+<!-- ) -->
+<!-- pois_root_1 -->
+
+<!-- pois_root_2 <- hang_rootogram_ard( -->
+<!--   ard = sim_dat_2$ard, -->
+<!--   model_fit = pois_fit_2, -->
+<!--   x_max = 200 -->
+<!-- ) -->
+<!-- pois_root_2 -->
+<!-- ``` -->
+
+
+```{r plot_cov_poisson, echo = TRUE}
+cov_p_2 <- cov_plots(
+  ard = sim_dat_2$ard,
+  model_fit = pois_fit_2,
+  x_cov = sim_dat_2$x_cov,
+  se = T
+)
+
+local_cov_plot <- cov_p_2$Group_plot
+global_cov_plot <- cov_p_2$Respondent_plot
+
+# local_cov_plot # Suggests x2 and x4 correctly
+# global_cov_plot # Suggests x1 correctly
+```
+
+
 
 
 - Describe the key functions for this in the package
