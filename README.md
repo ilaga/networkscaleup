@@ -11,6 +11,8 @@
 The `networkscaleup` package provides a suite of functions to both fit
 and diagnose the fit of several popular models for Aggregated Relational
 Data (ARD). These models are fit using Stan (`RStan`) and `glmmTMB`.
+There is also additional functionality available to fit these models
+using `cmdstan`.
 
 ## Installation
 
@@ -27,6 +29,18 @@ You can install the development version of `networkscaleup` from
 # install.packages("pak")
 pak::pak("ilaga/networkscaleup")
 ```
+
+## Installation to use cmdstanR functionality
+
+We have created a version of this package which can use `cmdstanR`. To
+install this version from Github use
+
+``` r
+remotes::install_github("ilaga/networkscaleup@dev-cmdstan", type = "source")
+```
+
+This requires an installation of `cmdstanR`. See
+[here](https://mc-stan.org/cmdstanr/) for details.
 
 ## Simulating Data
 
@@ -56,7 +70,7 @@ pois_root <- hang_rootogram_ard(
 pois_root
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="" width="100%" />
 
 We see that the hanging rootogram indicates good fit, as would be
 expected. More flexible models and additional model checking diagnostics

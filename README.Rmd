@@ -22,6 +22,8 @@ knitr::opts_chunk$set(
 The `networkscaleup` package provides a suite of functions to both fit
 and diagnose the fit of several popular models for Aggregated Relational
 Data (ARD). These models are fit using Stan (`RStan`) and `glmmTMB`.
+There is also additional functionality available to fit these
+models using `cmdstan`.
 
 ## Installation
 
@@ -38,6 +40,20 @@ You can install the development version of `networkscaleup` from [GitHub](https:
 # install.packages("pak")
 pak::pak("ilaga/networkscaleup")
 ```
+
+
+## Installation to use cmdstanR functionality
+
+We have created a version of this package which can use `cmdstanR`.
+To install this version from Github use
+
+
+``` r
+remotes::install_github("ilaga/networkscaleup@dev-cmdstan", type = "source")
+```
+
+This requires an installation of `cmdstanR`. See [here](https://mc-stan.org/cmdstanr/)
+for details.
 
 
 ## Simulating Data
