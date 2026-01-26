@@ -39,25 +39,54 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 # Introduction
 
-Interactive data graphics provides plots that allow users to interact them. One of the most basic types of interaction is through tooltips, where users are provided additional information about elements in the plot by moving the cursor over the plot.
+- ARD is ....
+- ARD is widely used in ....
 
-This paper will first review some R packages on interactive graphics and their tooltip implementations. A new package \CRANpkg{ToOoOlTiPs} that provides customized tooltips for plot, is introduced. Some example plots will then be given to showcase how these tooltips help users to better read the graphics. 
+- In this paper we will review how to use `networkscaleup` to fit and diagnose
+popular models for ARD. 
+
+- Aim to provide a suite of functions for applied practitioners who
+wish to use the models for their own ARD, and understand how 
+to compare and contrast popular models.
 
 # Background
 
-Some packages on interactive graphics include \CRANpkg{plotly} [@plotly] that interfaces with Javascript for web-based interactive graphics, \CRANpkg{crosstalk} [@crosstalk] that specializes cross-linking elements across individual graphics.  The recent R Journal paper \CRANpkg{tsibbletalk} [@RJ-2021-050] provides a good example of including interactive graphics into an article for the journal. It has both a set of linked plots, and also an animated gif example, illustrating linking between time series plots and feature summaries.
+- A brief description of ARD and the network scale up method in general. 
+
+- Then this will be followed by the goal of collecting widely used models
+for this data, and providing software to fit these models quickly 
+(fit and fail fast). 
 
 
 # The networkscaleup package
 
+- Describe an overview of the functionality of the package and the general
+formatting
+
+- Describe how to simulate ARD using the package
+
+- Describe how to read in and process real ARD in this 
+package (do we need this, we don't really do much for this?)
+
 
 # Fitting Models to ARD
+
+- Describe the key functionality we have to do this
+
+- A worked example with simulated data from the models in the package
+
+- A worked example with real data, where we fit these models.
 
 
 # Evaluating ARD Models
 
 
+- Describe the key functions for this in the package
+
+- Continue the two worked examples from before, illustrating the uses of the
+package for these tasks specifically
+
 
 # Summary
 
-We have displayed various tooltips that are available in the package \pkg{ToOoOlTiPs}. 
+- A summary of what we have done, and why we have done it
