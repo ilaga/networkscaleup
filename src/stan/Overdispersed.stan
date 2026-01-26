@@ -40,4 +40,4 @@ generated quantities {
       log_lik[i,k] = neg_binomial_lpmf(y[i,k] | par1[i,k], par2[k]);
     }
   }
-}
+} 

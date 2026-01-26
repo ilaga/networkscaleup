@@ -38,4 +38,4 @@ generated quantities {
       log_lik[i,k] = poisson_lpmf(y[i,k] | mu[i,k]);
     }
   }
-}
+} 
