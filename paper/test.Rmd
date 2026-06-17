@@ -36,6 +36,24 @@ author:
     url: https://annalantzsmith.github.io/
     email: asm297@g.uky.edu
     orcid: 0000-0003-1507-0207
+  - name: Le Bao
+    affiliation:
+    - Pennsylvania State University
+    address:
+    - Department of Statistics
+    - University Park, PA, USA
+    url: https://lebao0215.github.io/
+    email: lebao@psu.edu
+    orcid: 0000-0003-0191-5918
+  - name: Xiaoyue Niu
+    affiliation:
+    - Pennsylvania State University
+    address:
+    - Department of Statistics
+    - University Park, PA, USA
+    url: https://sites.google.com/view/maggiexniu/
+    email: xiaoyue@psu.edu
+    orcid: 0000-0003-3384-7446
   - name: Ian Laga
     affiliation:
     - Montana State University
@@ -49,6 +67,8 @@ type: package
 output: 
   rjtools::rjournal_pdf_article:
     toc: no
+    header-includes:
+      - \usepackage{bm}
   rjtools::rjournal_web_article:
     self_contained: yes
     toc: no
@@ -57,10 +77,10 @@ bibliography: RJreferences.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.height = 4)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE,
+                      message = FALSE, fig.height = 4)
 library(networkscaleup)
 library(ggplot2)
-library(patchwork)
 set.seed(100)
 
 ```
@@ -79,20 +99,28 @@ to compare and contrast popular models.
 
 
 ## Outline of the article
+In Section \@ref(sec:background) we first review ARD and popular models for 
+this data. In Section \@ref(sec:package) we introduce the
+\CRANpkg{networkscaleup} package which provides a 
+suite of functions to simulate ARD. 
+Section \ref{sec:fitting} describes how popular ARD models
+can be fit using this package
+while Section \ref{sec:eval} discusses the diagnostic functions
+available for assessing the fit of common ARD models to data.
 
-
-
-# Background
+# Background {#sec:background}
 
 ARD is a popular tool to study social networks and estimate the 
 size of hard-to-reach populations in such networks.
 Since it was first considered [@bernard1991estimating], it has been
 used to estimate the size of a range of hidden populations
-[@bernard2010counting] [@salganik2011assessing] and estimate
+[@bernard2010counting, @salganik2011assessing] and estimate
 personal network size [@mccormick2010many]. Here we provide a brief overview
 of ARD and the most commonly used methods, particularly the 
 Network Scale-Up Method (NSUM). Detailed reviews of NSUM and general models
-for ARD are given in @laga2021thirty, @mccormick2020network, @ward2025bayesian.
+for ARD, along with important
+implementation considerations, 
+are given in @laga2021thirty, @mccormick2020network, @ward2025bayesian.
 
 
 An ARD sample $Y$ takes the form of an $n \times K$ matrix, where 
@@ -104,39 +132,104 @@ These can represent people in the network with specific traits or
 characteristics of interest, such as hard to reach populations (e.g, people
 who use drugs).
 
+ARD models seek to place distributional assumptions on the
+entries of $Y$, such that properties of the underlying network
+and respondents can be inferred.
 The original and most widely used statistical model for ARD is the 
-classic NSUM procedure [cite this], which assumes that
+classic NSUM procedure [@killworth1998estimation, @killworth1998social],
+which assumes that
 
-$$
+\begin{equation}
 Y_{ik} \sim \text{Binomial}(\exp(\alpha_i), \exp(\beta_k)),
-$$ 
+(\#eq:simp-pois)
+\end{equation} 
+
 
 with $\alpha_i$ the log-degree of respondent $i$ and $\beta_k$
 the log-prevalence of subpopulation $k$ in the underlying social network.
 This initial model does not allow for the incorporation of covariates,
-which are commonly collected and which we discuss below.
+which are commonly collected and utilised in the models considered below.
+<!-- Maybe a bit more discussion of this model here? -->
+
+Two types of covariates have been considered in ARD models: respondent-level
+covariates and respondent–group-level covariates. Respondent-level covariates are 
+commonly collected, whereas respondent–group-level covariates are 
+relatively rare.
+In this work, we focus exclusively on respondent-level covariates and leave the
+incorporation of respondent–group-level covariates in software to future work.
+Let $Z$ denote the $n \times p$ matrix of respondent-level covariates, 
+where the $i$-th row $z_i$ contains the covariates for respondent $i$. 
+These covariates do not vary across groups indexed by $k$. 
+Their effects on the response $Y_{ik}$ may be either global or local. 
+A global covariate induces a shift in the expected value of $Y_{ik}$ 
+that is constant across all groups $k$, given by a common coefficient $\beta$. 
+In contrast, a local covariate has an effect that varies with $k$, 
+allowing the impact of $z_i$ to differ across groups through a varying
+coefficient $\beta_k$.
+In the models described below, this difference corresponds to
+whether the coefficient in $\beta^\mathsf{T}z_i$ varies
+for different values of $k$.
 
 
-- A brief but self contained description of ARD and the network scale up method in general. 
+Several extensions of this initial Binomial model have been 
+considered which allow the incorporation of covariate information.
+A natural extension is the Poisson model of @teo2019estimating, where
+counts are modeled, with respondent covariates $z_i$, as
 
-- Then this will be followed by the goal of collecting widely used models
-for this data, and providing software to fit these models quickly 
-(fit and fail fast). 
-
-Diagnostics paper talks about how negative binomial models 
-don't include covariates so don't consider them further, just mention
-them briefly here (same as that paper).
+\begin{equation}
+Y_{ik} \sim \text{Poisson}(\exp(\alpha_i +\beta_k + \beta^\mathsf{T}z_i)).
+(\#eq:pois-cov)
+\end{equation}
 
 
-# The networkscaleup package
+Alternatively, @zheng2006many utilised a Negative Binomial distribution
+(without covariates)
+for respondent counts, which allows group specific overdispersion through the
+parameter $\omega_k$,
+
+\begin{equation}
+Y_{ik} \sim \text{Negative-Binomial}(\mu = \exp(\alpha_i +\beta_k + \beta^\mathsf{T}z_i),\ \text{overdispersion}=\omega_k).
+\end{equation}
+
+These models are widely considered in the ARD literature and serve as 
+a set of initial candidate models for many ARD analyses. 
+We note also that there have been several important extensions
+of these models
+in recent years, including incorporating correlation across 
+groups [@laga2023correlated] and between degree and 
+group [@vogel2025accounting].
+There are also other related ARD models, which we do not consider here.
+These include robust estimation for NSUM models [@diaz2026robust] and
+dichotomous ARD models [@baum2023uses]. Similarly, we do not consider
+ARD models for inferring the underlying network [e.g, @breza2020using]
+or design based models [e.g, @feehan2016generalizing].
+
+
+Given the variety of ARD models proposed in the literature, a key practical 
+challenge is selecting an appropriate specification for a given dataset. This 
+includes determining which covariates to include and which
+distribution to assume 
+for the outcome $Y$. The \CRANpkg{networkscaleup} package
+provides a selection of functions to fit some of the
+most widely used candidate models and
+evaluate their fit for given data. In the next section, we
+introduce the \CRANpkg{networkscaleup} package and 
+describe how it can be used for evaluating and 
+comparing ARD models.
+
+
+
+# The networkscaleup package {#sec:package}
+
+
+<!-- TO DO: Talk very briefly about installing the package here... -->
 
 The \CRANpkg{networkscaleup} package provides a complete suite of 
 functions to fit and do model checking for 
-the most widely used models for ARD.
+the most widely used ARD models.
 It allows simulation of synthetic ARD from the widely used models described 
 above, with the possibility to incorporate both local and/or
 global covariates also, as is often the case in real data.
-
 The researcher can then utilise either this simulated data or their
 own data to fit a range of candidate models and identify 
 what underlying structure is captured by a model. This provides users with
@@ -148,7 +241,8 @@ We will illustrate the workflow possible using this package
 with both simulated and real data.
 We will 
 first generate two synthetic datasets from the widely used Poisson
-model described above (reference eqn). In the first case we will 
+model described above in Equation\@ref(eq:simp-pois).
+In the first case we will 
 consider a simulated dataset where there are no covariates, meaning 
 the underlying Poisson rates are given exactly by 
 
@@ -158,9 +252,16 @@ $$
 This is one of the simplest ARD models and 
 data from this model can then easily be simulated, specifying the size
 of the ARD sample and the underlying population.
+To simulate data from this model, with no covariates, the 
+function `make_ard` can be used, which can simulate ARD from either
+a Poisson on Negative Binomial model, with arguments specifying the size
+of the ARD sample $Y$ along with potential covariate structure
+and population degree parameters. The following demonstrates a
+minimal example of this function, generating a small ARD sample.
 
-```{r sim_pois_data_1, echo =TRUE}
-sim_dat_1 <- make_ard(family = "poisson", n_i = 500, n_k = 20, N = 1e06)
+```{r sim_pois_data_1, echo =TRUE, eval=FALSE}
+library(networkscaleup)
+make_ard(family = "poisson", n_i = 500, n_k = 20, N = 1e06)
 ```
 
 The underlying values of $\alpha_i$ are drawn from a normal distribution
@@ -170,39 +271,58 @@ between 1% and 15% of the total population
 (a typical size in real ARD).
 
 
-
-We can also incorporate respondent and group level covariates into this
+We can also incorporate respondent level covariates into this
 model, by specifying the number of non-zero coefficients of each.
 For example, the following code will generate $p=6$ covariates,
 of which two have non-zero local coefficients and one 
-will have a non-zero group coefficient.
+will have a non-zero global coefficient.
 The underlying coefficients and the covariates will then also be stored 
-in this object.
+in the returned object, along with the ARD sample. This generates
+more realistic synthetic data which we will use throughout this paper
+to demonstrate the code functionality.
 
 ```{r sim_pois_data_2, echo = TRUE}
-sim_dat_2 <- make_ard(n_i = 500, n_k = 20, N = 1e06,
+sim_dat <- make_ard(n_i = 500, n_k = 20, N = 1e06,
                     p = 6,
                     p_local_nonzero = 2,
                     p_global_nonzero = 1,
                     family = "poisson")
-
-sim_dat_2$x_beta_global ## to see the single non-zero global coefficient
 ```
 
+For example, here we have specified that only one of the 
+global covariates has a non-zero coefficient, which is seen
+in the following output.
 
-TO DO: Incorporate a real data example here also, describe how to read the 
-data in and store it so that it can be used like the simulated data 
-in everything below. Even though this is not particularly interesting.
-Could just keep the simulated data to this section only...
+```{r see-global-beta, echo=TRUE}
+sim_dat$x_beta_global 
+```
+
+To illustrate the functionality of the \CRANpkg{networkscaleup}
+with real data, we consider ARD collected in Ukraine in 2008-2009
+[@paniotto2009estimating] which describes ARD for more than 9000 respondents
+about 15 groups. Several groups were removed using the
+pre-processing procedure outlined in @laga2023correlated. There
+are 8 respondent level covariates here, including age, gender, employment
+status and several additional binary education covariates.
+The subpopulations respondents were queried about include
+demographic categories (e.g., how many males aged 20-30 do you know?),
+specific names (e.g., how many
+people named Pavlo do you know?)
+and specific activities (e.g., how many intravenous drug users do you know?).
+This is a large ARD sample but it is representative of the 
+data size collected in current ARD studies. 
+Fitting complex ARD models to this data can be computationally
+intensive. As such, being able to identify the appropriate form
+of ARD model for such data is an important initial step which
+can prevent fitting complex and expensive models which are 
+not appropriate for a given dataset.
 
 
-# Fitting models to ARD
+<!-- TO DO: Spruce this up a little. Maybe add some more background or -->
+<!-- something -->
 
-<!-- - Describe the key functionality we have to do this -->
 
-<!-- - A worked example with simulated data from the models in the package -->
-
-<!-- - A worked example with real data, where we fit these models. -->
+# Fitting models to ARD {#sec:fitting}
 
 Given that we have either simulated ARD or have collected data which
 is to be analysed, the first task
@@ -210,9 +330,10 @@ is to fit candidate models to this data,
 so that the fit of these models can be
 assessed. \CRANpkg{networkscaleup} provides two main options for 
 fitting these models.
-The first uses \CRANpkg{glmmTMB} [@glmmtmb1] [@glmmtmb2] to compute maximum 
+The first uses \CRANpkg{glmmTMB} [@glmmtmb1, @glmmtmb2] to compute maximum 
 likelihood estimates (MLEs) for each of the models, providing point estimates
-of the underlying parameters. The second approach uses \CRANpkg{rstan} [@rstan],
+of the underlying parameters. 
+The second approach uses \CRANpkg{rstan} [@rstan],
 a software for Bayesian inference which allows for the incorporation
 of priors into the model. Here, we use Stan only for optimization, 
 which also returns MAP (maximum a posteriori) point estimates.
@@ -223,11 +344,13 @@ model can require considerable computation time.
 These functions
 allow the user to quickly identify an appropriate model,
 which can then be fit using MCMC methods, if required.
-We use the MLE estimates for illustration
-in this paper, but similar results are obtained with MAP estimates.
+We use only the MLE estimates throughout
+this paper, but similar results are generally obtained with MAP estimates.
+As the goal of these functions is to obtain quick diagnostics of potential
+models, either approach can be considered.
 
 We first fit the standard Poisson model, ignoring covariate information,
-to both simulated datasets using the function `fit_mle`. 
+to our simulated dataset using the function `fit_mle`. 
 This function takes several arguments, including the ARD, any potential covariates
 to include in the model, and the distributional family assumed 
 for the model.
@@ -238,20 +361,38 @@ and Randomized Quantile residuals [@dunn1996randomized].
 We obtain similar results using either residual but show only Randomized
 Quantile residuals in this paper.
 
+We can fit a standard Poisson model to 
 
 ```{r fit_pois_data, echo = TRUE}
-pois_fit_1 <- fit_mle(sim_dat_1$ard, family = "poisson")
-pois_fit_2 <- fit_mle(sim_dat_2$ard, family = "poisson")
+pois_fit <- fit_mle(sim_dat$ard, family = "poisson")
 
-pois_fit_1$alphas[1:5] # the first 5 log degree estimates
+pois_fit$alphas[1:5] # the first 5 log degree estimates
 ```
 
 
-TO DO: Fit the real data here also.
+Similarly, we can fit the initial Poisson model of Equation~\@ref(eq:simp-pois)
+to the Ukraine ARD. We initially ignore the covariates, before then
+using our diagnostics to identify which covariates to incorporate.
+This simple model fits quickly for this large dataset, giving MLE estimates
+in less than 8 seconds on a recent laptop. We will then use the 
+fit of this model to identify local and global covariates.
+
+```{r}
+y <- read.csv("data/Ukraine_y_analysis.csv")
+x <- read.csv("data/Ukraine_dem_cov_analysis.csv")
+cov_names <- colnames(x)
+y_m <- as.matrix(y)
+```
+
+```{r fit_pois_ukr, echo=TRUE}
+pois_fit_ukr <- fit_mle(ard = y_m, family = "poisson")
+```
+
+In each case this fitted object can then be used for subsequent 
+diagnostics, which we describe below.
 
 
-# Evaluating ARD models
-
+# Evaluating ARD models {#sec:eval}
 
 Given the fit of a specified ARD model, the next goal is to identify 
 the appropriateness of this fitted model and what structure (if any)
@@ -269,57 +410,132 @@ procedure is:
 
 We will describe the functions available in \CRANpkg{networkscaleup}
 for each of these steps, along with considering them for 
-each of our examples.
+our simulated and real data examples.
 
 ## Identifying Covariate Structure
 
-To identify which covariates may be required to in the model, the
-`cov_plots` function displays the relationship between these covariates,
+To identify which covariates should be considered
+for inclusion in a potential model, the
+`cov_plots` function examines the relationship between these covariates
+and the fitted model,
 which can then be used to identify which local and global covariates should
-be included in the model. The resulting figures, 
-for our simulated data with covariates,
-are shown 
-in Figure \@ref(fig:plot-cov-poisson) and Figure \@ref(fig:plot-global-cov).
-We see that for this simulation example, these plots correctly identify
-the true local and global coefficients in this data.
+be included. 
+This function generates two plots. The first, shown in 
+Figure \@ref(fig:plot-cov-poisson) for our simulated example, 
+plots a fitted smooth relationship (the default is a linear regression)
+along with associated confidence bounds, between the values of the covariates
+and their corresponding 
+residuals, for each of the subpopulations in the ARD.
+A relationship between these covariates and residuals can be used to
+identify potential local covariates.
 
 
-```{r plot-cov-poisson, echo = TRUE, fig.cap="Local covariates", fig.pos='H'}
-cov_p_2 <- cov_plots(
-  ard = sim_dat_2$ard,
-  model_fit = pois_fit_2,
-  x_cov = sim_dat_2$x_cov,
+```{r make-plot-cov-poisson, echo = TRUE, fig.cap="Local covariates", fig.pos='H'}
+cov_plot <- cov_plots(
+  ard = sim_dat$ard,
+  model_fit = pois_fit,
+  x_cov = sim_dat$x_cov,
   se = T
 )
 
-local_cov_plot <- cov_p_2$Group_plot
-global_cov_plot <- cov_p_2$Respondent_plot
-
-local_cov_plot # Suggests x2 and x4 correctly
+local_cov_plot <- cov_plot$Group_plot
+global_cov_plot <- cov_plot$Respondent_plot
 ```
+
+
+```{r plot-cov-poisson, echo = TRUE, fig.cap="Local covariates", fig.height=3, fig.pos='H'}
+local_cov_plot 
+```
+
+The second plot, shown in Figure \@ref(fig:plot-global-cov),
+displays the smooth relationship between the covariate values
+and the estimated log-degree for each respondent, 
+for each of the potential covariates.
+Linear patterns in these figures indicates covariates which 
+are correlated with the estimated respondent degree, which can 
+then be incorporated as global covariates.
+
+
+<!-- The resulting figures,  -->
+<!-- for our simulated data with covariates, -->
+<!-- are shown  -->
+<!-- in Figure \@ref(fig:plot-cov-poisson) and Figure \@ref(fig:plot-global-cov). -->
+<!-- We see that for this simulation example, these plots correctly identify -->
+<!-- the true local and global coefficients in this data. -->
+
+
 
 ```{r plot-global-cov, echo=TRUE, fig.cap="Global covariates", fig.height=2.5, fig.pos='H'}
-global_cov_plot # Suggests x1 correctly
+global_cov_plot 
 ```
 
-
-
-TO DO: Repeat with the McCarthy Data here.
-
-Given the result of these diagnostics, we refine our
-model for the simulated data which does have covariates,
+For this simulated data, this plots clearly identify the true local and global 
+covariates. Given the result of this diagnostic, we refine our
+model for the simulated data,
 now incorporating the local
 and global covariates 
 suggested by Figures \@ref(fig:plot-cov-poisson),\@ref(fig:plot-global-cov).
 
-```{r, echo=TRUE}
-pois_fit_2_cov <- fit_mle(
-  sim_dat_2$ard,
-  x_cov_local = as.matrix(sim_dat_2$x_cov[, c(2, 4)]),
-  x_cov_global = as.matrix(sim_dat_2$x_cov[, c(1)]),
+```{r fit-cov-sim, echo=TRUE}
+pois_fit_cov <- fit_mle(
+  sim_dat$ard,
+  x_cov_local = as.matrix(sim_dat$x_cov[, c(1, 3)]),
+  x_cov_global = as.matrix(sim_dat$x_cov[, c(2)]),
   family = "poisson"
 )
 ```
+
+If we repeat this diagnostic after incorporating these covariates
+we see either very weak or no relationship in both these covariate
+diagnostics.
+
+We repeat this analysis for our Ukraine ARD. We first examine the 
+local covariates which are shown in Figure~\@ref(fig:plot-local-cov-ukr).
+Here, Age, Gender, Employed, Access to Internet and Secondary Education
+as showing linear patterns, indicating they should be chosen for
+inclusion in any potential model.
+
+```{r get-cov-ukraine}
+cov_pois <- cov_plots(
+  ard = y_m,
+  model_fit = pois_fit_ukr,
+  x_cov = x,
+  se = T
+)
+
+local_cov_plot_ukr <- cov_pois$Group_plot
+global_cov_plot_ukr <- cov_pois$Respondent_plot
+```
+
+```{r plot-local-cov-ukr, echo=TRUE, fig.cap="Local covariates, Ukraine", fig.height=5, fig.pos='H'}
+local_cov_plot_ukr 
+```
+
+
+Similarly, we plot global covariates in Figure~\@ref(fig:plot-global-cov-ukr).
+Here we show all covariates but only identify those not chosen as
+local covariates. This identifies the 3 remaining 
+education covariates as potential global effects.
+
+```{r plot-global-cov-ukr, echo=TRUE, fig.cap="Global covariates, Ukraine", fig.height=2.5, fig.pos='H'}
+global_cov_plot_ukr
+```
+
+
+Given this identification of local and global covariates, 
+we can then refine our fitted model to incorporate this specification.
+Incorporating these covariates increases the computational 
+time required to fit this model, from several seconds to several minutes.
+
+```{r fit-cov-ukr, echo=TRUE}
+pois_fit_ukr_cov <- fit_mle(
+  y_m,
+  x_cov_local = as.matrix(x[, c(1, 2, 4, 5, 6)]),
+  x_cov_global = as.matrix(x[, c(3, 7, 8)]),
+  family = "poisson"
+)
+```
+
 
 
 ## Diagnosing Group Correlation
@@ -336,18 +552,24 @@ returns additional information which is used in constructing this test,
 and a corresponding p-value.
 Note that incorporating these covariates gives a
 plausible test statistic, indicating that, after accounting 
-for these covariates, there is not any remaining group correlation
+for these covariates, there is limited evidence for
+any remaining group correlation
 structure.
 
 ```{r plot-tw-sim, fig.cap="TW Test",fig.pos='H', echo=TRUE, fig.height=2.5, fig.width=5}
-tw_test <- tw_group_corr_test(model_fit = pois_fit_2_cov, plot = TRUE)
+tw_test <- tw_group_corr_test(model_fit = pois_fit_cov, plot = TRUE)
 tw_test$p_value
 tw_test$tw_density_plot
 ```
 
 
 
-TO DO: Repeat this for the McCarthy data here.
+```{r plot-tw-ukr, fig.cap="TW Test, Ukraine Data", fig.pos='H',fig.height=2.5, fig.width=5, echo=TRUE}
+tw_ukr <- tw_group_corr_test(model_fit = pois_fit_ukr_cov, plot = TRUE)
+tw_ukr$p_value
+tw_ukr$tw_density_plot
+```
+
 
 
 ## Checking Distributional Assumptions
@@ -365,27 +587,43 @@ true covariate structure. We see that the rootogram indicates good model fit,
 with all bars close to the x-axis, indicating agreement 
 between the expected and observed frequencies.
 We also have a dispersion test, which is shown for this data in 
-Figure \@ref(fig:disp-sim). As expected, these dispersion tests are not 
-significant for any subpopulations.
+Figure \@ref(fig:disp-sim). These dispersion tests are significant 
+for one of the twenty subpopulations, as would be expected by chance
+at $\alpha = 0.05$.
 
 ```{r root, echo = TRUE, fig.height=2.5, fig.cap="Hanging rootogram for simulated data."}
-root_2 <- pois_root_2 <- hang_rootogram_ard(
-  ard = sim_dat_2$ard,
-  model_fit = pois_fit_2_cov,
-  x_max = 200
+pois_root <- hang_rootogram_ard(
+  ard = sim_dat$ard,
+  model_fit = pois_fit_cov,
+  x_max = 100
 ) 
-root_2
+pois_root
 
 ```
 
 
 ```{r disp-sim, fig.height=2.5, fig.cap="Dispersion test for simulated data across subpopulations"}
-disp_test <- dispersion_metric(ard = sim_dat_2$ard, model_fit = pois_fit_2_cov)
+disp_test <- dispersion_metric(ard = sim_dat$ard, model_fit = pois_fit_cov)
 disp_test$plots
 ```
 
 
-TO DO: Repeat for the McCarthy data here.
+We can repeat these distributional tests for our real data.
+
+```{r root-ukr, fig.height=3.5, fig.cap="Overall Rootogram for Ukraine Data"}
+pois_root_ukr <- hang_rootogram_ard(
+  ard = y_m,
+  model_fit = pois_fit_ukr_cov
+)
+pois_root_ukr
+```
+
+
+```{r fig.height=2.5, fig.cap="Dispersion test for Ukraine data across subpopulations"}
+disp_test_ukr <- dispersion_metric(ard = y_m, model_fit = pois_fit_ukr_cov)
+disp_test_ukr$plots
+```
+
 
 ## Additional Diagnostic Functions
 
@@ -406,8 +644,8 @@ improved model fit, as expected.
 
 ```{r fitted-no-cov, echo=TRUE, fig.height=2.5, fig.cap="Plotting fitted residuals indicates lack of model fit when covariates are ignored."}
 
-plot_fitted(ard = sim_dat_2$ard,
-            model_fit = pois_fit_2,
+plot_fitted(ard = sim_dat$ard,
+            model_fit = pois_fit,
             resid = "rqr") +
   labs(title = "Ignoring covariates")
 ```
@@ -415,20 +653,22 @@ plot_fitted(ard = sim_dat_2$ard,
 
 
 ```{r fitted-cov, echo=TRUE, fig.height=2.5, fig.cap="Incorporating covariates indicates improved model fit."}
-plot_fitted(ard = sim_dat_2$ard,
-            model_fit = pois_fit_2_cov,
+plot_fitted(ard = sim_dat$ard,
+            model_fit = pois_fit_cov,
             resid = "rqr") +
   labs(title = "Including covariates")
 ```
 
 
-TO DO: Repeat for the McCarthy data here also.
+```{r ukraine-cov, echo=TRUE, fig.height=2.5, fig.cap="Plotting fitted residuals indicates lack of model fit, after including covariates."}
+plot_fitted(ard = y_m,
+            model_fit = pois_fit_ukr_cov,
+            resid = "rqr") +
+  labs(title = "Ignoring covariates")
 
-
-
+```
 
 
 
 # Summary
-
 - A summary of what we have done, and why we have done it

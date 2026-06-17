@@ -42,7 +42,7 @@ plot_fitted <- function(ard, model_fit = NULL,
   # then construct data for plot
   if (family == "poisson") {
     plot_data <- base::data.frame(fit = as.numeric(fit_vec), resid = resids)
-  } else if (family == "negbin") {
+  } else if (family == "nbinomial") {
     plot_data <- base::data.frame(
       fit = as.numeric(size_vec) *
         as.numeric(1 - full_prob) / (as.numeric(full_prob)),
