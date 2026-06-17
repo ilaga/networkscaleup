@@ -85,7 +85,7 @@ construct_pearson <- function(ard, model_fit) {
 construct_rqr <- function(ard, model_fit) {
   n_i <- nrow(ard)
   family <- model_fit$family
-  family <- match.arg(family, c("poisson", "nbinomial", "binomial"))
+  family <- match.arg(family, c("poisson", "nbinomial"))
   if (family == "poisson") {
     pois_lambda_est <- model_fit$mu
     mu_vec <- as.numeric(pois_lambda_est)
@@ -104,25 +104,7 @@ construct_rqr <- function(ard, model_fit) {
   y_vec <- as.numeric(ard)
   rqr <- rep(NA, length(y_vec))
 
-  if (family == "binomial") {
-    stop("Not implemented yet, the probability not passed in below.")
-    for (i in 1:length(y_vec)) {
-      # Get CDF at y[i] and at y[i] - 1
-      F_lower <- NA
-      if (y_vec[i] == 0) {
-        F_lower <- 0
-      } else {
-        F_lower <- stats::pbinom(y_vec[i] - 1, size = size_vec[i], prob = 0.5)
-      }
-      F_upper <- stats::pbinom(y_vec[i], size = size_vec[i], prob = 0.5)
-
-      # Sample a uniform value between F_lower and F_upper
-      u <- stats::runif(1, min = F_lower, max = F_upper)
-
-      # Inverse standard normal transformation
-      rqr[i] <- stats::qnorm(u)
-    }
-  } else if (family == "nbinomial") {
+  if (family == "nbinomial") {
     for (i in 1:length(y_vec)) {
       ## to avoid some numerical issues
       rqr[i] <- rqr_nbinom_logs(y_vec[i], size_vec[i], prob_vec[i])

@@ -15,7 +15,8 @@
 #' @param eta correlation hyperparameter for LKJ prior
 #' @param seed random seed
 #'
-#' @returns simulated ARD along with all true parameters
+#' @returns simulated ARD along with all true parameters. Parameters which
+#' are not used in a specific setting are set to NULL.
 #' @export
 #'
 #' @examples make_ard(N = 10000, family = "poisson")
@@ -132,24 +133,36 @@ make_ard <- function(n_i = 500,
   }
 
   # The return gives all the information need to recreate this data in and out of function
-  return(
-    list(
-      ard = ard,
-      prev = nk_prev,
-      size = nk_size,
-      omega = omega,
-      # TODO: unused if Poisson, should throw inside if statement
-      eta = eta,
-      # TODO: unused if uncorrelated, should throw inside if statement
-      alphas = alphas,
-      betas = betas,
-      x_cov = x_cov,
-      x_beta_global = x_beta_global,
-      x_beta_local = x_beta_local,
-      n_i = n_i,
-      n_k = n_k,
-      bias_mat = bias,
-      seed = seed
-    )
-  )
+  out <- list(
+    ard = ard,
+    prev = nk_prev,
+    size = nk_size,
+    omega = NULL,
+    eta = NULL,
+    alphas = alphas,
+    betas = betas,
+    x_cov = NULL,
+    x_beta_global = NULL,
+    x_beta_local = NULL,
+    n_i = n_i,
+    n_k = n_k,
+    bias_mat = bias,
+    seed = seed
+  ) 
+  
+  if(p > 0){
+    out$x_cov = x_cov
+  }
+  if(p_global_nonzero > 0){
+    out$x_beta_global = x_beta_global
+  }
+  if(p_local_nonzero > 0){
+    out$x_beta_local = x_beta_local
+  }
+  if(family == "nbinomial") {
+    out$omega = omega 
+    out$eta = eta
+  }
+  
+  return(out)
 }
