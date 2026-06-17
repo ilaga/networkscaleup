@@ -51,7 +51,8 @@ make_ard(
 \item{seed}{random seed}
 }
 \value{
-simulated ARD along with all true parameters
+simulated ARD along with all true parameters. Parameters which
+are not used in a specific setting are set to NULL.
 }
 \description{
 Generate simulated ARD
