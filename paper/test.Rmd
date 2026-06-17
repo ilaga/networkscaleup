@@ -378,8 +378,8 @@ in less than 8 seconds on a recent laptop. We will then use the
 fit of this model to identify local and global covariates.
 
 ```{r}
-y <- read.csv("data/Ukraine_y_analysis.csv")
-x <- read.csv("data/Ukraine_dem_cov_analysis.csv")
+y <- read.csv("paper/data/Ukraine_y_analysis.csv")
+x <- read.csv("paper/data/Ukraine_dem_cov_analysis.csv")
 cov_names <- colnames(x)
 y_m <- as.matrix(y)
 ```
