@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.12.29)  19 JAN 2026 13:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.12.29)  18 JUN 2026 14:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -722,18 +722,19 @@ Package: longtable 2021-09-01 v4.17 Multi-page Table package (DPC)
 )
 \cslhangindent=\skip74
 \csllabelwidth=\skip75
+\cslentryspacingunit=\skip76
 (/usr/local/texlive/2023/texmf-dist/tex/latex/tools/calc.sty
 Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
 \calc@Acount=\count327
 \calc@Bcount=\count328
 \calc@Adimen=\dimen301
 \calc@Bdimen=\dimen302
-\calc@Askip=\skip76
-\calc@Bskip=\skip77
+\calc@Askip=\skip77
+\calc@Bskip=\skip78
 LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
 \calc@Ccount=\count329
-\calc@Cskip=\skip78
+\calc@Cskip=\skip79
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count330
@@ -741,24 +742,24 @@ File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
 ) (./RJwrapper.aux)
 \openout1 = `RJwrapper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
 (/usr/local/texlive/2023/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count331
@@ -816,21 +817,21 @@ e
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Info: Redefining \microtypecontext on input line 54.
-Package microtype Info: Applying patch `item' on input line 54.
-Package microtype Info: Applying patch `toc' on input line 54.
-Package microtype Info: Applying patch `eqnum' on input line 54.
+LaTeX Info: Redefining \microtypecontext on input line 48.
+Package microtype Info: Applying patch `item' on input line 48.
+Package microtype Info: Applying patch `toc' on input line 48.
+Package microtype Info: Applying patch `eqnum' on input line 48.
 
-Package microtype Warning: Unable to apply patch `footnote' on input line 54.
+Package microtype Warning: Unable to apply patch `footnote' on input line 48.
 
-Package microtype Info: Applying patch `verbatim' on input line 54.
+Package microtype Info: Applying patch `verbatim' on input line 48.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 54.
+LaTeX Info: Redefining \showhyphens on input line 48.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
@@ -840,8 +841,8 @@ File: mt-ppl.cfg 2005/11/16 v1.6 microtype config. file: Palatino (RS)
 Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verba
 tim
 )
-Package backref Info: ** backref set up for natbib ** on input line 54.
-Package hyperref Info: Link coloring ON on input line 54.
+Package backref Info: ** backref set up for natbib ** on input line 48.
+Package hyperref Info: Link coloring ON on input line 48.
 (./RJwrapper.out) (./RJwrapper.out)
 \@outlinefile=\write5
 \openout5 = `RJwrapper.out'.
@@ -852,43 +853,40 @@ Package caption Info: longtable package is loaded.
 Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 )
 Package caption Info: End \AtBeginDocument code.
-(./test.tex (./RJwrapper.bbl (./RJwrapper.brf)
-\tf@brf=\write6
-\openout6 = `RJwrapper.brf'.
-
-LaTeX Font Info:    Trying to load font information for T1+zi4 on input line 14
-.
-(/usr/local/texlive/2023/texmf-dist/tex/latex/inconsolata/t1zi4.fd
-File: t1zi4.fd 2018/01/14 T1/zi4 (Inconsolata)
+(./test.tex
+LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 1
+8.
+(/usr/local/texlive/2023/texmf-dist/tex/latex/psnfss/ts1ppl.fd
+File: ts1ppl.fd 2001/06/04 font definitions for TS1/ppl.
 )
-LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 9.18004pt on input line 14.
-Package microtype Info: Loading generic protrusion settings for font family
-(microtype)             `zi4' (encoding: T1).
-(microtype)             For optimal results, create family-specific settings.
-(microtype)             See the microtype manual for details.
-LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 1
-4.
+
+LaTeX Warning: Reference `(' on page 1 undefined on input line 33.
+
+
+LaTeX Warning: Reference `(' on page 1 undefined on input line 34.
+
+LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 5
+7.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 )
 LaTeX Font Info:    Trying to load font information for OML+zplm on input line 
-14.
+57.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/psnfss/omlzplm.fd
 File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OMS+zplm on input line 
-14.
+57.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/psnfss/omszplm.fd
 File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OMX+zplm on input line 
-14.
+57.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/psnfss/omxzplm.fd
 File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OT1+zplm on input line 
-14.
+57.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/psnfss/ot1zplm.fd
 File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
 )
@@ -897,59 +895,244 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 9.37807pt on input line 14.
+(Font)              scaled to size 9.37807pt on input line 57.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 7.29405pt on input line 14.
+(Font)              scaled to size 7.29405pt on input line 57.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 14.
+(Font)              scaled to size 5.21004pt on input line 57.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 9.37807pt on input line 14.
+(Font)              scaled to size 9.37807pt on input line 57.
 (/usr/local/texlive/2023/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 7.29405pt on input line 14.
+(Font)              scaled to size 7.29405pt on input line 57.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 14.
+(Font)              scaled to size 5.21004pt on input line 57.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `cmss' (encoding: OT1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+[1{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/l
+ocal/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc}
+
+]
+LaTeX Font Info:    Trying to load font information for T1+zi4 on input line 17
+8.
+(/usr/local/texlive/2023/texmf-dist/tex/latex/inconsolata/t1zi4.fd
+File: t1zi4.fd 2018/01/14 T1/zi4 (Inconsolata)
 )
+LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
+(Font)              scaled to size 9.18004pt on input line 178.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `zi4' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+[2{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}]
+[3]
+<test_files/figure-latex/plot-cov-poisson-1.pdf, id=177, 461.725pt x 204.765pt>
+
+File: test_files/figure-latex/plot-cov-poisson-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/plot-cov-poisson-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/plot-cov-poisson-1.pdf  used o
+n input line 380.
+(pdftex.def)             Requested size: 461.72388pt x 204.76448pt.
+
+Overfull \hbox (63.3853pt too wide) in paragraph at lines 380--381
+ [][] 
+ []
+
+<test_files/figure-latex/plot-global-cov-1.pdf, id=179, 453.695pt x 168.63pt>
+File: test_files/figure-latex/plot-global-cov-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/plot-global-cov-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/plot-global-cov-1.pdf  used on
+ input line 398.
+(pdftex.def)             Requested size: 453.6939pt x 168.62958pt.
+
+Overfull \hbox (55.35532pt too wide) in paragraph at lines 398--399
+ [][] 
+ []
+
+[4] [5 <./test_files/figure-latex/plot-cov-poisson-1.pdf> <./test_files/figure-
+latex/plot-global-cov-1.pdf>]
+<test_files/figure-latex/plot-local-cov-ukr-1.pdf, id=219, 462.72874pt x 349.30
+5pt>
+File: test_files/figure-latex/plot-local-cov-ukr-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/plot-local-cov-ukr-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/plot-local-cov-ukr-1.pdf  used
+ on input line 434.
+(pdftex.def)             Requested size: 462.72762pt x 349.30414pt.
+
+Overfull \hbox (64.38904pt too wide) in paragraph at lines 434--435
+ [][] 
+ []
+
+<test_files/figure-latex/plot-global-cov-ukr-1.pdf, id=221, 453.695pt x 168.63p
+t>
+File: test_files/figure-latex/plot-global-cov-ukr-1.pdf Graphic file (type pdf)
+
+<use test_files/figure-latex/plot-global-cov-ukr-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/plot-global-cov-ukr-1.pdf  use
+d on input line 449.
+(pdftex.def)             Requested size: 453.6939pt x 168.62958pt.
+
+Overfull \hbox (55.35532pt too wide) in paragraph at lines 449--450
+ [][] 
+ []
+
+[6 <./test_files/figure-latex/plot-local-cov-ukr-1.pdf>]
+<test_files/figure-latex/plot-tw-sim-1.pdf, id=243, 323.2075pt x 168.63pt>
+File: test_files/figure-latex/plot-tw-sim-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/plot-tw-sim-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/plot-tw-sim-1.pdf  used on inp
+ut line 501.
+(pdftex.def)             Requested size: 323.20671pt x 168.62958pt.
+[7 <./test_files/figure-latex/plot-global-cov-ukr-1.pdf> <./test_files/figure-l
+atex/plot-tw-sim-1.pdf>]
+<test_files/figure-latex/plot-tw-ukr-1.pdf, id=270, 323.2075pt x 168.63pt>
+File: test_files/figure-latex/plot-tw-ukr-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/plot-tw-ukr-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/plot-tw-ukr-1.pdf  used on inp
+ut line 520.
+(pdftex.def)             Requested size: 323.20671pt x 168.62958pt.
+<test_files/figure-latex/root-1.pdf, id=275, 459.7175pt x 168.63pt>
+File: test_files/figure-latex/root-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/root-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/root-1.pdf  used on input line
+ 554.
+(pdftex.def)             Requested size: 459.71637pt x 168.62958pt.
+
+Overfull \hbox (61.37779pt too wide) in paragraph at lines 554--555
+ [][] 
+ []
+
+<test_files/figure-latex/disp-sim-1.pdf, id=276, 459.7175pt x 164.615pt>
+File: test_files/figure-latex/disp-sim-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/disp-sim-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/disp-sim-1.pdf  used on input 
+line 560.
+(pdftex.def)             Requested size: 459.71637pt x 164.6146pt.
+
+Overfull \hbox (61.37779pt too wide) in paragraph at lines 560--561
+ [][] 
+ []
+
+<test_files/figure-latex/root-ukr-1.pdf, id=277, 459.7175pt x 240.9pt>
+File: test_files/figure-latex/root-ukr-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/root-ukr-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/root-ukr-1.pdf  used on input 
+line 568.
+(pdftex.def)             Requested size: 459.71637pt x 240.8994pt.
+
+Overfull \hbox (61.37779pt too wide) in paragraph at lines 568--569
+ [][] 
+ []
+
+<test_files/figure-latex/unnamed-chunk-2-1.pdf, id=278, 459.7175pt x 164.615pt>
+
+File: test_files/figure-latex/unnamed-chunk-2-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/unnamed-chunk-2-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/unnamed-chunk-2-1.pdf  used on
+ input line 574.
+(pdftex.def)             Requested size: 459.71637pt x 164.6146pt.
+
+Overfull \hbox (61.37779pt too wide) in paragraph at lines 574--575
+ [][] 
+ []
+
+[8 <./test_files/figure-latex/plot-tw-ukr-1.pdf> <./test_files/figure-latex/roo
+t-1.pdf>] [9 <./test_files/figure-latex/disp-sim-1.pdf> <./test_files/figure-la
+tex/root-ukr-1.pdf> <./test_files/figure-latex/unnamed-chunk-2-1.pdf>]
+<test_files/figure-latex/fitted-no-cov-1.pdf, id=339, 459.7175pt x 168.63pt>
+File: test_files/figure-latex/fitted-no-cov-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/fitted-no-cov-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/fitted-no-cov-1.pdf  used on i
+nput line 604.
+(pdftex.def)             Requested size: 459.71637pt x 168.62958pt.
+
+Overfull \hbox (61.37779pt too wide) in paragraph at lines 604--605
+ [][] 
+ []
+
+<test_files/figure-latex/fitted-cov-1.pdf, id=340, 459.7175pt x 168.63pt>
+File: test_files/figure-latex/fitted-cov-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/fitted-cov-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/fitted-cov-1.pdf  used on inpu
+t line 617.
+(pdftex.def)             Requested size: 459.71637pt x 168.62958pt.
+
+Overfull \hbox (61.37779pt too wide) in paragraph at lines 617--618
+ [][] 
+ []
+
+<test_files/figure-latex/ukraine-cov-1.pdf, id=341, 463.7325pt x 168.63pt>
+File: test_files/figure-latex/ukraine-cov-1.pdf Graphic file (type pdf)
+<use test_files/figure-latex/ukraine-cov-1.pdf>
+Package pdftex.def Info: test_files/figure-latex/ukraine-cov-1.pdf  used on inp
+ut line 630.
+(pdftex.def)             Requested size: 463.73135pt x 168.62958pt.
+
+Overfull \hbox (65.39278pt too wide) in paragraph at lines 630--631
+ [][] 
+ []
+
+[10 <./test_files/figure-latex/fitted-no-cov-1.pdf> <./test_files/figure-latex/
+fitted-cov-1.pdf>] (./RJwrapper.bbl (./RJwrapper.brf)
+\tf@brf=\write6
+\openout6 = `RJwrapper.brf'.
+
+[11 <./test_files/figure-latex/ukraine-cov-1.pdf>])
 
 LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
-(Font)              using `T1/zi4/m/n' instead on input line 43.
+(Font)              using `T1/zi4/m/n' instead on input line 653.
 
 LaTeX Font Info:    Font shape `T1/zi4/m/it' will be
-(Font)              scaled to size 9.18004pt on input line 43.
-) [1{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr
-/local/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc}
+(Font)              scaled to size 9.18004pt on input line 653.
 
-{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}] [
-2] (./RJwrapper.aux)
+Underfull \hbox (badness 10000) in paragraph at lines 663--664
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 673--674
+
+ []
+
+[12]) [13] (./RJwrapper.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
+
+LaTeX Warning: There were undefined references.
+
 Package rerunfilecheck Info: File `RJwrapper.out' has not changed.
-(rerunfilecheck)             Checksum: 4D626920BD7804B5CA1BD51ACDF1C980;1381.
+(rerunfilecheck)             Checksum: F70B534818270979D551D054426643E7;2457.
 Package rerunfilecheck Info: File `RJwrapper.brf' has not changed.
-(rerunfilecheck)             Checksum: 9E52F6D792B54160192ABAF53E8F3C43;134.
+(rerunfilecheck)             Checksum: 8C2B4A437E229D054BA4D2B25993C94F;1532.
  ) 
 Here is how much of TeX's memory you used:
- 26988 strings out of 476025
- 492945 string characters out of 5790016
- 1867388 words of memory out of 5000000
- 46817 multiletter control sequences out of 15000+600000
- 540005 words of font info for 146 fonts, out of 8000000 for 9000
+ 27492 strings out of 476025
+ 504118 string characters out of 5790016
+ 1869388 words of memory out of 5000000
+ 47105 multiletter control sequences out of 15000+600000
+ 553533 words of font info for 238 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 117i,11n,131p,1006b,653s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 117i,11n,131p,1006b,877s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/inconsolata/Inconsolat
-a-zi4r.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/urw/palatino/uplb8a.
-pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></u
-sr/local/texlive/2023/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on RJwrapper.pdf (2 pages, 81855 bytes).
+a-zi4r.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+s8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy1
+0.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/mathpazo/fplmri.pf
+b></usr/local/texlive/2023/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr
+/local/texlive/2023/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/
+texlive/2023/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb>
+Output written on RJwrapper.pdf (13 pages, 8985452 bytes).
 PDF statistics:
- 103 PDF objects out of 1000 (max. 8388607)
- 90 compressed objects within 1 object stream
- 15 named destinations out of 1000 (max. 500000)
- 45125 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 487 PDF objects out of 1000 (max. 8388607)
+ 412 compressed objects within 5 object streams
+ 84 named destinations out of 1000 (max. 500000)
+ 59054 words of extra memory for PDF output out of 61914 (max. 10000000)
 
