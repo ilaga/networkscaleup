@@ -61,7 +61,7 @@ author:
     - Department of Mathematical Sciences
     - Bozeman, MT, USA
     url: https://ilaga.github.io/
-    email: ian.laga@montata.edu
+    email: ian.laga@montana.edu
     orcid: 0000-0002-5164-4856
 type: package
 output: 
@@ -99,8 +99,8 @@ to compare and contrast popular models.
 
 
 ## Outline of the article
-In Section \@ref(sec:background) we first review ARD and popular models for 
-this data. In Section \@ref(sec:package) we introduce the
+In Section \ref(sec:background) we first review ARD and popular models for 
+this data. In Section \ref(sec:package) we introduce the
 \CRANpkg{networkscaleup} package which provides a 
 suite of functions to simulate ARD. 
 Section \ref{sec:fitting} describes how popular ARD models
@@ -114,7 +114,7 @@ ARD is a popular tool to study social networks and estimate the
 size of hard-to-reach populations in such networks.
 Since it was first considered [@bernard1991estimating], it has been
 used to estimate the size of a range of hidden populations
-[@bernard2010counting, @salganik2011assessing] and estimate
+[@bernard2010counting], [@salganik2011assessing] and estimate
 personal network size [@mccormick2010many]. Here we provide a brief overview
 of ARD and the most commonly used methods, particularly the 
 Network Scale-Up Method (NSUM). Detailed reviews of NSUM and general models
@@ -223,6 +223,7 @@ comparing ARD models.
 
 
 <!-- TO DO: Talk very briefly about installing the package here... -->
+<!-- potentially add a table of key package functions here also -->
 
 The \CRANpkg{networkscaleup} package provides a complete suite of 
 functions to fit and do model checking for 
@@ -241,7 +242,7 @@ We will illustrate the workflow possible using this package
 with both simulated and real data.
 We will 
 first generate two synthetic datasets from the widely used Poisson
-model described above in Equation\@ref(eq:simp-pois).
+model described below. <!-- above in Equation\@ref(eq:simp-pois). -->
 In the first case we will 
 consider a simulated dataset where there are no covariates, meaning 
 the underlying Poisson rates are given exactly by 
@@ -254,7 +255,7 @@ data from this model can then easily be simulated, specifying the size
 of the ARD sample and the underlying population.
 To simulate data from this model, with no covariates, the 
 function `make_ard` can be used, which can simulate ARD from either
-a Poisson on Negative Binomial model, with arguments specifying the size
+a Poisson or Negative Binomial model, with arguments specifying the size
 of the ARD sample $Y$ along with potential covariate structure
 and population degree parameters. The following demonstrates a
 minimal example of this function, generating a small ARD sample.
@@ -378,14 +379,14 @@ in less than 8 seconds on a recent laptop. We will then use the
 fit of this model to identify local and global covariates.
 
 ```{r}
-y <- read.csv("paper/data/Ukraine_y_analysis.csv")
-x <- read.csv("paper/data/Ukraine_dem_cov_analysis.csv")
-cov_names <- colnames(x)
-y_m <- as.matrix(y)
+y_ukr <- read.csv("data/Ukraine_y_analysis.csv")
+x_ukr <- read.csv("data/Ukraine_dem_cov_analysis.csv")
+cov_names <- colnames(x_ukr)
+y_ukr <- as.matrix(y_ukr)
 ```
 
-```{r fit_pois_ukr, echo=TRUE}
-pois_fit_ukr <- fit_mle(ard = y_m, family = "poisson")
+```{r fit_pois_ukr, echo=TRUE, cache=TRUE}
+pois_fit_ukr <- fit_mle(ard = y_ukr, family = "poisson")
 ```
 
 In each case this fitted object can then be used for subsequent 
@@ -469,7 +470,7 @@ then be incorporated as global covariates.
 global_cov_plot 
 ```
 
-For this simulated data, this plots clearly identify the true local and global 
+For this simulated data, these plots recover the true local and global 
 covariates. Given the result of this diagnostic, we refine our
 model for the simulated data,
 now incorporating the local
@@ -527,7 +528,7 @@ we can then refine our fitted model to incorporate this specification.
 Incorporating these covariates increases the computational 
 time required to fit this model, from several seconds to several minutes.
 
-```{r fit-cov-ukr, echo=TRUE}
+```{r fit-cov-ukr, echo=TRUE, cache=TRUE}
 pois_fit_ukr_cov <- fit_mle(
   y_m,
   x_cov_local = as.matrix(x[, c(1, 2, 4, 5, 6)]),
