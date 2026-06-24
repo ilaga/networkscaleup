@@ -1,0 +1,123 @@
+# networkscaleup
+
+The `networkscaleup` package provides a suite of functions to both fit
+and diagnose the fit of several popular models for Aggregated Relational
+Data (ARD). These models are fit using Stan (`RStan`) and `glmmTMB`.
+
+## Installation
+
+`networkscaleup` can be installed from CRAN with
+
+``` r
+install.packages("networkscaleup)
+```
+
+You can install the development version of `networkscaleup` from
+[GitHub](https://github.com/) with:
+
+``` r
+
+# install.packages("pak")
+pak::pak("ilaga/networkscaleup")
+```
+
+## Simulating Data
+
+The `networkscaleup` package allows simulation of synthetic ARD from
+commonly used models.
+
+``` r
+
+## simulate some simple data
+library(networkscaleup)
+
+set.seed(2)
+sim_dat <- make_ard(family = "poisson")
+```
+
+We can then fit the (true) model to this data and evaluate the fit of
+this model. Several diagnostics are provided, including rootograms and
+residual computation.
+
+``` r
+
+pois_fit_list <- fit_mle(sim_dat$ard, family = "poisson")
+
+pois_root <- hang_rootogram_ard(
+  ard = sim_dat$ard,
+  model_fit = pois_fit_list
+)
+
+pois_root
+```
+
+![](reference/figures/README-unnamed-chunk-3-1.png)
+
+We see that the hanging rootogram indicates good fit, as would be
+expected. More flexible models and additional model checking diagnostics
+are also available.
+
+# Package index
+
+## All functions
+
+- [`construct_pearson()`](https://ilaga.github.io/networkscaleup/reference/construct_pearson.md)
+  : Compute Pearson Residuals for ARD matrix and fitted model
+- [`construct_rqr()`](https://ilaga.github.io/networkscaleup/reference/construct_rqr.md)
+  : Compute Randomized Quantile Residuals for ARD Models
+- [`correlatedStan()`](https://ilaga.github.io/networkscaleup/reference/correlatedStan.md)
+  : Fit ARD using the uncorrelated or correlated model in Stan This
+  function fits the ARD using either the uncorrelated or correlated
+  model in Laga et al. (2021) in Stan. The population size estimates and
+  degrees are scaled using a post-hoc procedure.
+- [`cov_plots()`](https://ilaga.github.io/networkscaleup/reference/cov_plots.md)
+  : Covariance plots
+- [`dispersion_metric()`](https://ilaga.github.io/networkscaleup/reference/dispersion_metric.md)
+  : Dispersion Metric for Fitted ARD Model
+- [`example_data`](https://ilaga.github.io/networkscaleup/reference/example_data.md)
+  : Simulated ARD data set with z and x.
+- [`fit_mle()`](https://ilaga.github.io/networkscaleup/reference/fit_mle.md)
+  : Fit basic Poisson and Negative Binomial models using glmmTMB
+- [`get_surrogate()`](https://ilaga.github.io/networkscaleup/reference/get_surrogate.md)
+  : Compute Surrogate Residuals for ARD Models
+- [`hang_rootogram_ard()`](https://ilaga.github.io/networkscaleup/reference/hang_rootogram_ard.md)
+  : Hanging Rootogram for Fitted ARD Model
+- [`killworth()`](https://ilaga.github.io/networkscaleup/reference/killworth.md)
+  : Fit Killworth models to ARD. This function estimates the degrees and
+  population sizes using the plug-in MLE and MLE estimator.
+- [`log_mix_uniform()`](https://ilaga.github.io/networkscaleup/reference/log_mix_uniform.md)
+  : log computed uniform quantile
+- [`make_ard()`](https://ilaga.github.io/networkscaleup/reference/make_ard.md)
+  : Generate simulated ARD
+- [`make_ard_tidy()`](https://ilaga.github.io/networkscaleup/reference/make_ard_tidy.md)
+  : Construct tibble from ARD matrix
+- [`networkscaleup-package`](https://ilaga.github.io/networkscaleup/reference/networkscaleup.md)
+  [`networkscaleup`](https://ilaga.github.io/networkscaleup/reference/networkscaleup.md)
+  : The 'networkscaleup' package.
+- [`overdispersed()`](https://ilaga.github.io/networkscaleup/reference/overdispersed.md)
+  : Fit Overdispersed model to ARD (Gibbs-Metropolis)
+- [`overdispersedStan()`](https://ilaga.github.io/networkscaleup/reference/overdispersedStan.md)
+  : Fit ARD using the Overdispersed model in Stan
+- [`plot_fitted()`](https://ilaga.github.io/networkscaleup/reference/plot_fitted.md)
+  : Plot residuals against fitted values
+- [`residual_correlation()`](https://ilaga.github.io/networkscaleup/reference/residual_correlation.md)
+  : Construction Residual (row/column) correlation matrix
+- [`residual_heatmap()`](https://ilaga.github.io/networkscaleup/reference/residual_heatmap.md)
+  : Construct heatmap of residuals
+- [`rqr_nbinom_logs()`](https://ilaga.github.io/networkscaleup/reference/rqr_nbinom_logs.md)
+  : compute numerically stable negative binomial rqr
+- [`rqr_pois_logs()`](https://ilaga.github.io/networkscaleup/reference/rqr_pois_logs.md)
+  : compute numerically stable Poisson rqr
+- [`scaling()`](https://ilaga.github.io/networkscaleup/reference/scaling.md)
+  : Scale raw log degree and log prevalence estimates
+- [`tw_group_corr_test()`](https://ilaga.github.io/networkscaleup/reference/tw_group_corr_test.md)
+  : Tracy-Widom test for residual group correlation
+
+# Articles
+
+### All vignettes
+
+- [Diagnostic tools for ARD
+  Models](https://ilaga.github.io/networkscaleup/articles/ARD-Diagnostics.md):
+- [Fitting Network Scale-up
+  Models](https://ilaga.github.io/networkscaleup/articles/FittingNetworkScaleup.md):
