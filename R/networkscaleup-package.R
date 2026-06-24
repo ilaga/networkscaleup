@@ -4,7 +4,8 @@
 #'   analyze Aggregated Relational Data, mostly through the use of Stan.
 #'
 #' @docType package
-#' @name networkscaleup-package
+#' @name networkscaleup
+"_PACKAGE"
 #' @aliases networkscaleup
 #' @useDynLib networkscaleup, .registration = TRUE
 #' @import methods

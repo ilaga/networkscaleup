@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
+^sims$
+^README\.Rmd$
+^Makefile$
+^figures$
+^paper$
+^template_check$

@@ -72,31 +72,31 @@ scaling <-
            B2_ind = NULL,
            N = NULL) {
     ## Extract dimensions
-    iter = nrow(log_degrees) ## Number of MCMC samples
-    N_i = ncol(log_degrees) ## Number of respondents
-    N_k = ncol(log_prevalences) ## Number of subpopulations
+    iter <- nrow(log_degrees) ## Number of MCMC samples
+    N_i <- ncol(log_degrees) ## Number of respondents
+    N_k <- ncol(log_prevalences) ## Number of subpopulations
 
-    scaling = match.arg(scaling)
+    scaling <- match.arg(scaling)
 
-    if(!is.null(Correlation)){
-      diag(Correlation) = NA
+    if (!is.null(Correlation)) {
+      diag(Correlation) <- NA
     }
 
 
-    alphas = log_degrees
-    betas = log_prevalences
+    alphas <- log_degrees
+    betas <- log_prevalences
 
-    known_prevalences = known_sizes / N
-    prevalences_vec = rep(NA, N_k)
-    prevalences_vec[known_ind] = known_prevalences
+    known_prevalences <- known_sizes / N
+    prevalences_vec <- rep(NA, N_k)
+    prevalences_vec[known_ind] <- known_prevalences
     if (!is.null(G1_ind)) {
-      Pg1 = sum(prevalences_vec[G1_ind])
+      Pg1 <- sum(prevalences_vec[G1_ind])
     }
     if (!is.null(G2_ind)) {
-      Pg2 = sum(prevalences_vec[G2_ind])
+      Pg2 <- sum(prevalences_vec[G2_ind])
     }
     if (!is.null(B2_ind)) {
-      Pb2 = sum(prevalences_vec[B2_ind])
+      Pb2 <- sum(prevalences_vec[B2_ind])
     }
 
 
@@ -106,35 +106,33 @@ scaling <-
       }
 
       if (is.null(G2_ind) |
-          is.null(B2_ind)) {
+        is.null(B2_ind)) {
         ## Perform scaling with only main
         for (ind in 1:iter) {
-          C1 = log(sum(exp(log_prevalences[ind, G1_ind]) / Pg1))
-          C = C1
+          C1 <- log(sum(exp(log_prevalences[ind, G1_ind]) / Pg1))
+          C <- C1
 
-          alphas[ind, ] = alphas[ind, ] + C
-          betas[ind, ] = betas[ind, ] - C
+          alphas[ind, ] <- alphas[ind, ] + C
+          betas[ind, ] <- betas[ind, ] - C
         }
-
-      } else{
+      } else {
         ## Perform scaling with secondary groups
         for (ind in 1:iter) {
-          C1 = log(sum(exp(log_prevalences[ind, G1_ind]) / Pg1))
-          C2 = log(sum(exp(log_prevalences[ind, B2_ind]) / Pb2)) -
+          C1 <- log(sum(exp(log_prevalences[ind, G1_ind]) / Pg1))
+          C2 <- log(sum(exp(log_prevalences[ind, B2_ind]) / Pb2)) -
             log(sum(exp(log_prevalences[ind, G2_ind]) / Pg2))
-          C = C1 + 1 / 2 * C2
+          C <- C1 + 1 / 2 * C2
 
-          alphas[ind, ] = alphas[ind, ] + C
-          betas[ind, ] = betas[ind, ] - C
+          alphas[ind, ] <- alphas[ind, ] + C
+          betas[ind, ] <- betas[ind, ] - C
         }
-
       }
     } else if (scaling == "all") {
       for (ind in 1:iter) {
-        C = log(mean(exp(log_prevalences[ind, known_ind]) / known_prevalences))
+        C <- log(mean(exp(log_prevalences[ind, known_ind]) / known_prevalences))
 
-        alphas[ind,] = alphas[ind,] + C
-        betas[ind,] = betas[ind,] - C
+        alphas[ind, ] <- alphas[ind, ] + C
+        betas[ind, ] <- betas[ind, ] - C
       }
     } else if (scaling == "weighted") {
       if (is.null(Correlation)) {
@@ -142,62 +140,60 @@ scaling <-
       }
 
       for (k in 1:N_k) {
-        scale.weights = Correlation[k, known_ind]
+        scale.weights <- Correlation[k, known_ind]
         ## Set negative weights to 0
-        scale.weights[scale.weights < 0] = 0
-        scale.weights = scale.weights / sum(scale.weights, na.rm = T) * sum(!is.na(scale.weights))
+        scale.weights[scale.weights < 0] <- 0
+        scale.weights <- scale.weights / sum(scale.weights, na.rm = T) * sum(!is.na(scale.weights))
         for (ind in 1:iter) {
-          C = log(mean(
+          C <- log(mean(
             exp(log_prevalences[ind, known_ind]) * scale.weights / known_prevalences,
             na.rm = T
           ))
 
-          betas[ind, k] = betas[ind, k] - C
+          betas[ind, k] <- betas[ind, k] - C
         }
       }
 
       ## Scale degrees separately using all
       for (ind in 1:iter) {
-        C = log(mean(exp(log_prevalences[ind, known_ind]) / known_prevalences))
+        C <- log(mean(exp(log_prevalences[ind, known_ind]) / known_prevalences))
 
-        alphas[ind,] = alphas[ind,] + C
+        alphas[ind, ] <- alphas[ind, ] + C
       }
-
-
     } else if (scaling == "weighted_sq") {
       if (is.null(Correlation)) {
         stop("Correlation cannot be null for scaling option \'weighted_sq\'")
       }
 
       for (k in 1:N_k) {
-        scale.weights = Correlation[k, known_ind]
+        scale.weights <- Correlation[k, known_ind]
         ## Set negative weights to 0
-        scale.weights[scale.weights < 0] = 0
-        scale.weights = scale.weights ^ 2
-        scale.weights = scale.weights / sum(scale.weights, na.rm = T) * sum(!is.na(scale.weights))
+        scale.weights[scale.weights < 0] <- 0
+        scale.weights <- scale.weights^2
+        scale.weights <- scale.weights / sum(scale.weights, na.rm = T) * sum(!is.na(scale.weights))
         for (ind in 1:iter) {
-          C = log(mean(
+          C <- log(mean(
             exp(log_prevalences[ind, known_ind]) * scale.weights / known_prevalences[known_ind],
             na.rm = T
           ))
 
-          betas[ind, k] = betas[ind, k] - C
+          betas[ind, k] <- betas[ind, k] - C
         }
       }
 
       ## Scale degrees separately using all
       for (ind in 1:iter) {
-        C = log(mean(exp(log_prevalences[ind, known_ind]) / known_prevalences[known_ind]))
+        C <- log(mean(exp(log_prevalences[ind, known_ind]) / known_prevalences[known_ind]))
 
-        alphas[ind,] = alphas[ind,] + C
+        alphas[ind, ] <- alphas[ind, ] + C
       }
     }
 
 
-    return_list = list(log_degrees = alphas,
-                       log_prevalences = betas)
+    return_list <- list(
+      log_degrees = alphas,
+      log_prevalences = betas
+    )
 
     return(return_list)
-
-
   }
